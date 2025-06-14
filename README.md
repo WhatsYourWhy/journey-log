@@ -1,3 +1,7 @@
+# This was a simple AI Prompt creation using LLM. Very Basic and simple to do list.
+
+# If you would like to experiment with single prompt upgrades. This may show the evolution of LLM capabilities as a historical coding assistant. 
+
 # The Journey Log
 
 A simple and stylish to-do list application with a touch of wisdom and customizable themes.
