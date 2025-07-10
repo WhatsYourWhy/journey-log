@@ -128,7 +128,7 @@ h1 {
 }
 
 /* Forest Trail Theme */
-.forest-theme body {
+body.forest-theme {
     background-color: #a8dadc;
     color: #1d3557;
 }
@@ -186,7 +186,7 @@ h1 {
 }
 
 /* Ocean Breeze Theme */
-.ocean-theme body {
+body.ocean-theme {
     background-color: #e0f2f7;
     color: #0277bd;
 }
@@ -244,7 +244,7 @@ h1 {
 }
 
 /* Midnight Sky Theme */
-.dark-theme body {
+body.dark-theme {
     background-color: #212121;
     color: #f5f5f5;
 }
