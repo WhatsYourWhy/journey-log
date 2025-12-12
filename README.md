@@ -6,7 +6,7 @@ This repository captures the evolution from an early LLM-generated prototype to 
 
 # The Journey Log
 
-A simple and stylish to-do list application with a touch of wisdom and customizable themes.
+A simple and stylish to-do list application with a touch of wisdom, quick insights, and customizable themes.
 
 ## Overview
 
@@ -17,6 +17,7 @@ The Journey Log is a web-based to-do list designed to help you track your tasks 
 * **Mark steps as complete:** Check off completed tasks, which will be visually marked with a strikethrough and optionally reveal an insightful quote.
 * **Delete steps:** Remove tasks from your log.
 * **Clear completed steps:** Quickly remove all finished tasks to keep your log tidy.
+* **See journey insights:** View totals, completed counts, active steps, and a progress indicator that updates automatically as you work.
 * **Customize the look:** Choose from different visual themes to personalize your Journey Log.
 
 ## Technologies Used
@@ -35,12 +36,14 @@ The Journey Log is a web-based to-do list designed to help you track your tasks 
 6. Use the "Clear Completed Steps" button to remove all finished tasks.
 7. Select a theme from the "Choose a theme" dropdown to change the appearance of the application. Your theme preference will be saved.
 
-## Potential Future Enhancements
+## Recent Improvements
 
-* **Editing Tasks:** Allow users to modify existing tasks.
-* **Task Prioritization:** Add a way to mark tasks with different priority levels.
-* **More Themes:** Introduce additional visual themes.
-* **User Accounts (More Advanced):** Implement user accounts and data synchronization across devices (this would require backend development).
+* The wisdom panel now accurately reflects the state of your tasks on page load and after any action, so inspirational quotes stay in sync with completed steps.
+* Added a Journey Insights row that surfaces total steps, completed and active counts, plus a live progress bar that updates whenever you change your list.
+
+## Next Steps
+
+Future iterations can build on these insights by tracking completion timestamps to show daily streaks and celebrating milestones.
 
 ## Author
 

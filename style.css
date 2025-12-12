@@ -20,6 +20,60 @@ h1 {
     margin-bottom: 20px;
 }
 
+.insights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.insight-card {
+    background: linear-gradient(145deg, #ffffff, #f2f2f2);
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.insight-card .label {
+    font-size: 13px;
+    color: #777;
+    margin: 0 0 6px;
+}
+
+.insight-card .value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.progress-card {
+    grid-column: span 2;
+}
+
+@media (max-width: 520px) {
+    .progress-card {
+        grid-column: span 1;
+    }
+}
+
+.progress-bar {
+    background: #ededed;
+    border-radius: 999px;
+    height: 10px;
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #5cb85c, #4cae4c);
+    height: 100%;
+    width: 0;
+    transition: width 0.2s ease;
+}
+
 .input-section {
     display: flex;
     margin-bottom: 15px;
@@ -139,6 +193,28 @@ body.forest-theme {
     color: #f1faee;
 }
 
+.forest-theme .insight-card {
+    background: linear-gradient(145deg, #4f8ab3, #3e6f8c);
+    border: 1px solid #1d3557;
+    box-shadow: none;
+}
+
+.forest-theme .insight-card .label {
+    color: #d9e6ef;
+}
+
+.forest-theme .insight-card .value {
+    color: #f1faee;
+}
+
+.forest-theme .progress-bar {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.forest-theme .progress-fill {
+    background: linear-gradient(90deg, #f1faee, #a8dadc);
+}
+
 .forest-theme h1 {
     color: #f1faee;
 }
@@ -197,6 +273,28 @@ body.ocean-theme {
     color: #01579b;
 }
 
+.ocean-theme .insight-card {
+    background: linear-gradient(145deg, #c5f2f7, #a5dbe4);
+    border: 1px solid #0277bd;
+    box-shadow: none;
+}
+
+.ocean-theme .insight-card .label {
+    color: #0277bd;
+}
+
+.ocean-theme .insight-card .value {
+    color: #01579b;
+}
+
+.ocean-theme .progress-bar {
+    background: rgba(1, 87, 155, 0.15);
+}
+
+.ocean-theme .progress-fill {
+    background: linear-gradient(90deg, #0277bd, #039be5);
+}
+
 .ocean-theme h1 {
     color: #01579b;
 }
@@ -253,6 +351,28 @@ body.dark-theme {
     background-color: #424242;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
     color: #e0e0e0;
+}
+
+.dark-theme .insight-card {
+    background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
+    border: 1px solid #616161;
+    box-shadow: none;
+}
+
+.dark-theme .insight-card .label {
+    color: #cccccc;
+}
+
+.dark-theme .insight-card .value {
+    color: #ffffff;
+}
+
+.dark-theme .progress-bar {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.dark-theme .progress-fill {
+    background: linear-gradient(90deg, #81c784, #66bb6a);
 }
 
 .dark-theme h1 {

@@ -10,15 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const wisdomText = document.getElementById('wisdomText');
     const themeSelect = document.getElementById('theme');
     const bodyElement = document.body;
-
-    let tasks = loadTasks();
-    renderTasks();
-
-    const savedTheme = localStorage.getItem('journeyTheme');
-        if (savedTheme) {
-        themeSelect.value = savedTheme;
-        bodyElement.className = savedTheme === 'default' ? '' : `${savedTheme}-theme`;
-}
+    const totalCount = document.getElementById('totalCount');
+    const completedCount = document.getElementById('completedCount');
+    const activeCount = document.getElementById('activeCount');
+    const progressFill = document.getElementById('progressFill');
+    const progressPercent = document.getElementById('progressPercent');
 
     const wisdomQuotes = [
         "The journey of a thousand miles begins with a single step. - Lao Tzu",
@@ -27,6 +23,15 @@ document.addEventListener('DOMContentLoaded', () => {
         "Our greatest glory is not in never failing, but in rising up every time we fail. - Ralph Waldo Emerson",
         "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt"
     ];
+
+    const savedTheme = localStorage.getItem('journeyTheme');
+    if (savedTheme) {
+        themeSelect.value = savedTheme;
+        bodyElement.className = savedTheme === 'default' ? '' : `${savedTheme}-theme`;
+    }
+
+    let tasks = loadTasks();
+    updateUI();
 
     themeSelect.addEventListener('change', (event) => {
         const selectedTheme = event.target.value;
@@ -56,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         tasks.push(task);
         saveTasks();
-        renderTasks();
+        updateUI();
     }
 
     function renderTasks() {
@@ -90,19 +95,13 @@ document.addEventListener('DOMContentLoaded', () => {
             task.id === taskId ? { ...task, completed: !task.completed } : task
         );
         saveTasks();
-        renderTasks();
-        if (tasks.find(task => task.id === taskId && task.completed)) {
-            showWisdom();
-        } else {
-            hideWisdom();
-        }
+        updateUI();
     }
 
     function deleteTask(taskId) {
         tasks = tasks.filter(task => task.id !== taskId);
         saveTasks();
-        renderTasks();
-        hideWisdom(); // Hide wisdom if a completed task is deleted
+        updateUI();
     }
 
     function saveTasks() {
@@ -128,7 +127,35 @@ document.addEventListener('DOMContentLoaded', () => {
     function clearCompletedTasks() {
         tasks = tasks.filter(task => !task.completed);
         saveTasks();
+        updateUI();
+    }
+
+    function updateWisdomVisibility() {
+        const hasCompletedTasks = tasks.some(task => task.completed);
+        if (hasCompletedTasks) {
+            showWisdom();
+        } else {
+            hideWisdom();
+        }
+    }
+
+    function updateInsights() {
+        const total = tasks.length;
+        const completed = tasks.filter(task => task.completed).length;
+        const active = total - completed;
+        const progress = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+        totalCount.textContent = total;
+        completedCount.textContent = completed;
+        activeCount.textContent = active;
+        progressFill.style.width = `${progress}%`;
+        progressFill.parentElement.setAttribute('aria-valuenow', progress);
+        progressPercent.textContent = `${progress}%`;
+    }
+
+    function updateUI() {
         renderTasks();
-        hideWisdom(); // Hide wisdom if any was showing
+        updateWisdomVisibility();
+        updateInsights();
     }
 });
