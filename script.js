@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let tasks = loadTasks();
     renderTasks();
+    updateWisdomVisibility();
 
     const savedTheme = localStorage.getItem('journeyTheme');
         if (savedTheme) {
@@ -91,18 +92,14 @@ document.addEventListener('DOMContentLoaded', () => {
         );
         saveTasks();
         renderTasks();
-        if (tasks.find(task => task.id === taskId && task.completed)) {
-            showWisdom();
-        } else {
-            hideWisdom();
-        }
+        updateWisdomVisibility();
     }
 
     function deleteTask(taskId) {
         tasks = tasks.filter(task => task.id !== taskId);
         saveTasks();
         renderTasks();
-        hideWisdom(); // Hide wisdom if a completed task is deleted
+        updateWisdomVisibility();
     }
 
     function saveTasks() {
@@ -129,6 +126,15 @@ document.addEventListener('DOMContentLoaded', () => {
         tasks = tasks.filter(task => !task.completed);
         saveTasks();
         renderTasks();
-        hideWisdom(); // Hide wisdom if any was showing
+        updateWisdomVisibility();
+    }
+
+    function updateWisdomVisibility() {
+        const hasCompletedTasks = tasks.some(task => task.completed);
+        if (hasCompletedTasks) {
+            showWisdom();
+        } else {
+            hideWisdom();
+        }
     }
 });
