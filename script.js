@@ -10,16 +10,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const wisdomText = document.getElementById('wisdomText');
     const themeSelect = document.getElementById('theme');
     const bodyElement = document.body;
+    const totalCount = document.getElementById('totalCount');
+    const completedCount = document.getElementById('completedCount');
+    const activeCount = document.getElementById('activeCount');
+    const progressPercent = document.getElementById('progressPercent');
+    const progressFill = document.getElementById('progressFill');
 
     let tasks = loadTasks();
     renderTasks();
     updateWisdomVisibility();
 
     const savedTheme = localStorage.getItem('journeyTheme');
-        if (savedTheme) {
+    if (savedTheme) {
         themeSelect.value = savedTheme;
         bodyElement.className = savedTheme === 'default' ? '' : `${savedTheme}-theme`;
-}
+    }
 
     const wisdomQuotes = [
         "The journey of a thousand miles begins with a single step. - Lao Tzu",
@@ -84,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             listItem.appendChild(deleteButton);
             taskList.appendChild(listItem);
         });
+        updateInsights();
     }
 
     function toggleComplete(taskId) {
@@ -135,6 +141,24 @@ document.addEventListener('DOMContentLoaded', () => {
             showWisdom();
         } else {
             hideWisdom();
+        }
+    }
+
+    function updateInsights() {
+        const totalTasks = tasks.length;
+        const completedTasks = tasks.filter(task => task.completed).length;
+        const activeTasks = totalTasks - completedTasks;
+        const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+        totalCount.textContent = totalTasks;
+        completedCount.textContent = completedTasks;
+        activeCount.textContent = activeTasks;
+        progressPercent.textContent = `${progress}%`;
+
+        progressFill.style.width = `${progress}%`;
+        const progressBar = progressFill.parentElement;
+        if (progressBar && progressBar.setAttribute) {
+            progressBar.setAttribute('aria-valuenow', progress.toString());
         }
     }
 });
