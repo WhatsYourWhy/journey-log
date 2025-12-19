@@ -1,8 +1,44 @@
 console.log("JavaScript file loaded!");
 
+function computeInsights(tasks) {
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter(task => task.completed).length;
+    const activeTasks = totalTasks - completedTasks;
+    const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+    return { totalTasks, completedTasks, activeTasks, progress };
+}
+
+function updateInsights(tasks, elements) {
+    const { totalTasks, completedTasks, activeTasks, progress } = computeInsights(tasks);
+    const { totalCount, completedCount, activeCount, progressPercent, progressFill } = elements;
+
+    totalCount.textContent = totalTasks;
+    completedCount.textContent = completedTasks;
+    activeCount.textContent = activeTasks;
+    progressPercent.textContent = `${progress}%`;
+
+    progressFill.style.width = `${progress}%`;
+    const progressBar = progressFill.parentElement;
+    if (progressBar && progressBar.setAttribute) {
+        progressBar.setAttribute('aria-valuenow', progress.toString());
+    }
+
+    return { totalTasks, completedTasks, activeTasks, progress };
+}
+
+function updateWisdomVisibility(tasks, showWisdom, hideWisdom) {
+    const hasCompletedTasks = tasks.some(task => task.completed);
+    if (hasCompletedTasks) {
+        showWisdom();
+    } else {
+        hideWisdom();
+    }
+    return hasCompletedTasks;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const clearCompletedButton = document.getElementById('clearCompletedButton');
-    clearCompletedButton.addEventListener('click', clearCompletedTasks);
     const taskInput = document.getElementById('taskInput');
     const addTaskButton = document.getElementById('addTaskButton');
     const taskList = document.getElementById('taskList');
@@ -18,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let tasks = loadTasks();
     renderTasks();
-    updateWisdomVisibility();
+    updateWisdomVisibility(tasks, showWisdom, hideWisdom);
 
     const savedTheme = localStorage.getItem('journeyTheme');
     if (savedTheme) {
@@ -89,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
             listItem.appendChild(deleteButton);
             taskList.appendChild(listItem);
         });
-        updateInsights();
+        updateInsights(tasks, { totalCount, completedCount, activeCount, progressPercent, progressFill });
     }
 
     function toggleComplete(taskId) {
@@ -98,14 +134,14 @@ document.addEventListener('DOMContentLoaded', () => {
         );
         saveTasks();
         renderTasks();
-        updateWisdomVisibility();
+        updateWisdomVisibility(tasks, showWisdom, hideWisdom);
     }
 
     function deleteTask(taskId) {
         tasks = tasks.filter(task => task.id !== taskId);
         saveTasks();
         renderTasks();
-        updateWisdomVisibility();
+        updateWisdomVisibility(tasks, showWisdom, hideWisdom);
     }
 
     function saveTasks() {
@@ -132,33 +168,16 @@ document.addEventListener('DOMContentLoaded', () => {
         tasks = tasks.filter(task => !task.completed);
         saveTasks();
         renderTasks();
-        updateWisdomVisibility();
+        updateWisdomVisibility(tasks, showWisdom, hideWisdom);
     }
 
-    function updateWisdomVisibility() {
-        const hasCompletedTasks = tasks.some(task => task.completed);
-        if (hasCompletedTasks) {
-            showWisdom();
-        } else {
-            hideWisdom();
-        }
-    }
-
-    function updateInsights() {
-        const totalTasks = tasks.length;
-        const completedTasks = tasks.filter(task => task.completed).length;
-        const activeTasks = totalTasks - completedTasks;
-        const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
-
-        totalCount.textContent = totalTasks;
-        completedCount.textContent = completedTasks;
-        activeCount.textContent = activeTasks;
-        progressPercent.textContent = `${progress}%`;
-
-        progressFill.style.width = `${progress}%`;
-        const progressBar = progressFill.parentElement;
-        if (progressBar && progressBar.setAttribute) {
-            progressBar.setAttribute('aria-valuenow', progress.toString());
-        }
-    }
+    clearCompletedButton.addEventListener('click', clearCompletedTasks);
 });
+
+if (typeof module !== 'undefined') {
+    module.exports = {
+        computeInsights,
+        updateInsights,
+        updateWisdomVisibility
+    };
+}
