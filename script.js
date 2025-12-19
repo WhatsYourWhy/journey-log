@@ -38,12 +38,27 @@ function updateWisdomVisibility(tasks, showWisdom, hideWisdom) {
     return hasCompletedTasks;
 }
 
+function toggleAllTasks(tasks, shouldComplete) {
+    return tasks.map(task => ({ ...task, completed: shouldComplete }));
+}
+
+function getSelectAllState(tasks) {
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter(task => task.completed).length;
+    return {
+        checked: totalTasks > 0 && completedTasks === totalTasks,
+        indeterminate: totalTasks > 0 && completedTasks > 0 && completedTasks < totalTasks
+    };
+}
+
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
     const clearCompletedButton = document.getElementById('clearCompletedButton');
+    const clearSelectedButton = document.getElementById('clearSelectedButton');
     const taskInput = document.getElementById('taskInput');
     const addTaskButton = document.getElementById('addTaskButton');
     const taskList = document.getElementById('taskList');
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
     const wisdomDisplay = document.getElementById('wisdomDisplay');
     const wisdomText = document.getElementById('wisdomText');
     const themeSelect = document.getElementById('theme');
@@ -164,10 +179,7 @@ if (typeof document !== 'undefined') {
             taskList.appendChild(listItem);
         });
         updateInsights(tasks, { totalCount, completedCount, activeCount, progressPercent, progressFill });
-        if (emptyState) {
-            const hasTasks = taskCount > 0;
-            emptyState.classList.toggle('hidden', hasTasks);
-        }
+        syncSelectAllCheckbox();
     }
 
     function toggleComplete(taskId) {
@@ -228,7 +240,63 @@ if (typeof document !== 'undefined') {
         updateWisdomVisibility(tasks, showWisdom, hideWisdom);
     }
 
+    function clearSelectedTasks() {
+        clearCompletedTasks();
+    }
+
+    function syncSelectAllCheckbox() {
+        const { checked, indeterminate } = getSelectAllState(tasks);
+        selectAllCheckbox.checked = checked;
+        selectAllCheckbox.indeterminate = indeterminate;
+        selectAllCheckbox.disabled = tasks.length === 0;
+    }
+
+    function handleSelectAllChange(event) {
+        const shouldComplete = event.target.checked;
+        tasks = toggleAllTasks(tasks, shouldComplete);
+        saveTasks();
+        renderTasks();
+        updateWisdomVisibility(tasks, showWisdom, hideWisdom);
+    }
+
+    function isTypingInInput(element) {
+        if (!element) return false;
+        const tagName = element.tagName;
+        const interactiveTags = ['INPUT', 'TEXTAREA', 'SELECT'];
+        if (interactiveTags.includes(tagName)) {
+            return true;
+        }
+        return element.isContentEditable === true;
+    }
+
+    function handleKeyboardShortcuts(event) {
+        const isModifier = event.ctrlKey || event.metaKey;
+        if (!isModifier) return;
+
+        const activeElement = document.activeElement;
+        const typingInInput = isTypingInInput(activeElement);
+
+        if (event.key === 'Enter' && !event.shiftKey) {
+            if (activeElement === taskInput) {
+                event.preventDefault();
+                addTaskButton.click();
+            }
+            return;
+        }
+
+        if (event.key.toLowerCase() === 'c' && event.shiftKey) {
+            if (typingInInput && activeElement !== taskInput) {
+                return;
+            }
+            event.preventDefault();
+            clearCompletedTasks();
+        }
+    }
+
     clearCompletedButton.addEventListener('click', clearCompletedTasks);
+    clearSelectedButton.addEventListener('click', clearSelectedTasks);
+    selectAllCheckbox.addEventListener('change', handleSelectAllChange);
+    document.addEventListener('keydown', handleKeyboardShortcuts);
 });
 }
 
@@ -236,6 +304,8 @@ if (typeof module !== 'undefined') {
     module.exports = {
         computeInsights,
         updateInsights,
-        updateWisdomVisibility
+        updateWisdomVisibility,
+        toggleAllTasks,
+        getSelectAllState
     };
 }
