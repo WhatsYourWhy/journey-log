@@ -22,6 +22,7 @@ function updateInsights(tasks, elements) {
     const progressBar = progressFill.parentElement;
     if (progressBar && progressBar.setAttribute) {
         progressBar.setAttribute('aria-valuenow', progress.toString());
+        progressBar.setAttribute('aria-valuetext', `${progress}% complete`);
     }
 
     return { totalTasks, completedTasks, activeTasks, progress };
@@ -67,6 +68,7 @@ if (typeof document !== 'undefined') {
     const activeCount = document.getElementById('activeCount');
     const progressPercent = document.getElementById('progressPercent');
     const progressFill = document.getElementById('progressFill');
+    const emptyState = document.getElementById('emptyState');
 
     let tasks = loadTasks();
     renderTasks();
@@ -97,6 +99,7 @@ if (typeof document !== 'undefined') {
         if (taskDescription) {
             addTask(taskDescription);
             taskInput.value = '';
+            taskInput.focus();
         }
     });
 
@@ -117,13 +120,44 @@ if (typeof document !== 'undefined') {
         renderTasks();
     }
 
-    function renderTasks() {
+    function captureFocusDetails(options = {}) {
+        const activeElement = document.activeElement;
+        const taskId = activeElement?.getAttribute?.('data-task-id') ?? null;
+        const control = activeElement?.getAttribute?.('data-control') ?? null;
+        const fallback = options.fallback ?? (typeof activeElement?.focus === 'function' ? activeElement : null);
+        return { taskId, control, fallback };
+    }
+
+    function restoreFocus(focusTarget) {
+        if (!focusTarget) {
+            return;
+        }
+
+        const { taskId, control, fallback } = focusTarget;
+        if (taskId && control) {
+            const selector = `[data-task-id="${taskId}"][data-control="${control}"]`;
+            const elementToFocus = taskList.querySelector(selector);
+            if (elementToFocus && typeof elementToFocus.focus === 'function') {
+                elementToFocus.focus();
+                return;
+            }
+        }
+
+        if (fallback && typeof fallback.focus === 'function') {
+            fallback.focus();
+        }
+    }
+
+    function renderTasks(focusTarget) {
         taskList.innerHTML = '';
+        const taskCount = tasks.length;
         tasks.forEach(task => {
             const listItem = document.createElement('li');
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.checked = task.completed;
+            checkbox.dataset.taskId = task.id;
+            checkbox.dataset.control = 'checkbox';
             checkbox.addEventListener('change', () => toggleComplete(task.id));
 
             const taskSpan = document.createElement('span');
@@ -134,6 +168,9 @@ if (typeof document !== 'undefined') {
 
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Delete';
+            deleteButton.dataset.taskId = task.id;
+            deleteButton.dataset.control = 'delete';
+            deleteButton.setAttribute('aria-label', `Delete ${task.description}`);
             deleteButton.addEventListener('click', () => deleteTask(task.id));
 
             listItem.appendChild(checkbox);
@@ -146,18 +183,20 @@ if (typeof document !== 'undefined') {
     }
 
     function toggleComplete(taskId) {
+        const focusTarget = captureFocusDetails();
         tasks = tasks.map(task =>
             task.id === taskId ? { ...task, completed: !task.completed } : task
         );
         saveTasks();
-        renderTasks();
+        renderTasks(focusTarget);
         updateWisdomVisibility(tasks, showWisdom, hideWisdom);
     }
 
     function deleteTask(taskId) {
+        const focusTarget = captureFocusDetails({ fallback: taskInput });
         tasks = tasks.filter(task => task.id !== taskId);
         saveTasks();
-        renderTasks();
+        renderTasks(focusTarget);
         updateWisdomVisibility(tasks, showWisdom, hideWisdom);
     }
 
@@ -184,17 +223,20 @@ if (typeof document !== 'undefined') {
         const randomIndex = Math.floor(Math.random() * wisdomQuotes.length);
         wisdomText.textContent = wisdomQuotes[randomIndex];
         wisdomDisplay.classList.remove('hidden');
+        wisdomDisplay.setAttribute('aria-expanded', 'true');
     }
 
     function hideWisdom() {
         wisdomDisplay.classList.add('hidden');
         wisdomText.textContent = '';
+        wisdomDisplay.setAttribute('aria-expanded', 'false');
     }
 
     function clearCompletedTasks() {
+        const focusTarget = captureFocusDetails({ fallback: clearCompletedButton });
         tasks = tasks.filter(task => !task.completed);
         saveTasks();
-        renderTasks();
+        renderTasks(focusTarget);
         updateWisdomVisibility(tasks, showWisdom, hideWisdom);
     }
 

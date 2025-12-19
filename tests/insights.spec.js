@@ -8,7 +8,7 @@ test.describe('Journey insights', () => {
     await page.goto(indexFileUrl);
 
     const taskInput = page.locator('#taskInput');
-    const addTaskButton = page.getByRole('button', { name: 'Add Step' });
+    const addTaskButton = page.getByRole('button', { name: /Add a new journey step/i });
     const progressFill = page.locator('#progressFill');
     const progressBar = progressFill.locator('..');
 
@@ -40,5 +40,26 @@ test.describe('Journey insights', () => {
 
     await secondCheckbox.check();
     await expectCounts(2, 2, 0, 100);
+  });
+
+  test('empty state visibility tracks task count', async ({ page }) => {
+    await page.goto(indexFileUrl);
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+
+    const taskInput = page.locator('#taskInput');
+    const addTaskButton = page.getByRole('button', { name: 'Add Step' });
+    const emptyState = page.locator('#emptyState');
+
+    await expect(emptyState).toBeVisible();
+
+    await taskInput.fill('Map the journey');
+    await addTaskButton.click();
+
+    await expect(emptyState).toBeHidden();
+
+    await page.getByRole('button', { name: 'Delete' }).click();
+
+    await expect(emptyState).toBeVisible();
   });
 });
