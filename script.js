@@ -37,7 +37,8 @@ function updateWisdomVisibility(tasks, showWisdom, hideWisdom) {
     return hasCompletedTasks;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
     const clearCompletedButton = document.getElementById('clearCompletedButton');
     const taskInput = document.getElementById('taskInput');
     const addTaskButton = document.getElementById('addTaskButton');
@@ -183,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clearCompletedButton.addEventListener('click', clearCompletedTasks);
 });
+}
 
 if (typeof module !== 'undefined') {
     module.exports = {
