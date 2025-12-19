@@ -54,10 +54,20 @@ function getSelectAllState(tasks) {
     return { checked, indeterminate };
 }
 
+function restoreDeletedTasks(currentTasks, deletedTasks) {
+    if (!Array.isArray(deletedTasks) || deletedTasks.length === 0) {
+        return currentTasks;
+    }
+
+    const mergedTasks = [...currentTasks, ...deletedTasks];
+    return mergedTasks.sort((first, second) => Number(first.id) - Number(second.id));
+}
+
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
     const clearCompletedButton = document.getElementById('clearCompletedButton');
     const clearSelectedButton = document.getElementById('clearSelectedButton');
+    const undoDeleteButton = document.getElementById('undoDeleteButton');
     const taskInput = document.getElementById('taskInput');
     const addTaskButton = document.getElementById('addTaskButton');
     const addHelperBubble = document.getElementById('addHelperBubble');
@@ -75,11 +85,15 @@ if (typeof document !== 'undefined') {
     const progressFill = document.getElementById('progressFill');
     const emptyState = document.getElementById('emptyState');
     const helperBubbleKey = 'journeySeenAddHelper';
+    const UNDO_WINDOW_MS = 10000;
 
     let tasks = loadTasks();
+    let lastDeletedTasks = [];
+    let undoTimeoutId = null;
     initializeHelperBubble();
     renderTasks();
     updateWisdomVisibility(tasks, showWisdom, hideWisdom);
+    setUndoAvailability(false);
     if (taskInput && taskInput.focus) {
         taskInput.focus();
     }
@@ -221,6 +235,11 @@ if (typeof document !== 'undefined') {
 
     function deleteTask(taskId) {
         const focusTarget = captureFocusDetails({ fallback: taskInput });
+        const removedTasks = tasks.filter(task => task.id === taskId);
+        if (removedTasks.length === 0) {
+            return;
+        }
+        rememberDeletedTasks(removedTasks);
         tasks = tasks.filter(task => task.id !== taskId);
         saveTasks();
         renderTasks(focusTarget);
@@ -261,6 +280,11 @@ if (typeof document !== 'undefined') {
 
     function clearCompletedTasks() {
         const focusTarget = captureFocusDetails({ fallback: clearCompletedButton });
+        const completedTasks = tasks.filter(task => task.completed);
+        if (completedTasks.length === 0) {
+            return;
+        }
+        rememberDeletedTasks(completedTasks);
         tasks = tasks.filter(task => !task.completed);
         saveTasks();
         renderTasks(focusTarget);
@@ -326,6 +350,7 @@ if (typeof document !== 'undefined') {
 
     clearCompletedButton.addEventListener('click', clearCompletedTasks);
     clearSelectedButton.addEventListener('click', clearSelectedTasks);
+    undoDeleteButton?.addEventListener('click', undoLastDelete);
     selectAllCheckbox.addEventListener('change', handleSelectAllChange);
     document.addEventListener('keydown', handleKeyboardShortcuts);
 
@@ -361,6 +386,50 @@ if (typeof document !== 'undefined') {
     function dismissHelperBubble() {
         hideHelperBubble(true);
     }
+
+    function setUndoAvailability(isAvailable) {
+        if (!undoDeleteButton) {
+            return;
+        }
+        undoDeleteButton.disabled = !isAvailable;
+    }
+
+    function rememberDeletedTasks(deletedTasks) {
+        if (!Array.isArray(deletedTasks) || deletedTasks.length === 0) {
+            setUndoAvailability(false);
+            return;
+        }
+
+        lastDeletedTasks = deletedTasks;
+        setUndoAvailability(true);
+
+        if (undoTimeoutId) {
+            clearTimeout(undoTimeoutId);
+        }
+
+        undoTimeoutId = setTimeout(() => {
+            lastDeletedTasks = [];
+            setUndoAvailability(false);
+        }, UNDO_WINDOW_MS);
+    }
+
+    function undoLastDelete() {
+        if (!lastDeletedTasks.length) {
+            return;
+        }
+
+        const focusTarget = captureFocusDetails({ fallback: taskInput });
+        tasks = restoreDeletedTasks(tasks, lastDeletedTasks);
+        lastDeletedTasks = [];
+        saveTasks();
+        renderTasks(focusTarget);
+        updateWisdomVisibility(tasks, showWisdom, hideWisdom);
+        setUndoAvailability(false);
+        if (undoTimeoutId) {
+            clearTimeout(undoTimeoutId);
+            undoTimeoutId = null;
+        }
+    }
 });
 }
 
@@ -370,6 +439,7 @@ if (typeof module !== 'undefined') {
         updateInsights,
         updateWisdomVisibility,
         toggleAllTasks,
-        getSelectAllState
+        getSelectAllState,
+        restoreDeletedTasks
     };
 }
