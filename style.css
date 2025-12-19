@@ -345,9 +345,66 @@ h1 {
     background-color: #4cae4c;
 }
 
-#clearCompletedButton:active {
-    background-color: #3e903e;
+#undoDeleteButton {
+
+    background-color: #2457cf;
+
 }
+
+#undoDeleteButton:hover {
+
+    background-color: #1d46a6;
+
+}
+
+.task-toolbar {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-bottom: 15px;
+
+}
+
+.task-toolbar button {
+
+    background-color: #6c757d;
+
+    color: #fff;
+
+    border: none;
+
+    padding: 10px 14px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+
+}
+
+.task-toolbar button:focus-visible {
+
+    outline: 3px solid #4cae4c;
+
+    outline-offset: 2px;
+
+    box-shadow: 0 0 0 4px rgba(76, 174, 76, 0.2);
+
+}
+
+.task-toolbar button:disabled {
+
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+}
+
 
 .task-list-label {
     margin: 16px 0 6px;
