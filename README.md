@@ -1,4 +1,4 @@
-# This was a simple AI prompt creation using LLM. Very basic and simple to-do list.
+# This project started as a simple AI prompt using an LLM—a very basic and simple to-do list.
 
 # If you would like to experiment with single prompt upgrades, this may show the evolution of LLM capabilities as a historical coding assistant. 
 
