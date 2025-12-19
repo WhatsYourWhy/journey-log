@@ -54,6 +54,47 @@ function getSelectAllState(tasks) {
     return { checked, indeterminate };
 }
 
+function createSaveFeedbackController(statusElement, options = {}) {
+    const scheduler = options.scheduler ?? setTimeout;
+    const clearer = options.clearer ?? clearTimeout;
+    const showDelay = options.showDelay ?? 120;
+    const displayDuration = options.displayDuration ?? 1500;
+
+    let showTimer = null;
+    let hideTimer = null;
+
+    const show = () => {
+        if (!statusElement) return;
+        statusElement.textContent = 'Saved';
+        statusElement.classList.add('visible');
+        statusElement.setAttribute('aria-hidden', 'false');
+    };
+
+    const hide = () => {
+        if (!statusElement) return;
+        statusElement.classList.remove('visible');
+        statusElement.setAttribute('aria-hidden', 'true');
+        statusElement.textContent = '';
+    };
+
+    function trigger() {
+        if (!statusElement) return;
+        if (showTimer) {
+            clearer(showTimer);
+        }
+        if (hideTimer) {
+            clearer(hideTimer);
+        }
+
+        showTimer = scheduler(() => {
+            show();
+            hideTimer = scheduler(hide, displayDuration);
+        }, showDelay);
+    }
+
+    return { trigger };
+}
+
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
     const clearCompletedButton = document.getElementById('clearCompletedButton');
@@ -75,6 +116,8 @@ if (typeof document !== 'undefined') {
     const progressFill = document.getElementById('progressFill');
     const emptyState = document.getElementById('emptyState');
     const helperBubbleKey = 'journeySeenAddHelper';
+    const saveStatus = document.getElementById('saveStatus');
+    const saveFeedback = createSaveFeedbackController(saveStatus);
 
     let tasks = loadTasks();
     initializeHelperBubble();
@@ -229,6 +272,7 @@ if (typeof document !== 'undefined') {
 
     function saveTasks() {
         localStorage.setItem('journeyTasks', JSON.stringify(tasks));
+        saveFeedback.trigger();
     }
 
     function loadTasks() {
@@ -370,6 +414,7 @@ if (typeof module !== 'undefined') {
         updateInsights,
         updateWisdomVisibility,
         toggleAllTasks,
-        getSelectAllState
+        getSelectAllState,
+        createSaveFeedbackController
     };
 }

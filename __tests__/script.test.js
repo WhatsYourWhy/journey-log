@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { updateInsights, updateWisdomVisibility } = require('../script.js');
+const { updateInsights, updateWisdomVisibility, createSaveFeedbackController } = require('../script.js');
 
 function createSpy() {
     const spy = (...args) => {
@@ -51,6 +51,49 @@ function createDomElements() {
         progressPercent,
         progressFill
     };
+}
+
+function createStatusElement() {
+    const classes = new Set();
+    return {
+        textContent: '',
+        attributes: {},
+        classList: {
+            add: (...tokens) => tokens.forEach(token => classes.add(token)),
+            remove: (...tokens) => tokens.forEach(token => classes.delete(token)),
+            has: (token) => classes.has(token)
+        },
+        setAttribute(name, value) {
+            this.attributes[name] = value;
+        },
+        getAttribute(name) {
+            return this.attributes[name] ?? null;
+        }
+    };
+}
+
+function createFakeScheduler() {
+    let tasks = [];
+    let lastId = 0;
+
+    const scheduler = (callback) => {
+        const id = ++lastId;
+        tasks.push({ id, callback });
+        return id;
+    };
+
+    const clearer = (id) => {
+        tasks = tasks.filter(task => task.id !== id);
+    };
+
+    const runNext = () => {
+        const nextTask = tasks.shift();
+        nextTask?.callback();
+    };
+
+    const pendingCount = () => tasks.length;
+
+    return { scheduler, clearer, runNext, pendingCount };
 }
 
 test.describe('updateInsights', () => {
@@ -115,5 +158,36 @@ test.describe('updateWisdomVisibility', () => {
         expect(hasCompletedTasks).toBe(false);
         expect(hideWisdom.callCount()).toBe(1);
         expect(showWisdom.callCount()).toBe(0);
+    });
+});
+
+test.describe('createSaveFeedbackController', () => {
+    test('debounces and hides the saved indicator after the display duration', () => {
+        const statusElement = createStatusElement();
+        const timers = createFakeScheduler();
+        const controller = createSaveFeedbackController(statusElement, {
+            scheduler: timers.scheduler,
+            clearer: timers.clearer,
+            displayDuration: 50,
+            showDelay: 5
+        });
+
+        controller.trigger();
+        controller.trigger();
+        expect(timers.pendingCount()).toBe(1);
+
+        timers.runNext(); // show
+        expect(statusElement.textContent).toBe('Saved');
+        expect(statusElement.classList.has('visible')).toBe(true);
+        expect(statusElement.getAttribute('aria-hidden')).toBe('false');
+
+        controller.trigger();
+        expect(timers.pendingCount()).toBe(1);
+
+        timers.runNext(); // show again, schedules hide
+        timers.runNext(); // hide
+        expect(statusElement.textContent).toBe('');
+        expect(statusElement.classList.has('visible')).toBe(false);
+        expect(statusElement.getAttribute('aria-hidden')).toBe('true');
     });
 });
