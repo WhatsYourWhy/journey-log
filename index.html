@@ -92,6 +92,7 @@
             </div>
 
         </section>
+        <p class="insights-caption">Totals show how many steps you have, how many are done, and what remains. The progress bar tracks the percentage completed.</p>
 
         <div class="input-section">
 
@@ -99,10 +100,12 @@
 
             <div class="cta-wrapper">
                 <button id="addTaskButton" aria-label="Add a new journey step">Add Step</button>
+                <button id="addTaskButtonSecondary" type="button" aria-label="Add a journey step near the keyboard">Add</button>
                 <div id="addHelperBubble" class="helper-bubble hidden" role="status" aria-live="polite" aria-hidden="true">
                     Tap Add after you type.
                 </div>
             </div>
+            <button id="secondaryAddButton" class="secondary-add" type="button" aria-label="Add a new journey step (mobile friendly)">Add</button>
 
         </div>
 
@@ -129,7 +132,7 @@
             <p><strong>Quick start:</strong> Type a step and press Enter. We’ll keep it saved.</p>
         </div>
 
-        <ul id="taskList">
+        <ul id="taskList" aria-labelledby="taskListLabel">
 
         </ul>
 

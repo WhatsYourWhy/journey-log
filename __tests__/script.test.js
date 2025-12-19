@@ -66,6 +66,7 @@ test.describe('updateInsights', () => {
         expect(elements.progressPercent.textContent).toBe('0%');
         expect(elements.progressFill.style.width).toBe('0%');
         expect(elements.progressFill.parentElement.getAttribute('aria-valuenow')).toBe('0');
+        expect(elements.progressFill.parentElement.getAttribute('aria-valuetext')).toBe('0% complete');
     });
 
     test('reflects mixed active and completed tasks', () => {
@@ -84,6 +85,7 @@ test.describe('updateInsights', () => {
         expect(elements.progressPercent.textContent).toBe('67%');
         expect(elements.progressFill.style.width).toBe('67%');
         expect(elements.progressFill.parentElement.getAttribute('aria-valuenow')).toBe('67');
+        expect(elements.progressFill.parentElement.getAttribute('aria-valuetext')).toBe('67% complete');
     });
 });
 
