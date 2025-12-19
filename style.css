@@ -10,6 +10,31 @@ body {
 
 }
 
+:focus-visible {
+    outline: 3px solid #2457cf;
+    outline-offset: 3px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+#taskList li button:focus-visible {
+    box-shadow: 0 0 0 3px rgba(36, 87, 207, 0.15);
+}
+
+@media (prefers-contrast: more) {
+    :focus-visible {
+        outline-width: 4px;
+        outline-offset: 4px;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+        box-shadow: 0 0 0 4px #fff;
+    }
+}
+
 
 
 .container {
@@ -386,6 +411,14 @@ body.forest-theme {
 
 }
 
+.forest-theme :focus-visible {
+
+    outline-color: #f1faee;
+
+    box-shadow: 0 0 0 3px rgba(241, 250, 238, 0.25);
+
+}
+
 
 
 .forest-theme .insight-card {
@@ -546,6 +579,14 @@ body.ocean-theme {
 
 }
 
+.ocean-theme :focus-visible {
+
+    outline-color: #01579b;
+
+    box-shadow: 0 0 0 3px rgba(1, 87, 155, 0.25);
+
+}
+
 
 
 .ocean-theme .insight-card {
@@ -703,6 +744,14 @@ body.dark-theme {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 
     color: #e0e0e0;
+
+}
+
+.dark-theme :focus-visible {
+
+    outline-color: #b5d8ff;
+
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
 
 }
 

@@ -8,7 +8,7 @@ test.describe('Journey insights', () => {
     await page.goto(indexFileUrl);
 
     const taskInput = page.locator('#taskInput');
-    const addTaskButton = page.getByRole('button', { name: 'Add Step' });
+    const addTaskButton = page.getByRole('button', { name: /Add a new journey step/i });
     const progressFill = page.locator('#progressFill');
     const progressBar = progressFill.locator('..');
 
