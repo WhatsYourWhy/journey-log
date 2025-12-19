@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+const path = require('path');
 const { updateInsights, updateWisdomVisibility } = require('../script.js');
 
 function createSpy() {
@@ -115,5 +116,37 @@ test.describe('updateWisdomVisibility', () => {
         expect(hasCompletedTasks).toBe(false);
         expect(hideWisdom.callCount()).toBe(1);
         expect(showWisdom.callCount()).toBe(0);
+    });
+});
+
+test.describe('mobile layout', () => {
+    test('stays readable without horizontal scrolling at 375px width', async ({ page }) => {
+        const fileUrl = 'file://' + path.join(__dirname, '..', 'index.html');
+        await page.setViewportSize({ width: 375, height: 812 });
+        await page.goto(fileUrl);
+
+        await page.fill('#taskInput', 'A lengthy task description to make sure wrapping works well on mobile screens.');
+        await page.click('#addTaskButton');
+        await page.fill('#taskInput', 'Another detailed task that should stay visible without pushing controls off-screen.');
+        await page.click('#addTaskButton');
+
+        const hasHorizontalScroll = await page.evaluate(() => {
+            const root = document.scrollingElement || document.documentElement;
+            return root.scrollWidth > root.clientWidth;
+        });
+        expect(hasHorizontalScroll).toBe(false);
+
+        const anyOverflowing = await page.evaluate(() => {
+            const viewportWidth = window.innerWidth;
+            const elements = [
+                ...document.querySelectorAll('.insight-card'),
+                ...document.querySelectorAll('#taskList li')
+            ];
+            return elements.some((el) => {
+                const rect = el.getBoundingClientRect();
+                return rect.right - 0.5 > viewportWidth;
+            });
+        });
+        expect(anyOverflowing).toBe(false);
     });
 });
