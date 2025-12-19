@@ -60,6 +60,7 @@ if (typeof document !== 'undefined') {
     const clearSelectedButton = document.getElementById('clearSelectedButton');
     const taskInput = document.getElementById('taskInput');
     const addTaskButton = document.getElementById('addTaskButton');
+    const addTaskButtonSecondary = document.getElementById('addTaskButtonSecondary');
     const addHelperBubble = document.getElementById('addHelperBubble');
     const startCueButton = document.getElementById('startCueButton');
     const taskList = document.getElementById('taskList');
@@ -106,14 +107,18 @@ if (typeof document !== 'undefined') {
         localStorage.setItem('journeyTheme', selectedTheme); // Save the selected theme
     });
 
-    addTaskButton.addEventListener('click', () => {
+    const handleAddTask = () => {
         const taskDescription = taskInput.value.trim();
         if (taskDescription) {
             addTask(taskDescription);
             taskInput.value = '';
             taskInput.focus();
         }
-    });
+    };
+
+    [addTaskButton, addTaskButtonSecondary]
+        .filter(Boolean)
+        .forEach((button) => button.addEventListener('click', handleAddTask));
 
     startCueButton?.addEventListener('click', () => {
         taskInput?.focus();
@@ -122,7 +127,7 @@ if (typeof document !== 'undefined') {
 
     taskInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
-            addTaskButton.click();
+            handleAddTask();
         }
     });
 
