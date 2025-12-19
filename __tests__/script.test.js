@@ -1,12 +1,46 @@
+const { test, expect } = require('@playwright/test');
 const { updateInsights, updateWisdomVisibility } = require('../script.js');
 
+function createSpy() {
+    const spy = (...args) => {
+        spy.calls.push(args);
+    };
+    spy.calls = [];
+    spy.callCount = () => spy.calls.length;
+    return spy;
+}
+
 function createDomElements() {
-    const totalCount = document.createElement('span');
-    const completedCount = document.createElement('span');
-    const activeCount = document.createElement('span');
-    const progressPercent = document.createElement('span');
-    const progressBar = document.createElement('div');
-    const progressFill = document.createElement('div');
+    const createElement = () => {
+        let textContent = '';
+        return {
+            get textContent() {
+                return textContent;
+            },
+            set textContent(value) {
+                textContent = String(value);
+            },
+            style: {},
+            attributes: {},
+            parentElement: null,
+            appendChild(child) {
+                child.parentElement = this;
+            },
+            setAttribute(name, value) {
+                this.attributes[name] = value;
+            },
+            getAttribute(name) {
+                return this.attributes[name] ?? null;
+            }
+        };
+    };
+
+    const totalCount = createElement();
+    const completedCount = createElement();
+    const activeCount = createElement();
+    const progressPercent = createElement();
+    const progressBar = createElement();
+    const progressFill = createElement();
 
     progressBar.appendChild(progressFill);
 
@@ -19,7 +53,7 @@ function createDomElements() {
     };
 }
 
-describe('updateInsights', () => {
+test.describe('updateInsights', () => {
     test('handles zero tasks gracefully', () => {
         const elements = createDomElements();
         const tasks = [];
@@ -53,10 +87,10 @@ describe('updateInsights', () => {
     });
 });
 
-describe('updateWisdomVisibility', () => {
+test.describe('updateWisdomVisibility', () => {
     test('shows wisdom when there are completed tasks', () => {
-        const showWisdom = jest.fn();
-        const hideWisdom = jest.fn();
+        const showWisdom = createSpy();
+        const hideWisdom = createSpy();
         const tasks = [
             { id: 1, description: 'Done task', completed: true },
             { id: 2, description: 'Active task', completed: false }
@@ -65,13 +99,13 @@ describe('updateWisdomVisibility', () => {
         const hasCompletedTasks = updateWisdomVisibility(tasks, showWisdom, hideWisdom);
 
         expect(hasCompletedTasks).toBe(true);
-        expect(showWisdom).toHaveBeenCalledTimes(1);
-        expect(hideWisdom).not.toHaveBeenCalled();
+        expect(showWisdom.callCount()).toBe(1);
+        expect(hideWisdom.callCount()).toBe(0);
     });
 
     test('hides wisdom when there are no completed tasks', () => {
-        const showWisdom = jest.fn();
-        const hideWisdom = jest.fn();
+        const showWisdom = createSpy();
+        const hideWisdom = createSpy();
         const tasks = [
             { id: 1, description: 'Active task', completed: false }
         ];
@@ -79,7 +113,7 @@ describe('updateWisdomVisibility', () => {
         const hasCompletedTasks = updateWisdomVisibility(tasks, showWisdom, hideWisdom);
 
         expect(hasCompletedTasks).toBe(false);
-        expect(hideWisdom).toHaveBeenCalledTimes(1);
-        expect(showWisdom).not.toHaveBeenCalled();
+        expect(hideWisdom.callCount()).toBe(1);
+        expect(showWisdom.callCount()).toBe(0);
     });
 });
