@@ -114,7 +114,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadTasks() {
         const storedTasks = localStorage.getItem('journeyTasks');
-        return storedTasks ? JSON.parse(storedTasks) : [];
+        if (!storedTasks) {
+            return [];
+        }
+        try {
+            return JSON.parse(storedTasks);
+        } catch (error) {
+            console.error('Failed to parse stored tasks, clearing corrupted data.', error);
+            localStorage.removeItem('journeyTasks');
+            return [];
+        }
     }
 
     function showWisdom() {
