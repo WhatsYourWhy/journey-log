@@ -28,9 +28,10 @@ function updateInsights(tasks, elements) {
     return { totalTasks, completedTasks, activeTasks, progress };
 }
 
-function updateWisdomVisibility(tasks, showWisdom, hideWisdom) {
+function updateWisdomVisibility(tasks, showWisdom, hideWisdom, options = {}) {
+    const { wisdomEnabled = true } = options;
     const hasCompletedTasks = tasks.some(task => task.completed);
-    if (hasCompletedTasks) {
+    if (hasCompletedTasks && wisdomEnabled) {
         showWisdom();
     } else {
         hideWisdom();
@@ -87,15 +88,16 @@ if (typeof document !== 'undefined') {
     const progressFill = document.getElementById('progressFill');
     const emptyState = document.getElementById('emptyState');
     const helperBubbleKey = 'journeySeenAddHelper';
-    const UNDO_WINDOW_MS = 10000;
+    const wisdomToggle = document.getElementById('wisdomToggle');
+    const wisdomToggleKey = 'journeyShowWisdom';
 
     let tasks = loadTasks();
     let lastDeletedTasks = [];
     let undoTimeoutId = null;
     initializeHelperBubble();
     renderTasks();
-    updateWisdomVisibility(tasks, showWisdom, hideWisdom);
-    setUndoAvailability(false);
+    syncWisdomPreference();
+    updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: isWisdomEnabled() });
     if (taskInput && taskInput.focus) {
         taskInput.focus();
     }
@@ -247,7 +249,7 @@ if (typeof document !== 'undefined') {
         );
         saveTasks();
         renderTasks(focusTarget);
-        updateWisdomVisibility(tasks, showWisdom, hideWisdom);
+        updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: isWisdomEnabled() });
     }
 
     function deleteTask(taskId) {
@@ -260,7 +262,7 @@ if (typeof document !== 'undefined') {
         tasks = tasks.filter(task => task.id !== taskId);
         saveTasks();
         renderTasks(focusTarget);
-        updateWisdomVisibility(tasks, showWisdom, hideWisdom);
+        updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: isWisdomEnabled() });
     }
 
     function saveTasks() {
@@ -324,7 +326,7 @@ if (typeof document !== 'undefined') {
         tasks = toggleAllTasks(tasks, shouldComplete);
         saveTasks();
         renderTasks();
-        updateWisdomVisibility(tasks, showWisdom, hideWisdom);
+        updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: isWisdomEnabled() });
     }
 
     function isTypingInInput(element) {
@@ -370,6 +372,11 @@ if (typeof document !== 'undefined') {
     undoDeleteButton?.addEventListener('click', undoLastDelete);
     selectAllCheckbox.addEventListener('change', handleSelectAllChange);
     document.addEventListener('keydown', handleKeyboardShortcuts);
+    wisdomToggle?.addEventListener('change', () => {
+        const newValue = wisdomToggle.checked;
+        localStorage.setItem(wisdomToggleKey, newValue ? 'true' : 'false');
+        updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: newValue });
+    });
 
     function showHelperBubble() {
         if (!addHelperBubble) return;
@@ -404,48 +411,19 @@ if (typeof document !== 'undefined') {
         hideHelperBubble(true);
     }
 
-    function setUndoAvailability(isAvailable) {
-        if (!undoDeleteButton) {
-            return;
+    function syncWisdomPreference() {
+        const storedPreference = localStorage.getItem(wisdomToggleKey);
+        if (!wisdomToggle) return;
+        if (storedPreference === 'false') {
+            wisdomToggle.checked = false;
+        } else {
+            wisdomToggle.checked = true;
         }
-        undoDeleteButton.disabled = !isAvailable;
     }
 
-    function rememberDeletedTasks(deletedTasks) {
-        if (!Array.isArray(deletedTasks) || deletedTasks.length === 0) {
-            setUndoAvailability(false);
-            return;
-        }
-
-        lastDeletedTasks = deletedTasks;
-        setUndoAvailability(true);
-
-        if (undoTimeoutId) {
-            clearTimeout(undoTimeoutId);
-        }
-
-        undoTimeoutId = setTimeout(() => {
-            lastDeletedTasks = [];
-            setUndoAvailability(false);
-        }, UNDO_WINDOW_MS);
-    }
-
-    function undoLastDelete() {
-        if (!lastDeletedTasks.length) {
-            return;
-        }
-
-        const focusTarget = captureFocusDetails({ fallback: taskInput });
-        tasks = restoreDeletedTasks(tasks, lastDeletedTasks);
-        lastDeletedTasks = [];
-        saveTasks();
-        renderTasks(focusTarget);
-        updateWisdomVisibility(tasks, showWisdom, hideWisdom);
-        setUndoAvailability(false);
-        if (undoTimeoutId) {
-            clearTimeout(undoTimeoutId);
-            undoTimeoutId = null;
-        }
+    function isWisdomEnabled() {
+        if (!wisdomToggle) return true;
+        return wisdomToggle.checked;
     }
 });
 }
