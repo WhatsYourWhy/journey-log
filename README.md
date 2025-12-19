@@ -1,6 +1,6 @@
-# This was a simple AI Prompt creation using LLM. Very Basic and simple to do list.
+# This project started as a simple AI prompt using an LLM—a very basic and simple to-do list.
 
-# If you would like to experiment with single prompt upgrades. This may show the evolution of LLM capabilities as a historical coding assistant. 
+# If you would like to experiment with single prompt upgrades, this may show the evolution of LLM capabilities as a historical coding assistant. 
 
 This repository captures the evolution from an early LLM-generated prototype to the current workflow powered by OpenAI Codex. It shows how iterative prompts and code refinement can steadily improve a simple idea.
 
@@ -18,6 +18,7 @@ The Journey Log is a web-based to-do list designed to help you track your tasks 
 * **Delete steps:** Remove tasks from your log.
 * **Clear completed steps:** Quickly remove all finished tasks to keep your log tidy.
 * **Customize the look:** Choose from different visual themes to personalize your Journey Log.
+* **Check your progress at a glance:** See totals for all steps, completed steps, and active steps alongside a visual progress bar that fills as you complete tasks.
 
 ## Technologies Used
 
