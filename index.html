@@ -100,10 +100,12 @@
 
             <div class="cta-wrapper">
                 <button id="addTaskButton" aria-label="Add a new journey step">Add Step</button>
+                <button id="addTaskButtonSecondary" type="button" aria-label="Add a journey step near the keyboard">Add</button>
                 <div id="addHelperBubble" class="helper-bubble hidden" role="status" aria-live="polite" aria-hidden="true">
                     Tap Add after you type.
                 </div>
             </div>
+            <button id="secondaryAddButton" class="secondary-add" type="button" aria-label="Add a new journey step (mobile friendly)">Add</button>
 
         </div>
 
@@ -118,11 +120,6 @@
         </div>
 
         <p class="task-list-label" id="taskListLabel">Your steps</p>
-
-        <div id="emptyState" class="empty-state hidden" aria-live="polite">
-            <p><strong>Start your journey:</strong> add a step and press Enter or click “Add Step”.</p>
-            <p>Your insights and wisdom will appear once you begin tracking steps.</p>
-        </div>
 
         <div id="starterHint" class="starter-hint hidden" role="status" aria-live="polite">
             <p><strong>Quick start:</strong> Type a step and press Enter. We’ll keep it saved.</p>

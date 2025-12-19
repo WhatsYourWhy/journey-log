@@ -60,9 +60,11 @@ if (typeof document !== 'undefined') {
     const clearSelectedButton = document.getElementById('clearSelectedButton');
     const taskInput = document.getElementById('taskInput');
     const addTaskButton = document.getElementById('addTaskButton');
+    const secondaryAddButton = document.getElementById('secondaryAddButton');
     const addHelperBubble = document.getElementById('addHelperBubble');
     const startCueButton = document.getElementById('startCueButton');
     const taskList = document.getElementById('taskList');
+    const inputSection = document.querySelector('.input-section');
     const selectAllCheckbox = document.getElementById('selectAllCheckbox');
     const wisdomDisplay = document.getElementById('wisdomDisplay');
     const wisdomText = document.getElementById('wisdomText');
@@ -98,7 +100,17 @@ if (typeof document !== 'undefined') {
         "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt"
     ];
 
+    function revealInputSection() {
+        if (!inputSection) return;
+        inputSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+        const overflow = inputSection.getBoundingClientRect().bottom - window.innerHeight + 12;
+        if (overflow > 0) {
+            window.scrollBy({ top: overflow, behavior: 'auto' });
+        }
+    }
+
     taskInput?.focus();
+    revealInputSection();
 
     themeSelect.addEventListener('change', (event) => {
         const selectedTheme = event.target.value;
@@ -106,14 +118,19 @@ if (typeof document !== 'undefined') {
         localStorage.setItem('journeyTheme', selectedTheme); // Save the selected theme
     });
 
-    addTaskButton.addEventListener('click', () => {
+    taskInput.addEventListener('focus', revealInputSection);
+
+    function handleAddFromInput() {
         const taskDescription = taskInput.value.trim();
         if (taskDescription) {
             addTask(taskDescription);
             taskInput.value = '';
             taskInput.focus();
         }
-    });
+    }
+
+    addTaskButton.addEventListener('click', handleAddFromInput);
+    secondaryAddButton?.addEventListener('click', handleAddFromInput);
 
     startCueButton?.addEventListener('click', () => {
         taskInput?.focus();
@@ -122,7 +139,7 @@ if (typeof document !== 'undefined') {
 
     taskInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
-            addTaskButton.click();
+            handleAddTask();
         }
     });
 
