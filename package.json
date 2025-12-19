@@ -1,0 +1,16 @@
+{
+  "name": "journey-log",
+  "version": "1.0.0",
+  "description": "This repository captures the evolution from an early LLM-generated prototype to the current workflow powered by OpenAI Codex. It shows how iterative prompts and code refinement can steadily improve a simple idea.",
+  "main": "script.js",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0"
+  }
+}
