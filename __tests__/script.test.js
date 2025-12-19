@@ -116,4 +116,18 @@ test.describe('updateWisdomVisibility', () => {
         expect(hideWisdom.callCount()).toBe(1);
         expect(showWisdom.callCount()).toBe(0);
     });
+
+    test('respects disabled wisdom option even with completed tasks', () => {
+        const showWisdom = createSpy();
+        const hideWisdom = createSpy();
+        const tasks = [
+            { id: 1, description: 'Done task', completed: true }
+        ];
+
+        const hasCompletedTasks = updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: false });
+
+        expect(hasCompletedTasks).toBe(true);
+        expect(hideWisdom.callCount()).toBe(1);
+        expect(showWisdom.callCount()).toBe(0);
+    });
 });

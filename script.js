@@ -28,9 +28,10 @@ function updateInsights(tasks, elements) {
     return { totalTasks, completedTasks, activeTasks, progress };
 }
 
-function updateWisdomVisibility(tasks, showWisdom, hideWisdom) {
+function updateWisdomVisibility(tasks, showWisdom, hideWisdom, options = {}) {
+    const { wisdomEnabled = true } = options;
     const hasCompletedTasks = tasks.some(task => task.completed);
-    if (hasCompletedTasks) {
+    if (hasCompletedTasks && wisdomEnabled) {
         showWisdom();
     } else {
         hideWisdom();
@@ -75,11 +76,14 @@ if (typeof document !== 'undefined') {
     const progressFill = document.getElementById('progressFill');
     const emptyState = document.getElementById('emptyState');
     const helperBubbleKey = 'journeySeenAddHelper';
+    const wisdomToggle = document.getElementById('wisdomToggle');
+    const wisdomToggleKey = 'journeyShowWisdom';
 
     let tasks = loadTasks();
     initializeHelperBubble();
     renderTasks();
-    updateWisdomVisibility(tasks, showWisdom, hideWisdom);
+    syncWisdomPreference();
+    updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: isWisdomEnabled() });
     if (taskInput && taskInput.focus) {
         taskInput.focus();
     }
@@ -216,7 +220,7 @@ if (typeof document !== 'undefined') {
         );
         saveTasks();
         renderTasks(focusTarget);
-        updateWisdomVisibility(tasks, showWisdom, hideWisdom);
+        updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: isWisdomEnabled() });
     }
 
     function deleteTask(taskId) {
@@ -224,7 +228,7 @@ if (typeof document !== 'undefined') {
         tasks = tasks.filter(task => task.id !== taskId);
         saveTasks();
         renderTasks(focusTarget);
-        updateWisdomVisibility(tasks, showWisdom, hideWisdom);
+        updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: isWisdomEnabled() });
     }
 
     function saveTasks() {
@@ -283,7 +287,7 @@ if (typeof document !== 'undefined') {
         tasks = toggleAllTasks(tasks, shouldComplete);
         saveTasks();
         renderTasks();
-        updateWisdomVisibility(tasks, showWisdom, hideWisdom);
+        updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: isWisdomEnabled() });
     }
 
     function isTypingInInput(element) {
@@ -328,6 +332,11 @@ if (typeof document !== 'undefined') {
     clearSelectedButton.addEventListener('click', clearSelectedTasks);
     selectAllCheckbox.addEventListener('change', handleSelectAllChange);
     document.addEventListener('keydown', handleKeyboardShortcuts);
+    wisdomToggle?.addEventListener('change', () => {
+        const newValue = wisdomToggle.checked;
+        localStorage.setItem(wisdomToggleKey, newValue ? 'true' : 'false');
+        updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: newValue });
+    });
 
     function showHelperBubble() {
         if (!addHelperBubble) return;
@@ -360,6 +369,21 @@ if (typeof document !== 'undefined') {
 
     function dismissHelperBubble() {
         hideHelperBubble(true);
+    }
+
+    function syncWisdomPreference() {
+        const storedPreference = localStorage.getItem(wisdomToggleKey);
+        if (!wisdomToggle) return;
+        if (storedPreference === 'false') {
+            wisdomToggle.checked = false;
+        } else {
+            wisdomToggle.checked = true;
+        }
+    }
+
+    function isWisdomEnabled() {
+        if (!wisdomToggle) return true;
+        return wisdomToggle.checked;
     }
 });
 }
