@@ -1,6 +1,6 @@
-# This was a simple AI Prompt creation using LLM. Very Basic and simple to do list.
+# This was a simple AI prompt creation using LLM. Very basic and simple to-do list.
 
-# If you would like to experiment with single prompt upgrades. This may show the evolution of LLM capabilities as a historical coding assistant. 
+# If you would like to experiment with single prompt upgrades, this may show the evolution of LLM capabilities as a historical coding assistant. 
 
 This repository captures the evolution from an early LLM-generated prototype to the current workflow powered by OpenAI Codex. It shows how iterative prompts and code refinement can steadily improve a simple idea.
 
