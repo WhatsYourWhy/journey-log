@@ -88,7 +88,15 @@
 
         </div>
 
-        <button id="clearCompletedButton">Clear Completed Steps</button>
+        <div class="bulk-actions" role="toolbar" aria-label="Task selection controls">
+            <div class="bulk-toggle">
+                <label class="sr-only" for="selectAllCheckbox">Select all tasks</label>
+                <input type="checkbox" id="selectAllCheckbox" aria-label="Select all tasks">
+                <span aria-hidden="true" class="bulk-toggle-label">Select all</span>
+            </div>
+            <button id="clearSelectedButton" type="button">Clear selected</button>
+            <button id="clearCompletedButton" type="button">Clear Completed Steps</button>
+        </div>
 
         <ul id="taskList">
 
