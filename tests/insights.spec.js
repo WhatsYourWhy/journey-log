@@ -72,4 +72,46 @@ test.describe('Journey insights', () => {
 
     await expect(emptyState).toBeVisible();
   });
+
+  test('completed tasks stay legible and progress ARIA mirrors updates', async ({ page }) => {
+    await page.goto(indexFileUrl);
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+
+    const taskInput = page.locator('#taskInput');
+    const addTaskButton = page.getByRole('button', { name: /Add a new journey step/i });
+    const progressBar = page.locator('.progress-bar');
+
+    const addTask = async (text) => {
+      await taskInput.fill(text);
+      await addTaskButton.click();
+    };
+
+    await addTask('Review itinerary');
+    await addTask('Book transport');
+
+    const firstItem = page.locator('li', { hasText: 'Review itinerary' });
+    const firstCheckbox = firstItem.locator('input[type="checkbox"]');
+    const firstText = firstItem.locator('span');
+
+    await firstCheckbox.check();
+
+    const styles = await firstText.evaluate((node) => {
+      const computed = getComputedStyle(node);
+      return {
+        color: computed.color,
+        fontSize: computed.fontSize,
+        textDecorationColor: computed.textDecorationColor,
+        textDecorationLine: computed.textDecorationLine
+      };
+    });
+
+    expect(styles.color).toBe('rgb(15, 60, 99)');
+    expect(styles.fontSize).toBe('17px');
+    expect(styles.textDecorationLine).toContain('line-through');
+    expect(styles.textDecorationColor).toBe('rgb(15, 60, 99)');
+
+    await expect(progressBar).toHaveAttribute('aria-valuenow', '50');
+    await expect(progressBar).toHaveAttribute('aria-valuetext', '50% complete');
+  });
 });

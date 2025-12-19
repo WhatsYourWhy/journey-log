@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { updateInsights, updateWisdomVisibility } = require('../script.js');
+const { updateInsights, updateWisdomVisibility, restoreDeletedTasks } = require('../script.js');
 
 function createSpy() {
     const spy = (...args) => {
@@ -66,6 +66,7 @@ test.describe('updateInsights', () => {
         expect(elements.progressPercent.textContent).toBe('0%');
         expect(elements.progressFill.style.width).toBe('0%');
         expect(elements.progressFill.parentElement.getAttribute('aria-valuenow')).toBe('0');
+        expect(elements.progressFill.parentElement.getAttribute('aria-valuetext')).toBe('0% complete');
     });
 
     test('reflects mixed active and completed tasks', () => {
@@ -84,6 +85,7 @@ test.describe('updateInsights', () => {
         expect(elements.progressPercent.textContent).toBe('67%');
         expect(elements.progressFill.style.width).toBe('67%');
         expect(elements.progressFill.parentElement.getAttribute('aria-valuenow')).toBe('67');
+        expect(elements.progressFill.parentElement.getAttribute('aria-valuetext')).toBe('67% complete');
     });
 });
 
@@ -129,5 +131,30 @@ test.describe('updateWisdomVisibility', () => {
         expect(hasCompletedTasks).toBe(true);
         expect(hideWisdom.callCount()).toBe(1);
         expect(showWisdom.callCount()).toBe(0);
+    });
+});
+
+test.describe('restoreDeletedTasks', () => {
+    test('restores deleted tasks and keeps order by id', () => {
+        const currentTasks = [
+            { id: 2, description: 'Existing', completed: false }
+        ];
+        const deletedTasks = [
+            { id: 1, description: 'Deleted first', completed: true }
+        ];
+
+        const result = restoreDeletedTasks(currentTasks, deletedTasks);
+
+        expect(result).toEqual([
+            { id: 1, description: 'Deleted first', completed: true },
+            { id: 2, description: 'Existing', completed: false }
+        ]);
+    });
+
+    test('returns existing tasks when there is nothing to restore', () => {
+        const currentTasks = [{ id: 3, description: 'Only task', completed: false }];
+        const result = restoreDeletedTasks(currentTasks, []);
+
+        expect(result).toEqual(currentTasks);
     });
 });

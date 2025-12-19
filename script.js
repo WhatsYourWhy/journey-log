@@ -55,15 +55,27 @@ function getSelectAllState(tasks) {
     return { checked, indeterminate };
 }
 
+function restoreDeletedTasks(currentTasks, deletedTasks) {
+    if (!Array.isArray(deletedTasks) || deletedTasks.length === 0) {
+        return currentTasks;
+    }
+
+    const mergedTasks = [...currentTasks, ...deletedTasks];
+    return mergedTasks.sort((first, second) => Number(first.id) - Number(second.id));
+}
+
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
     const clearCompletedButton = document.getElementById('clearCompletedButton');
     const clearSelectedButton = document.getElementById('clearSelectedButton');
+    const undoDeleteButton = document.getElementById('undoDeleteButton');
     const taskInput = document.getElementById('taskInput');
     const addTaskButton = document.getElementById('addTaskButton');
+    const secondaryAddButton = document.getElementById('secondaryAddButton');
     const addHelperBubble = document.getElementById('addHelperBubble');
     const startCueButton = document.getElementById('startCueButton');
     const taskList = document.getElementById('taskList');
+    const inputSection = document.querySelector('.input-section');
     const selectAllCheckbox = document.getElementById('selectAllCheckbox');
     const wisdomDisplay = document.getElementById('wisdomDisplay');
     const wisdomText = document.getElementById('wisdomText');
@@ -80,6 +92,8 @@ if (typeof document !== 'undefined') {
     const wisdomToggleKey = 'journeyShowWisdom';
 
     let tasks = loadTasks();
+    let lastDeletedTasks = [];
+    let undoTimeoutId = null;
     initializeHelperBubble();
     renderTasks();
     syncWisdomPreference();
@@ -102,7 +116,17 @@ if (typeof document !== 'undefined') {
         "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt"
     ];
 
+    function revealInputSection() {
+        if (!inputSection) return;
+        inputSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+        const overflow = inputSection.getBoundingClientRect().bottom - window.innerHeight + 12;
+        if (overflow > 0) {
+            window.scrollBy({ top: overflow, behavior: 'auto' });
+        }
+    }
+
     taskInput?.focus();
+    revealInputSection();
 
     themeSelect.addEventListener('change', (event) => {
         const selectedTheme = event.target.value;
@@ -110,14 +134,19 @@ if (typeof document !== 'undefined') {
         localStorage.setItem('journeyTheme', selectedTheme); // Save the selected theme
     });
 
-    addTaskButton.addEventListener('click', () => {
+    taskInput.addEventListener('focus', revealInputSection);
+
+    function handleAddFromInput() {
         const taskDescription = taskInput.value.trim();
         if (taskDescription) {
             addTask(taskDescription);
             taskInput.value = '';
             taskInput.focus();
         }
-    });
+    }
+
+    addTaskButton.addEventListener('click', handleAddFromInput);
+    secondaryAddButton?.addEventListener('click', handleAddFromInput);
 
     startCueButton?.addEventListener('click', () => {
         taskInput?.focus();
@@ -126,7 +155,7 @@ if (typeof document !== 'undefined') {
 
     taskInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
-            addTaskButton.click();
+            handleAddTask();
         }
     });
 
@@ -225,6 +254,11 @@ if (typeof document !== 'undefined') {
 
     function deleteTask(taskId) {
         const focusTarget = captureFocusDetails({ fallback: taskInput });
+        const removedTasks = tasks.filter(task => task.id === taskId);
+        if (removedTasks.length === 0) {
+            return;
+        }
+        rememberDeletedTasks(removedTasks);
         tasks = tasks.filter(task => task.id !== taskId);
         saveTasks();
         renderTasks(focusTarget);
@@ -265,6 +299,11 @@ if (typeof document !== 'undefined') {
 
     function clearCompletedTasks() {
         const focusTarget = captureFocusDetails({ fallback: clearCompletedButton });
+        const completedTasks = tasks.filter(task => task.completed);
+        if (completedTasks.length === 0) {
+            return;
+        }
+        rememberDeletedTasks(completedTasks);
         tasks = tasks.filter(task => !task.completed);
         saveTasks();
         renderTasks(focusTarget);
@@ -330,6 +369,7 @@ if (typeof document !== 'undefined') {
 
     clearCompletedButton.addEventListener('click', clearCompletedTasks);
     clearSelectedButton.addEventListener('click', clearSelectedTasks);
+    undoDeleteButton?.addEventListener('click', undoLastDelete);
     selectAllCheckbox.addEventListener('change', handleSelectAllChange);
     document.addEventListener('keydown', handleKeyboardShortcuts);
     wisdomToggle?.addEventListener('change', () => {
@@ -394,6 +434,7 @@ if (typeof module !== 'undefined') {
         updateInsights,
         updateWisdomVisibility,
         toggleAllTasks,
-        getSelectAllState
+        getSelectAllState,
+        restoreDeletedTasks
     };
 }
