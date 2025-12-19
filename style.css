@@ -1,202 +1,232 @@
 body {
-
     font-family: sans-serif;
-
     margin: 20px;
-
     background-color: #f4f4f4;
-
     color: #333;
+}
 
+:focus-visible {
+    outline: 3px solid #2457cf;
+    outline-offset: 3px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+#taskList li button:focus-visible {
+    box-shadow: 0 0 0 3px rgba(36, 87, 207, 0.15);
+}
+
+@media (prefers-contrast: more) {
+    :focus-visible {
+        outline-width: 4px;
+        outline-offset: 4px;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+        box-shadow: 0 0 0 4px #fff;
+    }
 }
 
 
 
 .container {
-
     max-width: 600px;
-
     margin: 0 auto;
-
     background-color: #fff;
-
     padding: 20px;
-
     border-radius: 8px;
-
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
 }
-
-
 
 h1 {
-
     text-align: center;
-
     color: #555;
-
     margin-bottom: 20px;
-
 }
 
-
-
 .insights {
-
     display: grid;
-
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 12px;
+    margin-bottom: 15px;
+}
+
+.insight-card {
+    background: linear-gradient(145deg, #ffffff, #f2f2f2);
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.insight-card .label {
+    font-size: 13px;
+    color: #777;
+    margin: 0 0 6px;
+}
+
+.insight-card .value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.progress-card {
+    grid-column: span 2;
+}
+
+@media (max-width: 520px) {
+    .progress-card {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .insights {
+        grid-template-columns: 1fr;
+    }
+}
+
+.progress-bar {
+    background: #ededed;
+    border-radius: 999px;
+    height: 10px;
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #5cb85c, #4cae4c);
+    height: 100%;
+    width: 0;
+    transition: width 0.2s ease;
+}
+
+.input-section {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+#taskInput {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    min-width: 0;
+}
+
+#addTaskButton {
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#addTaskButton:hover {
+    background-color: #4cae4c;
+}
+
+.bulk-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
 
     margin-bottom: 15px;
 
-}
-
-
-
-.insight-card {
-
-    background: linear-gradient(145deg, #ffffff, #f2f2f2);
+    padding: 10px 12px;
 
     border: 1px solid #e5e5e5;
 
     border-radius: 8px;
 
-    padding: 12px;
-
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    background-color: #fafafa;
 
 }
 
-
-
-.insight-card .label {
-
-    font-size: 13px;
-
-    color: #777;
-
-    margin: 0 0 6px;
-
-}
-
-
-
-.insight-card .value {
-
-    font-size: 20px;
-
-    font-weight: 700;
-
-    color: #333;
-
-    margin: 0;
-
-}
-
-
-
-.progress-card {
-
-    grid-column: span 2;
-
-}
-
-
-
-@media (max-width: 520px) {
-
-    .progress-card {
-
-        grid-column: span 1;
-
-    }
-
-}
-
-
-
-.progress-bar {
-
-    background: #ededed;
-
-    border-radius: 999px;
-
-    height: 10px;
-
-    width: 100%;
-
-    overflow: hidden;
-
-    margin-bottom: 6px;
-
-}
-
-
-
-.progress-fill {
-
-    background: linear-gradient(90deg, #5cb85c, #4cae4c);
-
-    height: 100%;
-
-    width: 0;
-
-    transition: width 0.2s ease;
-
-}
-
-
-
-.input-section {
+.bulk-toggle {
 
     display: flex;
 
-    margin-bottom: 15px;
+    align-items: center;
+
+    gap: 8px;
 
 }
 
+.bulk-toggle-label {
 
+    font-weight: 600;
 
-#taskInput {
-
-    flex-grow: 1;
-
-    padding: 10px;
-
-    border: 1px solid #ccc;
-
-    border-radius: 4px 0 0 4px;
-
-    font-size: 16px;
+    color: #444;
 
 }
 
+.bulk-actions button {
 
+    background-color: #6c757d;
 
-#addTaskButton {
-
-    background-color: #5cb85c;
-
-    color: white;
+    color: #fff;
 
     border: none;
 
-    padding: 10px 15px;
+    padding: 8px 12px;
 
-    border-radius: 0 4px 4px 0;
+    border-radius: 6px;
 
     cursor: pointer;
 
-    font-size: 16px;
+    font-size: 14px;
+
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
 
 }
 
+.bulk-actions button:hover {
 
+    background-color: #5a6268;
 
-#addTaskButton:hover {
+}
+
+.bulk-actions button:focus-visible,
+.bulk-toggle input[type="checkbox"]:focus-visible {
+
+    outline: 3px solid #4cae4c;
+
+    outline-offset: 2px;
+
+    box-shadow: 0 0 0 4px rgba(76, 174, 76, 0.2);
+
+}
+
+.bulk-toggle input[type="checkbox"] {
+
+    width: 18px;
+
+    height: 18px;
+
+}
+
+#clearCompletedButton {
+
+    background-color: #5cb85c;
+
+}
+
+#clearCompletedButton:hover {
 
     background-color: #4cae4c;
 
@@ -205,13 +235,11 @@ h1 {
 
 
 #taskList {
-
     list-style-type: none;
-
     padding: 0;
-
 }
 
+.empty-state {
 
 .empty-state {
 
@@ -239,99 +267,35 @@ h1 {
 
 
 
-#taskList li {
+    padding: 14px;
 
-    padding: 10px;
+    text-align: center;
 
-    border-bottom: 1px solid #eee;
+    background: linear-gradient(145deg, #ffffff, #f6f6f6);
 
-    display: flex;
+    border: 1px solid #e5e5e5;
 
-    align-items: center;
+    border-radius: 8px;
 
-    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 
-}
-
-
-
-#taskList li:last-child {
-
-    border-bottom: none;
+    color: #555;
 
 }
 
+.empty-state-title {
 
+    margin: 0 0 6px;
 
-#taskList li span {
+    font-weight: 700;
 
-    flex-grow: 1;
-
-    margin-right: 10px;
-
-}
-
-
-
-#taskList li button {
-
-    background-color: #d9534f;
-
-    color: white;
-
-    border: none;
-
-    padding: 5px 10px;
-
-    border-radius: 4px;
-
-    cursor: pointer;
-
-    font-size: 14px;
-
-    margin-left: 5px;
+    color: inherit;
 
 }
 
+.empty-state-message {
 
-
-#taskList li button:hover {
-
-    background-color: #c9302c;
-
-}
-
-
-
-#taskList li input[type="checkbox"] {
-
-    margin-right: 8px;
-
-}
-
-
-
-.hidden {
-
-    display: none;
-
-}
-
-
-
-#wisdomDisplay {
-
-    margin-top: 20px;
-
-    padding: 15px;
-
-    background-color: #f9f9f9;
-
-    border: 1px solid #eee;
-
-    border-radius: 4px;
-
-    font-style: italic;
+    margin: 0;
 
     color: #777;
 
@@ -339,199 +303,535 @@ h1 {
 
 
 
+#taskList li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#taskList li:last-child {
+    border-bottom: none;
+}
+
+#taskList li span {
+    flex-grow: 1;
+    margin-right: 10px;
+    word-break: break-word;
+    min-width: 0;
+}
+
+#taskList li button {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 5px;
+    flex-shrink: 0;
+}
+
+#taskList li button:hover {
+    background-color: #c9302c;
+}
+
+#taskList li input[type="checkbox"] {
+    margin-right: 8px;
+    margin-top: 2px;
+}
+
+.hidden {
+    display: none;
+}
+
+
+
+.sr-only {
+
+    position: absolute;
+
+    width: 1px;
+
+    height: 1px;
+
+    padding: 0;
+
+    margin: -1px;
+
+    overflow: hidden;
+
+    clip: rect(0, 0, 0, 0);
+
+    white-space: nowrap;
+
+    border: 0;
+
+}
+
+
+
+#wisdomDisplay {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    font-style: italic;
+    color: #777;
+}
+
 #wisdomDisplay strong {
-
     font-style: normal;
-
     color: #555;
-
 }
 
 .completed {
-
     text-decoration: line-through;
-
-    color: #888; 
-
+    color: #888;
 }
 
 /* Theme selector styles */
-
 .theme-selector {
-
     margin-bottom: 15px;
-
     display: flex;
-
     align-items: center;
-
+    gap: 8px;
+    flex-wrap: wrap;
 }
-
-
 
 .theme-selector label {
-
     margin-right: 10px;
-
 }
-
-
 
 .theme-selector select {
-
     padding: 8px;
-
     border-radius: 4px;
-
     border: 1px solid #ccc;
-
 }
 
+@media (max-width: 600px) {
+    body {
+        margin: 12px;
+    }
 
+    .container {
+        padding: 16px;
+    }
+
+    .input-section {
+        flex-direction: column;
+    }
+
+    #addTaskButton {
+        width: 100%;
+    }
+
+    #clearCompletedButton {
+        width: 100%;
+    }
+
+    .insight-card {
+        padding: 10px;
+    }
+}
 
 /* Forest Trail Theme */
-
 body.forest-theme {
-
     background-color: #a8dadc;
-
     color: #1d3557;
-
 }
 
-
-
 .forest-theme .container {
-
     background-color: #457b9d;
-
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-
     color: #f1faee;
+}
+
+.forest-theme :focus-visible {
+
+    outline-color: #f1faee;
+
+    box-shadow: 0 0 0 3px rgba(241, 250, 238, 0.25);
 
 }
 
 
 
 .forest-theme .insight-card {
-
     background: linear-gradient(145deg, #4f8ab3, #3e6f8c);
-
     border: 1px solid #1d3557;
-
     box-shadow: none;
-
 }
-
-
 
 .forest-theme .insight-card .label {
-
     color: #d9e6ef;
+}
+
+.forest-theme .insight-card .value {
+    color: #f1faee;
+}
+
+.forest-theme .progress-bar {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.forest-theme .progress-fill {
+    background: linear-gradient(90deg, #f1faee, #a8dadc);
+}
+
+.forest-theme .bulk-actions {
+
+    background-color: #3e6f8c;
+
+    border-color: #1d3557;
 
 }
 
-
-
-.forest-theme .insight-card .value {
+.forest-theme .bulk-toggle-label {
 
     color: #f1faee;
 
 }
 
+.forest-theme .bulk-actions button {
 
+    background-color: #1d3557;
 
-.forest-theme .progress-bar {
-
-    background: rgba(255, 255, 255, 0.2);
+    color: #f1faee;
 
 }
 
+.forest-theme .bulk-actions button:hover {
 
+    background-color: #0b132b;
 
-.forest-theme .progress-fill {
+}
 
-    background: linear-gradient(90deg, #f1faee, #a8dadc);
+.forest-theme .bulk-actions button:focus-visible,
+.forest-theme .bulk-toggle input[type="checkbox"]:focus-visible {
+
+    outline-color: #f1faee;
+
+    box-shadow: 0 0 0 4px rgba(241, 250, 238, 0.25);
 
 }
 
 
 
 .forest-theme h1 {
-
     color: #f1faee;
-
 }
-
-
 
 .forest-theme #addTaskButton {
-
     background-color: #1d3557;
-
     color: #f1faee;
-
 }
-
-
 
 .forest-theme #addTaskButton:hover {
-
     background-color: #0b132b;
-
 }
-
-
 
 .forest-theme #taskList li {
-
     border-bottom: 1px solid #a8dadc;
-
 }
-
-
 
 .forest-theme .completed {
-
     color: #a8dadc;
-
 }
-
-
 
 .forest-theme #clearCompletedButton {
-
     background-color: #1d3557;
-
     color: #f1faee;
-
     border: none;
-
     padding: 8px 12px;
-
     border-radius: 4px;
-
     cursor: pointer;
-
     font-size: 14px;
-
     margin-top: 10px;
-
 }
-
-
 
 .forest-theme #clearCompletedButton:hover {
-
     background-color: #0b132b;
+}
+
+.forest-theme #wisdomDisplay {
+    background-color: #457b9d;
+    border: 1px solid #1d3557;
+    color: #f1faee;
+}
+
+.forest-theme #wisdomDisplay strong {
+    color: #f1faee;
+}
+
+/* Ocean Breeze Theme */
+body.ocean-theme {
+    background-color: #e0f2f7;
+    color: #0277bd;
+}
+
+.ocean-theme .container {
+    background-color: #b2ebf2;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: #01579b;
+}
+
+.ocean-theme :focus-visible {
+
+    outline-color: #01579b;
+
+    box-shadow: 0 0 0 3px rgba(1, 87, 155, 0.25);
 
 }
 
 
 
-.forest-theme #wisdomDisplay {
+.ocean-theme .insight-card {
+    background: linear-gradient(145deg, #c5f2f7, #a5dbe4);
+    border: 1px solid #0277bd;
+    box-shadow: none;
+}
 
-    background-color: #457b9d;
+.ocean-theme .insight-card .label {
+    color: #0277bd;
+}
+
+.ocean-theme .insight-card .value {
+    color: #01579b;
+}
+
+.ocean-theme .progress-bar {
+    background: rgba(1, 87, 155, 0.15);
+}
+
+.ocean-theme .progress-fill {
+    background: linear-gradient(90deg, #0277bd, #039be5);
+}
+
+.ocean-theme .bulk-actions {
+
+    background-color: #c5f2f7;
+
+    border-color: #0277bd;
+
+}
+
+.ocean-theme .bulk-toggle-label {
+
+    color: #01579b;
+
+}
+
+.ocean-theme .bulk-actions button {
+
+    background-color: #0277bd;
+
+    color: #e0f2f7;
+
+}
+
+.ocean-theme .bulk-actions button:hover {
+
+    background-color: #01579b;
+
+}
+
+.ocean-theme .bulk-actions button:focus-visible,
+.ocean-theme .bulk-toggle input[type="checkbox"]:focus-visible {
+
+    outline-color: #0277bd;
+
+    box-shadow: 0 0 0 4px rgba(2, 119, 189, 0.2);
+
+}
+
+
+
+.ocean-theme h1 {
+    color: #01579b;
+}
+
+.ocean-theme #addTaskButton {
+    background-color: #0277bd;
+    color: #e0f2f7;
+}
+
+.ocean-theme #addTaskButton:hover {
+    background-color: #01579b;
+}
+
+.ocean-theme #taskList li {
+    border-bottom: 1px solid #e0f2f7;
+}
+
+.ocean-theme .completed {
+    color: #80deea;
+}
+
+.ocean-theme #clearCompletedButton {
+    background-color: #0277bd;
+    color: #e0f2f7;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.ocean-theme #clearCompletedButton:hover {
+    background-color: #01579b;
+}
+
+.ocean-theme #wisdomDisplay {
+    background-color: #b2ebf2;
+    border: 1px solid #0277bd;
+    color: #01579b;
+}
+
+.ocean-theme #wisdomDisplay strong {
+    color: #01579b;
+}
+
+/* Midnight Sky Theme */
+body.dark-theme {
+    background-color: #212121;
+    color: #f5f5f5;
+}
+
+.dark-theme .container {
+    background-color: #424242;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    color: #e0e0e0;
+}
+
+.dark-theme :focus-visible {
+
+    outline-color: #b5d8ff;
+
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+
+}
+
+
+
+.dark-theme .insight-card {
+    background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
+    border: 1px solid #616161;
+    box-shadow: none;
+}
+
+.dark-theme .insight-card .label {
+    color: #cccccc;
+}
+
+.dark-theme .insight-card .value {
+    color: #ffffff;
+}
+
+.dark-theme .progress-bar {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.dark-theme .progress-fill {
+    background: linear-gradient(90deg, #81c784, #66bb6a);
+}
+
+.dark-theme .bulk-actions {
+
+    background-color: #333333;
+
+    border-color: #616161;
+
+}
+
+.dark-theme .bulk-toggle-label {
+
+    color: #e0e0e0;
+
+}
+
+.dark-theme .bulk-actions button {
+
+    background-color: #616161;
+
+    color: #f5f5f5;
+
+}
+
+.dark-theme .bulk-actions button:hover {
+
+    background-color: #757575;
+
+}
+
+.dark-theme .bulk-actions button:focus-visible,
+.dark-theme .bulk-toggle input[type="checkbox"]:focus-visible {
+
+    outline-color: #81c784;
+
+    box-shadow: 0 0 0 4px rgba(129, 199, 132, 0.25);
+
+}
+
+
+
+.dark-theme h1 {
+    color: #e0e0e0;
+}
+
+.dark-theme #addTaskButton {
+    background-color: #616161;
+    color: #f5f5f5;
+}
+
+.dark-theme #addTaskButton:hover {
+    background-color: #757575;
+}
+
+.dark-theme #taskList li {
+    border-bottom: 1px solid #616161;
+}
+
+.dark-theme .completed {
+    color: #9e9e9e;
+}
+
+.dark-theme #clearCompletedButton {
+    background-color: #616161;
+    color: #f5f5f5;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.dark-theme #clearCompletedButton:hover {
+    background-color: #757575;
+}
+
+.dark-theme #wisdomDisplay {
+    background-color: #424242;
+    border: 1px solid #616161;
+    color: #e0e0e0;
+}
+
+.dark-theme #wisdomDisplay strong {
+    color: #e0e0e0;
+}
+
+/* Empty state theme adjustments */
+
+.forest-theme .empty-state {
+
+    background: linear-gradient(145deg, #4f8ab3, #3e6f8c);
 
     border: 1px solid #1d3557;
 
@@ -539,330 +839,40 @@ body.forest-theme {
 
 }
 
+.forest-theme .empty-state-message {
 
-
-.forest-theme #wisdomDisplay strong {
-
-    color: #f1faee;
+    color: #d9e6ef;
 
 }
 
-
-
-/* Ocean Breeze Theme */
-
-body.ocean-theme {
-
-    background-color: #e0f2f7;
-
-    color: #0277bd;
-
-}
-
-
-
-.ocean-theme .container {
-
-    background-color: #b2ebf2;
-
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-
-    color: #01579b;
-
-}
-
-
-
-.ocean-theme .insight-card {
+.ocean-theme .empty-state {
 
     background: linear-gradient(145deg, #c5f2f7, #a5dbe4);
 
     border: 1px solid #0277bd;
 
-    box-shadow: none;
+    color: #01579b;
 
 }
 
-
-
-.ocean-theme .insight-card .label {
+.ocean-theme .empty-state-message {
 
     color: #0277bd;
 
 }
 
-
-
-.ocean-theme .insight-card .value {
-
-    color: #01579b;
-
-}
-
-
-
-.ocean-theme .progress-bar {
-
-    background: rgba(1, 87, 155, 0.15);
-
-}
-
-
-
-.ocean-theme .progress-fill {
-
-    background: linear-gradient(90deg, #0277bd, #039be5);
-
-}
-
-
-
-.ocean-theme h1 {
-
-    color: #01579b;
-
-}
-
-
-
-.ocean-theme #addTaskButton {
-
-    background-color: #0277bd;
-
-    color: #e0f2f7;
-
-}
-
-
-
-.ocean-theme #addTaskButton:hover {
-
-    background-color: #01579b;
-
-}
-
-
-
-.ocean-theme #taskList li {
-
-    border-bottom: 1px solid #e0f2f7;
-
-}
-
-
-
-.ocean-theme .completed {
-
-    color: #80deea;
-
-}
-
-
-
-.ocean-theme #clearCompletedButton {
-
-    background-color: #0277bd;
-
-    color: #e0f2f7;
-
-    border: none;
-
-    padding: 8px 12px;
-
-    border-radius: 4px;
-
-    cursor: pointer;
-
-    font-size: 14px;
-
-    margin-top: 10px;
-
-}
-
-
-
-.ocean-theme #clearCompletedButton:hover {
-
-    background-color: #01579b;
-
-}
-
-
-
-.ocean-theme #wisdomDisplay {
-
-    background-color: #b2ebf2;
-
-    border: 1px solid #0277bd;
-
-    color: #01579b;
-
-}
-
-
-
-.ocean-theme #wisdomDisplay strong {
-
-    color: #01579b;
-
-}
-
-
-
-/* Midnight Sky Theme */
-
-body.dark-theme {
-
-    background-color: #212121;
-
-    color: #f5f5f5;
-
-}
-
-
-
-.dark-theme .container {
-
-    background-color: #424242;
-
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-
-    color: #e0e0e0;
-
-}
-
-
-
-.dark-theme .insight-card {
+.dark-theme .empty-state {
 
     background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
 
     border: 1px solid #616161;
 
-    box-shadow: none;
+    color: #f5f5f5;
 
 }
 
-
-
-.dark-theme .insight-card .label {
+.dark-theme .empty-state-message {
 
     color: #cccccc;
-
-}
-
-
-
-.dark-theme .insight-card .value {
-
-    color: #ffffff;
-
-}
-
-
-
-.dark-theme .progress-bar {
-
-    background: rgba(255, 255, 255, 0.15);
-
-}
-
-
-
-.dark-theme .progress-fill {
-
-    background: linear-gradient(90deg, #81c784, #66bb6a);
-
-}
-
-
-
-.dark-theme h1 {
-
-    color: #e0e0e0;
-
-}
-
-
-
-.dark-theme #addTaskButton {
-
-    background-color: #616161;
-
-    color: #f5f5f5;
-
-}
-
-
-
-.dark-theme #addTaskButton:hover {
-
-    background-color: #757575;
-
-}
-
-
-
-.dark-theme #taskList li {
-
-    border-bottom: 1px solid #616161;
-
-}
-
-
-
-.dark-theme .completed {
-
-    color: #9e9e9e;
-
-}
-
-
-
-.dark-theme #clearCompletedButton {
-
-    background-color: #616161;
-
-    color: #f5f5f5;
-
-    border: none;
-
-    padding: 8px 12px;
-
-    border-radius: 4px;
-
-    cursor: pointer;
-
-    font-size: 14px;
-
-    margin-top: 10px;
-
-}
-
-
-
-.dark-theme #clearCompletedButton:hover {
-
-    background-color: #757575;
-
-}
-
-
-
-.dark-theme #wisdomDisplay {
-
-    background-color: #424242;
-
-    border: 1px solid #616161;
-
-    color: #e0e0e0;
-
-}
-
-
-
-.dark-theme #wisdomDisplay strong {
-
-    color: #e0e0e0;
 
 }
