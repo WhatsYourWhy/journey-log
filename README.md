@@ -40,13 +40,9 @@ The Journey Log is a web-based to-do list designed to help you track your tasks 
 
 * The wisdom panel now accurately reflects the state of your tasks on page load and after any action, so inspirational quotes stay in sync with completed steps.
 
-## Journey Insights
+## Journey Insights Dashboard
 
-An insights strip beneath the header summarizes your journey in real time. It displays total steps, completed steps, and active steps, plus a progress bar that fills as you finish tasks.
-
-## Future Enhancements
-
-Potential next steps include richer insights such as streak tracking and daily totals.
+The Journey Insights dashboard now ships alongside the main checklist, giving you progress at a glance right below the header. Each card summarizes the state of your log with live counts for total, completed, and active steps plus a progress bar that reflects your completion percentage. Insights update automatically whenever you add, toggle, or clear steps and carry forward your chosen theme for a cohesive look.
 
 ## Author
 
