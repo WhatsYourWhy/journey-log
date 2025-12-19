@@ -18,6 +18,7 @@ The Journey Log is a web-based to-do list designed to help you track your tasks 
 * **Delete steps:** Remove tasks from your log.
 * **Clear completed steps:** Quickly remove all finished tasks to keep your log tidy.
 * **Customize the look:** Choose from different visual themes to personalize your Journey Log.
+* **Check your progress at a glance:** See totals for all steps, completed steps, and active steps alongside a visual progress bar that fills as you complete tasks.
 
 ## Technologies Used
 
@@ -39,17 +40,13 @@ The Journey Log is a web-based to-do list designed to help you track your tasks 
 
 * The wisdom panel now accurately reflects the state of your tasks on page load and after any action, so inspirational quotes stay in sync with completed steps.
 
-## Planned Enhancement: Journey Insights Dashboard
+## Journey Insights
 
-To further motivate users, the next iteration will focus on a lightweight "Journey Insights" dashboard that surfaces progress at a glance.
+An insights strip beneath the header summarizes your journey in real time. It displays total steps, completed steps, and active steps, plus a progress bar that fills as you finish tasks.
 
-**Implementation plan:**
+## Future Enhancements
 
-1. **Data model updates:** Track completion timestamps and derive streaks and daily totals in `script.js`.
-2. **UI layout:** Add a summary section beneath the header in `index.html` that shows total steps, completed steps, and a progress bar.
-3. **Styling:** Extend `style.css` with cards and accent colors that adapt to existing themes without breaking readability.
-4. **Persistence & recalculation:** Ensure insights update whenever tasks are added, toggled, or cleared while persisting necessary metadata in local storage.
-5. **Accessibility:** Provide ARIA labels for new widgets and keep color contrast acceptable across all themes.
+Potential next steps include richer insights such as streak tracking and daily totals.
 
 ## Author
 
