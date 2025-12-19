@@ -38,12 +38,30 @@ function updateWisdomVisibility(tasks, showWisdom, hideWisdom) {
     return hasCompletedTasks;
 }
 
+function toggleAllTasks(tasks, shouldComplete) {
+    return tasks.map(task => ({ ...task, completed: shouldComplete }));
+}
+
+function getSelectAllState(tasks) {
+    const totalTasks = tasks.length;
+    if (totalTasks === 0) {
+        return { checked: false, indeterminate: false };
+    }
+
+    const completedCount = tasks.filter(task => task.completed).length;
+    const checked = completedCount === totalTasks;
+    const indeterminate = completedCount > 0 && completedCount < totalTasks;
+    return { checked, indeterminate };
+}
+
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
     const clearCompletedButton = document.getElementById('clearCompletedButton');
     const clearSelectedButton = document.getElementById('clearSelectedButton');
     const taskInput = document.getElementById('taskInput');
     const addTaskButton = document.getElementById('addTaskButton');
+    const addHelperBubble = document.getElementById('addHelperBubble');
+    const startCueButton = document.getElementById('startCueButton');
     const taskList = document.getElementById('taskList');
     const selectAllCheckbox = document.getElementById('selectAllCheckbox');
     const wisdomDisplay = document.getElementById('wisdomDisplay');
@@ -56,8 +74,10 @@ if (typeof document !== 'undefined') {
     const progressPercent = document.getElementById('progressPercent');
     const progressFill = document.getElementById('progressFill');
     const emptyState = document.getElementById('emptyState');
+    const helperBubbleKey = 'journeySeenAddHelper';
 
     let tasks = loadTasks();
+    initializeHelperBubble();
     renderTasks();
     updateWisdomVisibility(tasks, showWisdom, hideWisdom);
 
@@ -75,6 +95,8 @@ if (typeof document !== 'undefined') {
         "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt"
     ];
 
+    taskInput?.focus();
+
     themeSelect.addEventListener('change', (event) => {
         const selectedTheme = event.target.value;
         bodyElement.className = selectedTheme === 'default' ? '' : `${selectedTheme}-theme`;
@@ -88,6 +110,11 @@ if (typeof document !== 'undefined') {
             taskInput.value = '';
             taskInput.focus();
         }
+    });
+
+    startCueButton?.addEventListener('click', () => {
+        taskInput?.focus();
+        taskInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 
     taskInput.addEventListener('keypress', (event) => {
@@ -105,6 +132,7 @@ if (typeof document !== 'undefined') {
         tasks.push(task);
         saveTasks();
         renderTasks();
+        dismissHelperBubble();
     }
 
     function captureFocusDetails(options = {}) {
@@ -171,6 +199,9 @@ if (typeof document !== 'undefined') {
         });
         updateInsights(tasks, { totalCount, completedCount, activeCount, progressPercent, progressFill });
         syncSelectAllCheckbox();
+        if (focusTarget) {
+            restoreFocus(focusTarget);
+        }
     }
 
     function toggleComplete(taskId) {
@@ -253,9 +284,13 @@ if (typeof document !== 'undefined') {
     function isTypingInInput(element) {
         if (!element) return false;
         const tagName = element.tagName;
-        const interactiveTags = ['INPUT', 'TEXTAREA', 'SELECT'];
-        if (interactiveTags.includes(tagName)) {
+        if (tagName === 'TEXTAREA' || tagName === 'SELECT') {
             return true;
+        }
+
+        if (tagName === 'INPUT') {
+            const textInputTypes = ['text', 'search', 'email', 'url', 'password', 'tel', 'number'];
+            return textInputTypes.includes((element.type || '').toLowerCase());
         }
         return element.isContentEditable === true;
     }
@@ -288,6 +323,39 @@ if (typeof document !== 'undefined') {
     clearSelectedButton.addEventListener('click', clearSelectedTasks);
     selectAllCheckbox.addEventListener('change', handleSelectAllChange);
     document.addEventListener('keydown', handleKeyboardShortcuts);
+
+    function showHelperBubble() {
+        if (!addHelperBubble) return;
+        addHelperBubble.classList.remove('hidden');
+        addHelperBubble.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideHelperBubble(markSeen = false) {
+        if (!addHelperBubble) return;
+        addHelperBubble.classList.add('hidden');
+        addHelperBubble.setAttribute('aria-hidden', 'true');
+        if (markSeen) {
+            localStorage.setItem(helperBubbleKey, 'true');
+        }
+    }
+
+    function initializeHelperBubble() {
+        const helperSeen = localStorage.getItem(helperBubbleKey) === 'true';
+        if (tasks.length > 0) {
+            hideHelperBubble(true);
+            return;
+        }
+
+        if (!helperSeen) {
+            showHelperBubble();
+        } else {
+            hideHelperBubble();
+        }
+    }
+
+    function dismissHelperBubble() {
+        hideHelperBubble(true);
+    }
 });
 }
 
