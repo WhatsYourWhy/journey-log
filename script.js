@@ -139,7 +139,7 @@ if (typeof document !== 'undefined') {
 
     taskInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
-            addTaskButton.click();
+            handleAddTask();
         }
     });
 
