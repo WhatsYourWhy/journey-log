@@ -1,3 +1,18 @@
+:root {
+    --primary: #1b5e20;
+    --primary-hover: #174c1c;
+    --primary-active: #113a15;
+    --secondary: #6c757d;
+    --secondary-hover: #5a6268;
+    --secondary-active: #4e555b;
+    --danger: #d9534f;
+    --danger-hover: #c9302c;
+    --danger-active: #a12421;
+    --accent: #2457cf;
+    --border: #e5e5e5;
+    --surface: #fafafa;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -11,22 +26,59 @@ body {
     color: #333;
 }
 
-button,
-input,
-select {
-    font-family: inherit;
-    font-size: 17px;
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
-:focus-visible {
-    outline: 3px solid #2457cf;
-    outline-offset: 3px;
+button {
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    line-height: 1.4;
+    padding: 12px 18px;
+    min-height: 44px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+button:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+input[type="checkbox"] {
+    cursor: pointer;
+}
+
+input[type="checkbox"]:hover {
+    box-shadow: 0 0 0 3px rgba(36, 87, 207, 0.15);
+    border-radius: 5px;
+}
+
+input[type="checkbox"]:active {
+    box-shadow: 0 0 0 4px rgba(36, 87, 207, 0.22);
 }
 
 button:focus-visible,
 input:focus-visible,
-select:focus-visible {
-    box-shadow: 0 0 0 3px rgba(36, 87, 207, 0.15);
+select:focus-visible,
+#taskList li button:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(36, 87, 207, 0.18);
 }
 
 @media (prefers-contrast: more) {
@@ -42,26 +94,12 @@ select:focus-visible {
     }
 }
 
-button {
-    border: 1px solid transparent;
-    border-radius: 8px;
-    min-height: 46px;
-    padding: 10px 16px;
-    cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.2s ease, transform 0.08s ease;
-}
-
-button:active {
-    transform: translateY(1px);
-}
-
 .container {
-    max-width: 640px;
-    width: min(100%, 640px);
+    max-width: 680px;
     margin: 0 auto;
     background-color: #fff;
-    padding: 22px;
-    border-radius: 8px;
+    padding: 24px;
+    border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -69,6 +107,26 @@ h1 {
     text-align: center;
     color: #555;
     margin-bottom: 20px;
+}
+
+.theme-selector {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.theme-selector label {
+    font-weight: 600;
+}
+
+.theme-selector select {
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    min-height: 44px;
+    font-size: 16px;
 }
 
 .insights {
@@ -80,7 +138,7 @@ h1 {
 
 .insight-card {
     background: linear-gradient(145deg, #ffffff, #f2f2f2);
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -134,65 +192,82 @@ h1 {
 .input-section {
     display: flex;
     gap: 14px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     flex-wrap: wrap;
     align-items: stretch;
 }
 
 #taskInput {
-    flex: 1 1 240px;
-    padding: 12px;
+    flex: 1 1 260px;
+    padding: 12px 14px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    min-height: 46px;
+    font-size: 17px;
     min-width: 0;
+    min-height: 46px;
 }
 
 .cta-wrapper {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     position: relative;
     flex-wrap: wrap;
 }
 
 #addTaskButton {
-    background-color: #1b5e20;
+    background-color: var(--primary);
     color: white;
-    border: 1px solid #1b5e20;
-    padding: 12px 18px;
-    border-radius: 8px;
-    font-size: 17px;
-    min-width: 130px;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
 }
 
 #addTaskButton:hover {
-    background-color: #164a18;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+    background-color: var(--primary-hover);
 }
 
 #addTaskButton:active {
-    background-color: #123d13;
+    background-color: var(--primary-active);
 }
 
-#addTaskButtonSecondary {
-    background-color: #e6f2e8;
-    color: #1b5e20;
-    border: 1px solid #1b5e20;
-    font-weight: 700;
-    padding: 10px 14px;
+.secondary-add {
+    background-color: var(--primary);
+    color: #fff;
     display: none;
+    align-items: center;
+    justify-content: center;
     width: 100%;
 }
 
-#addTaskButtonSecondary:hover {
-    background-color: #d8ebdc;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+.secondary-add:hover {
+    background-color: var(--primary-hover);
 }
 
-#addTaskButtonSecondary:active {
-    background-color: #c7dfcc;
+.secondary-add:active {
+    background-color: var(--primary-active);
+}
+
+.helper-bubble {
+    background-color: var(--accent);
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    max-width: 240px;
+    position: absolute;
+    left: 0;
+    top: calc(100% + 8px);
+    transform: none;
+    z-index: 2;
+}
+
+.helper-bubble::after {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent transparent var(--accent) transparent;
 }
 
 .start-cue {
@@ -224,7 +299,7 @@ h1 {
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background-color: #2457cf;
+    background-color: var(--accent);
     color: #fff;
     font-weight: 700;
     font-size: 14px;
@@ -239,61 +314,32 @@ h1 {
 .start-cue-cta {
     margin-top: 10px;
     padding: 10px 14px;
-    border: 1px solid #2457cf;
-    background-color: #2457cf;
+    border: 1px solid var(--accent);
+    background-color: var(--accent);
     color: #fff;
     border-radius: 8px;
     font-weight: 700;
     font-size: 16px;
-    min-height: 46px;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
 }
 
 .start-cue-cta:hover {
     background-color: #1f4bb6;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
 }
 
 .start-cue-cta:active {
-    background-color: #1a3e95;
-}
-
-.helper-bubble {
-    background-color: #2457cf;
-    color: #fff;
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 14px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    max-width: 220px;
-    position: absolute;
-    left: 100%;
-    top: 50%;
-    transform: translate(12px, -50%);
-    z-index: 2;
-}
-
-.helper-bubble::after {
-    content: '';
-    position: absolute;
-    left: -6px;
-    top: 50%;
-    transform: translateY(-50%);
-    border-width: 6px;
-    border-style: solid;
-    border-color: transparent #2457cf transparent transparent;
+    background-color: #1a3f9c;
 }
 
 .bulk-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 15px;
+    gap: 14px;
+    margin-bottom: 18px;
     flex-wrap: wrap;
-    padding: 12px;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border);
     border-radius: 8px;
-    background-color: #fafafa;
+    background-color: var(--surface);
+    padding: 14px;
 }
 
 .bulk-toggle {
@@ -302,46 +348,36 @@ h1 {
     gap: 10px;
 }
 
-.bulk-toggle input[type="checkbox"] {
-    width: 22px;
-    height: 22px;
-    accent-color: #4cae4c;
-}
-
 .bulk-toggle-label {
     font-weight: 600;
     color: #444;
 }
 
 .bulk-actions button {
-    background-color: #6c757d;
+    background-color: var(--secondary);
     color: #fff;
-    border: 1px solid #5a6268;
-    padding: 10px 14px;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 15px;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.08s ease;
+    padding: 11px 15px;
 }
 
 .bulk-actions button:hover {
-    background-color: #5a6268;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+    background-color: var(--secondary-hover);
 }
 
 .bulk-actions button:active {
-    background-color: #4b5257;
+    background-color: var(--secondary-active);
 }
 
-.bulk-actions button:focus-visible,
-.bulk-toggle input[type="checkbox"]:focus-visible {
-    outline: 3px solid #4cae4c;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 4px rgba(76, 174, 76, 0.2);
+.bulk-toggle input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    accent-color: var(--accent);
+    border-radius: 4px;
 }
 
 #clearCompletedButton {
     background-color: #5cb85c;
-    border-color: #4cae4c;
 }
 
 #clearCompletedButton:hover {
@@ -349,7 +385,7 @@ h1 {
 }
 
 #clearCompletedButton:active {
-    background-color: #3f913f;
+    background-color: #3e903e;
 }
 
 #taskList {
@@ -372,43 +408,13 @@ h1 {
     margin: 4px 0;
 }
 
-.starter-hint {
-    background-color: #eef5ff;
-    border: 1px solid #d7e3ff;
-    border-radius: 8px;
-    padding: 10px 12px;
-    color: #304165;
-    margin: 8px 0 12px;
-    font-size: 15px;
-}
-
-#wisdomDisplay {
-    padding: 14px;
-    text-align: center;
-    background: linear-gradient(145deg, #ffffff, #f6f6f6);
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    color: #555;
-    margin-top: 10px;
-}
-
-#wisdomDisplay strong {
-    display: block;
-    margin-bottom: 6px;
-}
-
-#wisdomDisplay p {
-    margin: 0;
-}
-
 #taskList li {
-    padding: 10px;
+    padding: 14px;
     border-bottom: 1px solid #eee;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 12px;
+    gap: 14px;
     flex-wrap: wrap;
 }
 
@@ -423,29 +429,27 @@ h1 {
     min-width: 0;
 }
 
-#taskList li span.completed {
+#taskList li .completed {
     text-decoration: line-through;
-    color: #7a7a7a;
+    color: #777;
 }
 
 #taskList li button {
-    background-color: #d9534f;
+    background-color: var(--danger);
     color: white;
-    border: 1px solid #c9302c;
-    padding: 10px 12px;
-    border-radius: 6px;
+    padding: 10px 14px;
+    border-radius: 8px;
     font-size: 15px;
     margin-left: 5px;
     flex-shrink: 0;
 }
 
 #taskList li button:hover {
-    background-color: #c9302c;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+    background-color: var(--danger-hover);
 }
 
 #taskList li button:active {
-    background-color: #b52824;
+    background-color: var(--danger-active);
 }
 
 #taskList li input[type="checkbox"] {
@@ -453,42 +457,39 @@ h1 {
     margin-top: 2px;
     width: 22px;
     height: 22px;
-    accent-color: #4cae4c;
+    accent-color: var(--accent);
+    border-radius: 4px;
 }
 
 .hidden {
     display: none;
 }
 
-@media (max-width: 640px) {
-    .container {
-        margin: 12px;
-        padding: 18px;
+@media (max-width: 560px) {
+    .input-section {
+        flex-direction: column;
+        align-items: stretch;
     }
 }
 
 @media (max-width: 540px) {
     .cta-wrapper {
         width: 100%;
-        align-items: stretch;
+        justify-content: flex-start;
     }
 
     #addTaskButton {
         width: 100%;
     }
 
-    #addTaskButtonSecondary {
+    .secondary-add {
         display: inline-flex;
-        justify-content: center;
     }
 
     .helper-bubble {
         position: static;
-        transform: none;
-        left: auto;
-        top: auto;
         margin-top: 6px;
-        width: 100%;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     }
 
     .helper-bubble::after {
