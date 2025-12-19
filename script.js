@@ -38,19 +38,6 @@ function updateWisdomVisibility(tasks, showWisdom, hideWisdom) {
     return hasCompletedTasks;
 }
 
-function toggleAllTasks(tasks, shouldComplete) {
-    return tasks.map(task => ({ ...task, completed: shouldComplete }));
-}
-
-function getSelectAllState(tasks) {
-    const totalTasks = tasks.length;
-    const completedTasks = tasks.filter(task => task.completed).length;
-    return {
-        checked: totalTasks > 0 && completedTasks === totalTasks,
-        indeterminate: totalTasks > 0 && completedTasks > 0 && completedTasks < totalTasks
-    };
-}
-
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
     const clearCompletedButton = document.getElementById('clearCompletedButton');
@@ -150,7 +137,11 @@ if (typeof document !== 'undefined') {
 
     function renderTasks(focusTarget) {
         taskList.innerHTML = '';
-        const taskCount = tasks.length;
+        if (tasks.length === 0) {
+            emptyState.classList.remove('hidden');
+        } else {
+            emptyState.classList.add('hidden');
+        }
         tasks.forEach(task => {
             const listItem = document.createElement('li');
             const checkbox = document.createElement('input');

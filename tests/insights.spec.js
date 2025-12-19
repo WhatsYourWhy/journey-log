@@ -11,6 +11,7 @@ test.describe('Journey insights', () => {
     const addTaskButton = page.getByRole('button', { name: /Add a new journey step/i });
     const progressFill = page.locator('#progressFill');
     const progressBar = progressFill.locator('..');
+    const emptyState = page.locator('#emptyState');
 
     const expectCounts = async (total, completed, active, progress) => {
       await expect(page.locator('#totalCount')).toHaveText(String(total));
@@ -27,9 +28,13 @@ test.describe('Journey insights', () => {
       await addTaskButton.click();
     };
 
+    await expect(emptyState).toBeVisible();
+    await expectCounts(0, 0, 0, 0);
+
     await addTask('Plan the route');
     await addTask('Pack the bag');
 
+    await expect(emptyState).toBeHidden();
     await expectCounts(2, 0, 2, 0);
 
     const firstCheckbox = page.locator('li', { hasText: 'Plan the route' }).locator('input[type="checkbox"]');

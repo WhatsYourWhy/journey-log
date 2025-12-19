@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { updateInsights, updateWisdomVisibility, toggleAllTasks, getSelectAllState } = require('../script.js');
+const { updateInsights, updateWisdomVisibility } = require('../script.js');
 
 function createSpy() {
     const spy = (...args) => {
@@ -115,37 +115,5 @@ test.describe('updateWisdomVisibility', () => {
         expect(hasCompletedTasks).toBe(false);
         expect(hideWisdom.callCount()).toBe(1);
         expect(showWisdom.callCount()).toBe(0);
-    });
-});
-
-test.describe('bulk selection helpers', () => {
-    test('toggleAllTasks applies the desired completion state', () => {
-        const initialTasks = [
-            { id: 1, description: 'One', completed: false },
-            { id: 2, description: 'Two', completed: true }
-        ];
-
-        const allCompleted = toggleAllTasks(initialTasks, true);
-        expect(allCompleted.every(task => task.completed)).toBe(true);
-
-        const allActive = toggleAllTasks(initialTasks, false);
-        expect(allActive.every(task => task.completed)).toBe(false);
-    });
-
-    test('getSelectAllState reports checked and indeterminate correctly', () => {
-        const empty = getSelectAllState([]);
-        expect(empty).toEqual({ checked: false, indeterminate: false });
-
-        const mixed = getSelectAllState([
-            { id: 1, completed: true },
-            { id: 2, completed: false }
-        ]);
-        expect(mixed).toEqual({ checked: false, indeterminate: true });
-
-        const allDone = getSelectAllState([
-            { id: 1, completed: true },
-            { id: 2, completed: true }
-        ]);
-        expect(allDone).toEqual({ checked: true, indeterminate: false });
     });
 });
