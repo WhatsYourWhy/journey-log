@@ -7,9 +7,8 @@ body {
     color: #333;
 }
 
-:focus-visible {
-    outline: 3px solid #2457cf;
-    outline-offset: 3px;
+    font-size: 17px;
+
 }
 
 button:focus-visible,
@@ -243,7 +242,11 @@ h1 {
 
     margin-bottom: 15px;
 
-    padding: 10px 12px;
+    gap: 8px;
+
+    flex-wrap: wrap;
+
+}
 
     border: 1px solid #e5e5e5;
 
@@ -251,15 +254,15 @@ h1 {
 
     background-color: #fafafa;
 
-}
+    flex: 1 1 200px;
 
-.bulk-toggle {
+    padding: 12px;
 
     display: flex;
 
-    align-items: center;
+    border-radius: 6px;
 
-    gap: 8px;
+    font-size: 17px;
 
 }
 
@@ -281,7 +284,7 @@ h1 {
 
     padding: 10px 14px;
 
-    border-radius: 6px;
+    border-radius: 0 6px 6px 0;
 
     cursor: pointer;
 
@@ -357,7 +360,31 @@ h1 {
 
 .empty-state p {
 
+.empty-state {
+
+    background: linear-gradient(145deg, #ffffff, #f2f2f2);
+
+    border: 1px dashed #ccc;
+
+    border-radius: 8px;
+
+    padding: 12px 14px;
+
+    color: #666;
+
+    margin: 10px 0;
+
+    font-size: 16px;
+
+}
+
+.empty-state p {
+
     margin: 4px 0;
+
+}
+
+
 
 }
 
@@ -424,10 +451,15 @@ h1 {
     background-color: #d9534f;
     color: white;
     border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
+
+    padding: 8px 12px;
+
+    border-radius: 6px;
+
     cursor: pointer;
-    font-size: 14px;
+
+    font-size: 15px;
+
     margin-left: 5px;
     flex-shrink: 0;
 }
@@ -467,6 +499,21 @@ h1 {
 
     border: 0;
 
+}
+
+#starterHint {
+    background: #fff8e1;
+    border: 1px solid #f0d78c;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 10px 0 5px;
+    color: #7a5d00;
+    font-size: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+#starterHint strong {
+    color: #5c4400;
 }
 
 

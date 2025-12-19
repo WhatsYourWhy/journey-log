@@ -80,6 +80,9 @@ if (typeof document !== 'undefined') {
     initializeHelperBubble();
     renderTasks();
     updateWisdomVisibility(tasks, showWisdom, hideWisdom);
+    if (taskInput && taskInput.focus) {
+        taskInput.focus();
+    }
 
     const savedTheme = localStorage.getItem('journeyTheme');
     if (savedTheme) {
@@ -167,8 +170,10 @@ if (typeof document !== 'undefined') {
         taskList.innerHTML = '';
         if (tasks.length === 0) {
             emptyState.classList.remove('hidden');
+            starterHint.classList.remove('hidden');
         } else {
             emptyState.classList.add('hidden');
+            starterHint.classList.add('hidden');
         }
         tasks.forEach(task => {
             const listItem = document.createElement('li');
