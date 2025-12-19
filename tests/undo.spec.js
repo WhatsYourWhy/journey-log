@@ -1,0 +1,33 @@
+const path = require('path');
+const { test, expect } = require('@playwright/test');
+
+const indexFileUrl = `file://${path.join(__dirname, '..', 'index.html')}`;
+
+test.describe('Undo last delete', () => {
+  test('restores the most recently deleted task', async ({ page }) => {
+    await page.goto(indexFileUrl);
+    await page.evaluate(() => localStorage.clear());
+
+    const taskInput = page.locator('#taskInput');
+    const addButton = page.getByRole('button', { name: /Add a new journey step/i });
+    const undoButton = page.locator('#undoDeleteButton');
+
+    await taskInput.fill('Keep me');
+    await addButton.click();
+
+    await taskInput.fill('Remove me');
+    await addButton.click();
+
+    const deleteButton = page.locator('li', { hasText: 'Remove me' }).getByRole('button', { name: /Delete/i });
+    await deleteButton.click();
+
+    const taskTexts = page.locator('#taskList li span');
+    await expect(taskTexts).toHaveText(['Keep me']);
+
+    await expect(undoButton).toBeEnabled();
+    await undoButton.click();
+
+    await expect(taskTexts).toHaveText(['Keep me', 'Remove me']);
+    await expect(undoButton).toBeDisabled();
+  });
+});

@@ -109,6 +109,7 @@ test.describe('updateInsights', () => {
         expect(elements.progressPercent.textContent).toBe('0%');
         expect(elements.progressFill.style.width).toBe('0%');
         expect(elements.progressFill.parentElement.getAttribute('aria-valuenow')).toBe('0');
+        expect(elements.progressFill.parentElement.getAttribute('aria-valuetext')).toBe('0% complete');
     });
 
     test('reflects mixed active and completed tasks', () => {
@@ -127,6 +128,7 @@ test.describe('updateInsights', () => {
         expect(elements.progressPercent.textContent).toBe('67%');
         expect(elements.progressFill.style.width).toBe('67%');
         expect(elements.progressFill.parentElement.getAttribute('aria-valuenow')).toBe('67');
+        expect(elements.progressFill.parentElement.getAttribute('aria-valuetext')).toBe('67% complete');
     });
 });
 
@@ -158,6 +160,45 @@ test.describe('updateWisdomVisibility', () => {
         expect(hasCompletedTasks).toBe(false);
         expect(hideWisdom.callCount()).toBe(1);
         expect(showWisdom.callCount()).toBe(0);
+    });
+
+    test('respects disabled wisdom option even with completed tasks', () => {
+        const showWisdom = createSpy();
+        const hideWisdom = createSpy();
+        const tasks = [
+            { id: 1, description: 'Done task', completed: true }
+        ];
+
+        const hasCompletedTasks = updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: false });
+
+        expect(hasCompletedTasks).toBe(true);
+        expect(hideWisdom.callCount()).toBe(1);
+        expect(showWisdom.callCount()).toBe(0);
+    });
+});
+
+test.describe('restoreDeletedTasks', () => {
+    test('restores deleted tasks and keeps order by id', () => {
+        const currentTasks = [
+            { id: 2, description: 'Existing', completed: false }
+        ];
+        const deletedTasks = [
+            { id: 1, description: 'Deleted first', completed: true }
+        ];
+
+        const result = restoreDeletedTasks(currentTasks, deletedTasks);
+
+        expect(result).toEqual([
+            { id: 1, description: 'Deleted first', completed: true },
+            { id: 2, description: 'Existing', completed: false }
+        ]);
+    });
+
+    test('returns existing tasks when there is nothing to restore', () => {
+        const currentTasks = [{ id: 3, description: 'Only task', completed: false }];
+        const result = restoreDeletedTasks(currentTasks, []);
+
+        expect(result).toEqual(currentTasks);
     });
 });
 
