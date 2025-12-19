@@ -44,7 +44,7 @@
 
                 <p class="label">Total steps</p>
 
-                <p id="totalCount" class="value">0</p>
+                <p id="totalCount" class="value" aria-live="polite" aria-atomic="true">0</p>
 
             </div>
 
@@ -52,7 +52,7 @@
 
                 <p class="label">Completed</p>
 
-                <p id="completedCount" class="value">0</p>
+                <p id="completedCount" class="value" aria-live="polite" aria-atomic="true">0</p>
 
             </div>
 
@@ -60,7 +60,7 @@
 
                 <p class="label">Active</p>
 
-                <p id="activeCount" class="value">0</p>
+                <p id="activeCount" class="value" aria-live="polite" aria-atomic="true">0</p>
 
             </div>
 
@@ -74,7 +74,7 @@
 
                 </div>
 
-                <p id="progressPercent" class="value">0%</p>
+                <p id="progressPercent" class="value" aria-live="polite" aria-atomic="true">0%</p>
 
             </div>
 
@@ -82,13 +82,13 @@
 
         <div class="input-section">
 
-            <input type="text" id="taskInput" placeholder="Add a new step in your journey...">
+            <input type="text" id="taskInput" placeholder="Add a new step in your journey..." aria-label="New journey step">
 
-            <button id="addTaskButton">Add Step</button>
+            <button id="addTaskButton" aria-label="Add a new journey step">Add Step</button>
 
         </div>
 
-        <button id="clearCompletedButton">Clear Completed Steps</button>
+        <button id="clearCompletedButton" aria-label="Clear all completed journey steps">Clear Completed Steps</button>
 
         <div id="emptyState" class="empty-state" aria-live="polite">
             <p class="empty-state-title">No steps logged</p>
@@ -99,7 +99,7 @@
 
         </ul>
 
-        <div id="wisdomDisplay" class="hidden">
+        <div id="wisdomDisplay" class="hidden" role="region" aria-live="polite" aria-expanded="false">
 
             <p><strong>Wisdom for this step:</strong></p>
 
