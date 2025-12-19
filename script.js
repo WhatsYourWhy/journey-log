@@ -37,7 +37,8 @@ function updateWisdomVisibility(tasks, showWisdom, hideWisdom) {
     return hasCompletedTasks;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
     const clearCompletedButton = document.getElementById('clearCompletedButton');
     const taskInput = document.getElementById('taskInput');
     const addTaskButton = document.getElementById('addTaskButton');
@@ -51,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeCount = document.getElementById('activeCount');
     const progressPercent = document.getElementById('progressPercent');
     const progressFill = document.getElementById('progressFill');
+    const emptyState = document.getElementById('emptyState');
 
     let tasks = loadTasks();
     renderTasks();
@@ -103,6 +105,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderTasks() {
         taskList.innerHTML = '';
+        if (tasks.length === 0) {
+            emptyState.classList.remove('hidden');
+        } else {
+            emptyState.classList.add('hidden');
+        }
         tasks.forEach(task => {
             const listItem = document.createElement('li');
             const checkbox = document.createElement('input');
@@ -183,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clearCompletedButton.addEventListener('click', clearCompletedTasks);
 });
+}
 
 if (typeof module !== 'undefined') {
     module.exports = {

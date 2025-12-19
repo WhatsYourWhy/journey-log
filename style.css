@@ -213,6 +213,31 @@ h1 {
 }
 
 
+.empty-state {
+
+    background: linear-gradient(145deg, #ffffff, #f2f2f2);
+
+    border: 1px dashed #ccc;
+
+    border-radius: 8px;
+
+    padding: 12px 14px;
+
+    color: #666;
+
+    margin: 10px 0;
+
+    font-size: 15px;
+
+}
+
+.empty-state p {
+
+    margin: 4px 0;
+
+}
+
+
 
 #taskList li {
 
