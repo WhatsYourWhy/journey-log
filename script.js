@@ -52,6 +52,7 @@ if (typeof document !== 'undefined') {
     const activeCount = document.getElementById('activeCount');
     const progressPercent = document.getElementById('progressPercent');
     const progressFill = document.getElementById('progressFill');
+    const emptyState = document.getElementById('emptyState');
 
     let tasks = loadTasks();
     renderTasks();
@@ -104,6 +105,7 @@ if (typeof document !== 'undefined') {
 
     function renderTasks() {
         taskList.innerHTML = '';
+        const taskCount = tasks.length;
         tasks.forEach(task => {
             const listItem = document.createElement('li');
             const checkbox = document.createElement('input');
@@ -127,6 +129,10 @@ if (typeof document !== 'undefined') {
             taskList.appendChild(listItem);
         });
         updateInsights(tasks, { totalCount, completedCount, activeCount, progressPercent, progressFill });
+        if (emptyState) {
+            const hasTasks = taskCount > 0;
+            emptyState.classList.toggle('hidden', hasTasks);
+        }
     }
 
     function toggleComplete(taskId) {
