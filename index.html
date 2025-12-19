@@ -20,6 +20,19 @@
 
         <h1>The Journey Log</h1>
 
+        <section class="start-cue" aria-label="Quick start guide">
+            <p class="start-cue-title">Start here</p>
+            <div class="start-cue-step">
+                <span class="start-cue-step-number" aria-hidden="true">1</span>
+                <p class="start-cue-text">Type one small step.</p>
+            </div>
+            <div class="start-cue-step">
+                <span class="start-cue-step-number" aria-hidden="true">2</span>
+                <p class="start-cue-text">Tap Add Step to save.</p>
+            </div>
+            <button id="startCueButton" class="start-cue-cta" type="button">Start with one step</button>
+        </section>
+
         <div class="theme-selector">
 
             <label for="theme">Choose a theme:</label>
@@ -84,7 +97,12 @@
 
             <input type="text" id="taskInput" placeholder="Add a new step in your journey..." aria-label="New journey step">
 
-            <button id="addTaskButton" aria-label="Add a new journey step">Add Step</button>
+            <div class="cta-wrapper">
+                <button id="addTaskButton" aria-label="Add a new journey step">Add Step</button>
+                <div id="addHelperBubble" class="helper-bubble hidden" role="status" aria-live="polite" aria-hidden="true">
+                    Tap Add after you type.
+                </div>
+            </div>
 
         </div>
 
@@ -95,7 +113,7 @@
                 <span aria-hidden="true" class="bulk-toggle-label">Select all</span>
             </div>
             <button id="clearSelectedButton" type="button">Clear selected</button>
-            <button id="clearCompletedButton" type="button">Clear Completed Steps</button>
+            <button id="clearCompletedButton" type="button" aria-label="Clear all completed journey steps">Clear Completed Steps</button>
         </div>
 
         <div id="emptyState" class="empty-state hidden" aria-live="polite">

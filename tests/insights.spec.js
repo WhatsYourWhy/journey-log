@@ -58,7 +58,7 @@ test.describe('Journey insights', () => {
     await page.reload();
 
     const taskInput = page.locator('#taskInput');
-    const addTaskButton = page.getByRole('button', { name: 'Add Step' });
+    const addTaskButton = page.getByRole('button', { name: /Add a new journey step/i });
     const emptyState = page.locator('#emptyState');
 
     await expect(emptyState).toBeVisible();
