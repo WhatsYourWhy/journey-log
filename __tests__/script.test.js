@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { updateInsights, updateWisdomVisibility } = require('../script.js');
+const { updateInsights, updateWisdomVisibility, createSaveFeedbackController } = require('../script.js');
 
 function createSpy() {
     const spy = (...args) => {
@@ -53,6 +53,49 @@ function createDomElements() {
     };
 }
 
+function createStatusElement() {
+    const classes = new Set();
+    return {
+        textContent: '',
+        attributes: {},
+        classList: {
+            add: (...tokens) => tokens.forEach(token => classes.add(token)),
+            remove: (...tokens) => tokens.forEach(token => classes.delete(token)),
+            has: (token) => classes.has(token)
+        },
+        setAttribute(name, value) {
+            this.attributes[name] = value;
+        },
+        getAttribute(name) {
+            return this.attributes[name] ?? null;
+        }
+    };
+}
+
+function createFakeScheduler() {
+    let tasks = [];
+    let lastId = 0;
+
+    const scheduler = (callback) => {
+        const id = ++lastId;
+        tasks.push({ id, callback });
+        return id;
+    };
+
+    const clearer = (id) => {
+        tasks = tasks.filter(task => task.id !== id);
+    };
+
+    const runNext = () => {
+        const nextTask = tasks.shift();
+        nextTask?.callback();
+    };
+
+    const pendingCount = () => tasks.length;
+
+    return { scheduler, clearer, runNext, pendingCount };
+}
+
 test.describe('updateInsights', () => {
     test('handles zero tasks gracefully', () => {
         const elements = createDomElements();
@@ -66,6 +109,7 @@ test.describe('updateInsights', () => {
         expect(elements.progressPercent.textContent).toBe('0%');
         expect(elements.progressFill.style.width).toBe('0%');
         expect(elements.progressFill.parentElement.getAttribute('aria-valuenow')).toBe('0');
+        expect(elements.progressFill.parentElement.getAttribute('aria-valuetext')).toBe('0% complete');
     });
 
     test('reflects mixed active and completed tasks', () => {
@@ -84,6 +128,7 @@ test.describe('updateInsights', () => {
         expect(elements.progressPercent.textContent).toBe('67%');
         expect(elements.progressFill.style.width).toBe('67%');
         expect(elements.progressFill.parentElement.getAttribute('aria-valuenow')).toBe('67');
+        expect(elements.progressFill.parentElement.getAttribute('aria-valuetext')).toBe('67% complete');
     });
 });
 
@@ -115,5 +160,75 @@ test.describe('updateWisdomVisibility', () => {
         expect(hasCompletedTasks).toBe(false);
         expect(hideWisdom.callCount()).toBe(1);
         expect(showWisdom.callCount()).toBe(0);
+    });
+
+    test('respects disabled wisdom option even with completed tasks', () => {
+        const showWisdom = createSpy();
+        const hideWisdom = createSpy();
+        const tasks = [
+            { id: 1, description: 'Done task', completed: true }
+        ];
+
+        const hasCompletedTasks = updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: false });
+
+        expect(hasCompletedTasks).toBe(true);
+        expect(hideWisdom.callCount()).toBe(1);
+        expect(showWisdom.callCount()).toBe(0);
+    });
+});
+
+test.describe('restoreDeletedTasks', () => {
+    test('restores deleted tasks and keeps order by id', () => {
+        const currentTasks = [
+            { id: 2, description: 'Existing', completed: false }
+        ];
+        const deletedTasks = [
+            { id: 1, description: 'Deleted first', completed: true }
+        ];
+
+        const result = restoreDeletedTasks(currentTasks, deletedTasks);
+
+        expect(result).toEqual([
+            { id: 1, description: 'Deleted first', completed: true },
+            { id: 2, description: 'Existing', completed: false }
+        ]);
+    });
+
+    test('returns existing tasks when there is nothing to restore', () => {
+        const currentTasks = [{ id: 3, description: 'Only task', completed: false }];
+        const result = restoreDeletedTasks(currentTasks, []);
+
+        expect(result).toEqual(currentTasks);
+    });
+});
+
+test.describe('createSaveFeedbackController', () => {
+    test('debounces and hides the saved indicator after the display duration', () => {
+        const statusElement = createStatusElement();
+        const timers = createFakeScheduler();
+        const controller = createSaveFeedbackController(statusElement, {
+            scheduler: timers.scheduler,
+            clearer: timers.clearer,
+            displayDuration: 50,
+            showDelay: 5
+        });
+
+        controller.trigger();
+        controller.trigger();
+        expect(timers.pendingCount()).toBe(1);
+
+        timers.runNext(); // show
+        expect(statusElement.textContent).toBe('Saved');
+        expect(statusElement.classList.has('visible')).toBe(true);
+        expect(statusElement.getAttribute('aria-hidden')).toBe('false');
+
+        controller.trigger();
+        expect(timers.pendingCount()).toBe(1);
+
+        timers.runNext(); // show again, schedules hide
+        timers.runNext(); // hide
+        expect(statusElement.textContent).toBe('');
+        expect(statusElement.classList.has('visible')).toBe(false);
+        expect(statusElement.getAttribute('aria-hidden')).toBe('true');
     });
 });
