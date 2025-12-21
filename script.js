@@ -66,6 +66,7 @@ if (typeof document !== 'undefined') {
     const selectAllCheckbox = document.getElementById('selectAllCheckbox');
     const wisdomDisplay = document.getElementById('wisdomDisplay');
     const wisdomText = document.getElementById('wisdomText');
+    const starterHint = document.getElementById('starterHint');
     const themeSelect = document.getElementById('theme');
     const bodyElement = document.body;
     const totalCount = document.getElementById('totalCount');
@@ -75,6 +76,9 @@ if (typeof document !== 'undefined') {
     const progressFill = document.getElementById('progressFill');
     const emptyState = document.getElementById('emptyState');
     const helperBubbleKey = 'journeySeenAddHelper';
+    const supportedThemes = ['comfort', 'forest', 'ocean', 'dark', 'high-contrast'];
+    const themeClasses = supportedThemes.map(theme => `${theme}-theme`);
+    const defaultTheme = 'comfort';
 
     let tasks = loadTasks();
     initializeHelperBubble();
@@ -84,11 +88,7 @@ if (typeof document !== 'undefined') {
         taskInput.focus();
     }
 
-    const savedTheme = localStorage.getItem('journeyTheme');
-    if (savedTheme) {
-        themeSelect.value = savedTheme;
-        bodyElement.className = savedTheme === 'default' ? '' : `${savedTheme}-theme`;
-    }
+    applyTheme(localStorage.getItem('journeyTheme'));
 
     const wisdomQuotes = [
         "The journey of a thousand miles begins with a single step. - Lao Tzu",
@@ -100,11 +100,7 @@ if (typeof document !== 'undefined') {
 
     taskInput?.focus();
 
-    themeSelect.addEventListener('change', (event) => {
-        const selectedTheme = event.target.value;
-        bodyElement.className = selectedTheme === 'default' ? '' : `${selectedTheme}-theme`;
-        localStorage.setItem('journeyTheme', selectedTheme); // Save the selected theme
-    });
+    themeSelect.addEventListener('change', (event) => applyTheme(event.target.value));
 
     addTaskButton.addEventListener('click', () => {
         const taskDescription = taskInput.value.trim();
@@ -360,6 +356,45 @@ if (typeof document !== 'undefined') {
 
     function dismissHelperBubble() {
         hideHelperBubble(true);
+    }
+
+    function normalizeTheme(theme) {
+        if (theme === 'default') {
+            return defaultTheme;
+        }
+        return supportedThemes.includes(theme) ? theme : defaultTheme;
+    }
+
+    function applyTheme(themeValue) {
+        const normalizedTheme = normalizeTheme(themeValue);
+        document.documentElement.classList.remove(...themeClasses);
+        document.documentElement.classList.add(`${normalizedTheme}-theme`);
+        bodyElement.classList.remove(...themeClasses);
+        bodyElement.classList.add(`${normalizedTheme}-theme`);
+        document.documentElement.dataset.theme = normalizedTheme;
+        bodyElement.dataset.theme = normalizedTheme;
+        if (normalizedTheme === 'high-contrast') {
+            if (addTaskButton) {
+                addTaskButton.style.cssText = [
+                    'background: #ffd60a !important',
+                    'background-color: #ffd60a !important',
+                    'color: #0d0d0d !important',
+                    'border-color: #ffb700 !important'
+                ].join('; ');
+            }
+            bodyElement.style.setProperty('background-color', '#000000', 'important');
+            bodyElement.style.setProperty('color', '#ffffff', 'important');
+        } else {
+            if (addTaskButton) {
+                addTaskButton.style.cssText = '';
+            }
+            bodyElement.style.removeProperty('background-color');
+            bodyElement.style.removeProperty('color');
+        }
+        if (themeSelect.value !== normalizedTheme) {
+            themeSelect.value = normalizedTheme;
+        }
+        localStorage.setItem('journeyTheme', normalizedTheme);
     }
 });
 }
