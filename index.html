@@ -97,20 +97,28 @@
         <p class="insights-caption">Totals show how many steps you have, how many are done, and what remains. The progress bar tracks the percentage completed.</p>
 
         <p class="insights-note">These update when you check or add steps.</p>
+        <div class="milestone-wrapper" aria-live="polite">
+            <div class="milestone-header">
+                <p class="milestone-title">Milestones</p>
+                <p class="milestone-subtitle">Unlock markers as you complete steps.</p>
+            </div>
+            <div id="milestoneStrip" class="milestone-strip" aria-label="Milestones" role="group"></div>
+        </div>
 
         <div class="input-section">
 
             <div class="input-meta" aria-label="Journey step details">
-                <input type="text" id="taskInput" placeholder="Add a new step in your journey..." aria-label="New journey step description">
+                <input type="text" id="taskInput" placeholder="Add a new step in your journey..." aria-label="New journey step description" autocomplete="off">
                 <div class="selectors">
                     <label for="moodSelect">Mood</label>
-                    <select id="moodSelect" aria-label="Select a mood for this step">
+                    <select id="moodSelect" aria-label="Select a mood for this step" aria-describedby="moodHelper">
                         <option value="">Mood (optional)</option>
                         <option value="bright">😊 Bright</option>
                         <option value="calm">🧘 Calm</option>
                         <option value="focused">🎯 Focused</option>
                         <option value="reflective">🌙 Reflective</option>
                     </select>
+                    <p id="moodHelper" class="selector-helper">Choose the vibe guiding this step.</p>
                     <label for="categorySelect">Category</label>
                     <select id="categorySelect" aria-label="Select a category for this step">
                         <option value="">Category (optional)</option>
@@ -122,10 +130,10 @@
                     <fieldset class="priority-pill" aria-label="Set a priority for this step">
                         <legend>Priority</legend>
                         <div class="pill-options" role="group" aria-label="Priority options">
-                            <button type="button" class="priority" data-priority="" aria-label="No priority">None</button>
-                            <button type="button" class="priority" data-priority="low" aria-label="Low priority">Low</button>
-                            <button type="button" class="priority" data-priority="medium" aria-label="Medium priority">Medium</button>
-                            <button type="button" class="priority" data-priority="high" aria-label="High priority">High</button>
+                            <button type="button" class="priority" data-priority="" aria-label="No priority" aria-pressed="true">None</button>
+                            <button type="button" class="priority" data-priority="low" aria-label="Low priority" aria-pressed="false">Low</button>
+                            <button type="button" class="priority" data-priority="medium" aria-label="Medium priority" aria-pressed="false">Medium</button>
+                            <button type="button" class="priority" data-priority="high" aria-label="High priority" aria-pressed="false">High</button>
                         </div>
                     </fieldset>
                 </div>
@@ -157,7 +165,8 @@
 
         <div id="emptyState" class="empty-state hidden" aria-live="polite">
             <div class="carousel">
-                <p id="carouselPrompt" class="carousel-prompt"></p>
+                <div class="carousel-icon" aria-hidden="true">✨</div>
+                <p id="carouselPrompt" class="carousel-prompt" role="status" aria-live="polite" aria-atomic="true"></p>
                 <button id="shufflePrompt" type="button" aria-label="Shuffle creative prompt">Shuffle</button>
             </div>
             <p class="carousel-caption">Let a playful prompt spark the next step in your story.</p>
@@ -182,8 +191,6 @@
             <p id="wisdomAttribution" class="wisdom-attribution"></p>
 
         </div>
-
-        <div id="milestoneStrip" class="milestone-strip" aria-label="Milestones" role="group"></div>
 
     </div>
 
