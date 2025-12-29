@@ -3,6 +3,12 @@ const path = require('path');
 
 const indexPath = `file://${path.join(__dirname, '..', 'index.html')}`;
 
+test.beforeEach(async ({ page }) => {
+    await page.goto(indexPath);
+    await page.evaluate(() => localStorage.clear());
+    await page.reload({ waitUntil: 'domcontentloaded' });
+});
+
 function parseRgb(colorString) {
     const [r = 0, g = 0, b = 0] = (colorString.match(/[\d.]+/g) || []).map(Number);
     return { r, g, b };
@@ -43,6 +49,27 @@ test.describe('theme accessibility', () => {
             return { text: styles.color, background: styles.backgroundColor };
         });
         expect(contrastRatio(addButtonColors.text, addButtonColors.background)).toBeGreaterThanOrEqual(4.5);
+    });
+
+    test('progress indicators update aria values when tasks complete', async ({ page }) => {
+        await page.goto(indexPath);
+
+        await page.fill('#taskInput', 'First task');
+        await page.click('#addTaskButton');
+        await page.fill('#taskInput', 'Second task');
+        await page.click('#addTaskButton');
+
+        await page.getByTestId('complete-checkbox').first().check();
+
+        await expect(page.getByTestId('total-count')).toHaveText('2');
+        await expect(page.getByTestId('completed-count')).toHaveText('1');
+        await expect(page.getByTestId('active-count')).toHaveText('1');
+        await expect(page.getByTestId('progress-percent')).toHaveText('50%');
+
+        const ariaNow = await page.$eval('.progress-bar', (el) => el.getAttribute('aria-valuenow'));
+        const ariaValueText = await page.$eval('.progress-bar', (el) => el.getAttribute('aria-valuetext'));
+        expect(ariaNow).toBe('50');
+        expect(ariaValueText).toBe('50% complete');
     });
 
     test('theme selection persists through localStorage and reload', async ({ page }) => {

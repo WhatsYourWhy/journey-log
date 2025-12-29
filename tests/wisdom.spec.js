@@ -31,7 +31,7 @@ test.describe('Wisdom toggle', () => {
     await addTask('Draft the itinerary');
     await addTask('Confirm bookings');
 
-    const firstCheckbox = page.locator('li', { hasText: 'Draft the itinerary' }).locator('input[type="checkbox"]');
+    const firstCheckbox = page.locator('li', { hasText: 'Draft the itinerary' }).getByTestId('complete-checkbox');
     await firstCheckbox.check();
 
     await expect(page.locator('#totalCount')).toHaveText('2');
@@ -43,7 +43,7 @@ test.describe('Wisdom toggle', () => {
     await expect(wisdomDisplay).toBeHidden();
     await expect(wisdomDisplay).toHaveAttribute('aria-expanded', 'false');
 
-    const secondCheckbox = page.locator('li', { hasText: 'Confirm bookings' }).locator('input[type="checkbox"]');
+    const secondCheckbox = page.locator('li', { hasText: 'Confirm bookings' }).getByTestId('complete-checkbox');
     await secondCheckbox.check();
 
     await expect(progressBar).toHaveAttribute('aria-valuenow', '100');

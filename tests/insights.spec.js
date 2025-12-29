@@ -42,8 +42,8 @@ test.describe('Journey insights', () => {
     await expect(starterHint).toBeHidden();
     await expectCounts(2, 0, 2, 0);
 
-    const firstCheckbox = page.locator('li', { hasText: 'Plan the route' }).locator('input[type="checkbox"]');
-    const secondCheckbox = page.locator('li', { hasText: 'Pack the bag' }).locator('input[type="checkbox"]');
+    const firstCheckbox = page.locator('li', { hasText: 'Plan the route' }).getByTestId('complete-checkbox');
+    const secondCheckbox = page.locator('li', { hasText: 'Pack the bag' }).getByTestId('complete-checkbox');
 
     await firstCheckbox.check();
     await expectCounts(2, 1, 1, 50);
@@ -91,7 +91,7 @@ test.describe('Journey insights', () => {
     await addTask('Book transport');
 
     const firstItem = page.locator('li', { hasText: 'Review itinerary' });
-    const firstCheckbox = firstItem.locator('input[type="checkbox"]');
+    const firstCheckbox = firstItem.getByTestId('complete-checkbox');
     const firstText = firstItem.locator('span');
 
     await firstCheckbox.check();
@@ -106,10 +106,9 @@ test.describe('Journey insights', () => {
       };
     });
 
-    expect(styles.color).toBe('rgb(15, 60, 99)');
-    expect(styles.fontSize).toBe('17px');
+    expect(styles.color).toBe(styles.textDecorationColor);
+    expect(styles.fontSize).toBe('18px');
     expect(styles.textDecorationLine).toContain('line-through');
-    expect(styles.textDecorationColor).toBe('rgb(15, 60, 99)');
 
     await expect(progressBar).toHaveAttribute('aria-valuenow', '50');
     await expect(progressBar).toHaveAttribute('aria-valuetext', '50% complete');

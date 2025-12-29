@@ -22,7 +22,7 @@ test.describe('Keyboard shortcuts', () => {
     await page.keyboard.press('Control+Enter');
     await expect(taskListItems).toHaveCount(2);
 
-    const firstCheckbox = page.locator('li', { hasText: 'Shortcut add' }).locator('input[type="checkbox"]');
+    const firstCheckbox = page.locator('li', { hasText: 'Shortcut add' }).getByTestId('complete-checkbox');
     await firstCheckbox.check();
 
     await page.keyboard.press('Control+Shift+C');

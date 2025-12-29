@@ -20,7 +20,7 @@ test.describe('Accessibility and focus management', () => {
     await taskInput.fill('Second step');
     await addTaskButton.click();
 
-    const firstCheckbox = page.locator('li').first().locator('input[type="checkbox"]');
+    const firstCheckbox = page.getByTestId('complete-checkbox').first();
     await firstCheckbox.focus();
     await firstCheckbox.check();
     await expect(firstCheckbox).toBeFocused();
@@ -56,8 +56,8 @@ test.describe('Accessibility and focus management', () => {
     await addTask('Pack the map');
     await addTask('Lock the door');
 
-    const firstCheckbox = page.locator('li', { hasText: 'Pack the map' }).locator('input[type="checkbox"]');
-    const secondCheckbox = page.locator('li', { hasText: 'Lock the door' }).locator('input[type="checkbox"]');
+    const firstCheckbox = page.locator('li', { hasText: 'Pack the map' }).getByTestId('complete-checkbox');
+    const secondCheckbox = page.locator('li', { hasText: 'Lock the door' }).getByTestId('complete-checkbox');
 
     await firstCheckbox.check();
     await expect(progressBar).toHaveAttribute('aria-valuenow', '50');

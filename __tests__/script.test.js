@@ -1,5 +1,10 @@
 const { test, expect } = require('@playwright/test');
-const { updateInsights, updateWisdomVisibility, createSaveFeedbackController } = require('../script.js');
+const {
+    updateInsights,
+    updateWisdomVisibility,
+    createSaveFeedbackController,
+    restoreDeletedTasks
+} = require('../script.js');
 
 function createSpy() {
     const spy = (...args) => {
