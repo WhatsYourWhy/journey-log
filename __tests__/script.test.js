@@ -5,7 +5,11 @@ const {
     updateWisdomVisibility,
     createSaveFeedbackController,
     restoreDeletedTasks,
-    getSelectAllState
+    getSelectAllState,
+    deriveMilestoneState,
+    updateTaskNote,
+    getNextOpenNoteId,
+    pickQuoteForTask
 } = require('../script.js');
 
 function createSpy() {
@@ -293,5 +297,69 @@ test.describe('computeInsights and getSelectAllState', () => {
             { id: 2, selected: true }
         ]);
         expect(all).toEqual({ checked: true, indeterminate: false });
+    });
+
+    test('ignores note metadata when summarizing progress', () => {
+        const tasks = [
+            { id: 1, completed: true, note: 'Thoughts' },
+            { id: 2, completed: false, note: 'More notes' }
+        ];
+
+        const result = computeInsights(tasks);
+
+        expect(result).toEqual({
+            totalTasks: 2,
+            completedTasks: 1,
+            activeTasks: 1,
+            progress: 50
+        });
+    });
+});
+
+test.describe('note handling helpers', () => {
+    test('persists note content on the correct task', () => {
+        const tasks = [
+            { id: 1, note: '', completed: false },
+            { id: 2, note: 'Keep', completed: true }
+        ];
+
+        const updated = updateTaskNote(tasks, 1, 'New note');
+
+        expect(updated).toEqual([
+            { id: 1, note: 'New note', completed: false },
+            { id: 2, note: 'Keep', completed: true }
+        ]);
+    });
+
+    test('toggles open note id', () => {
+        expect(getNextOpenNoteId(null, 5)).toBe(5);
+        expect(getNextOpenNoteId(5, 5)).toBeNull();
+        expect(getNextOpenNoteId(5, 6)).toBe(6);
+    });
+});
+
+test.describe('milestones and wisdom', () => {
+    test('derives milestone state based on thresholds', () => {
+        const state = deriveMilestoneState(12, [5, 10, 20]);
+
+        expect(state).toEqual({
+            unlocked: [5, 10],
+            next: 20,
+            lastUnlocked: 10
+        });
+    });
+
+    test('picks contextual wisdom for metadata', () => {
+        const task = { mood: 'bright', category: '', priority: 'high' };
+        const wisdomSet = {
+            mood: { bright: [{ text: 'Hello', author: 'Test' }] },
+            category: {},
+            priority: { high: [{ text: 'High', author: 'Test' }] },
+            fallback: []
+        };
+
+        const quote = pickQuoteForTask(task, wisdomSet);
+
+        expect(['Hello', 'High']).toContain(quote.text);
     });
 });

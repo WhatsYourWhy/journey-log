@@ -42,6 +42,10 @@
                 <option value="dark">Midnight</option>
                 <option value="high-contrast">High contrast</option>
             </select>
+            <label class="artful-toggle" for="artfulMode">
+                <input type="checkbox" id="artfulMode" aria-label="Toggle artful illustrations">
+                Artful mode
+            </label>
         </div>
 
         <div class="wisdom-toggle">
@@ -96,7 +100,36 @@
 
         <div class="input-section">
 
-            <input type="text" id="taskInput" placeholder="Add a new step in your journey..." aria-label="New journey step">
+            <div class="input-meta" aria-label="Journey step details">
+                <input type="text" id="taskInput" placeholder="Add a new step in your journey..." aria-label="New journey step description">
+                <div class="selectors">
+                    <label for="moodSelect">Mood</label>
+                    <select id="moodSelect" aria-label="Select a mood for this step">
+                        <option value="">Mood (optional)</option>
+                        <option value="bright">😊 Bright</option>
+                        <option value="calm">🧘 Calm</option>
+                        <option value="focused">🎯 Focused</option>
+                        <option value="reflective">🌙 Reflective</option>
+                    </select>
+                    <label for="categorySelect">Category</label>
+                    <select id="categorySelect" aria-label="Select a category for this step">
+                        <option value="">Category (optional)</option>
+                        <option value="wellness">Wellness</option>
+                        <option value="creative">Creative</option>
+                        <option value="planning">Planning</option>
+                        <option value="connection">Connection</option>
+                    </select>
+                    <fieldset class="priority-pill" aria-label="Set a priority for this step">
+                        <legend>Priority</legend>
+                        <div class="pill-options" role="group" aria-label="Priority options">
+                            <button type="button" class="priority" data-priority="" aria-label="No priority">None</button>
+                            <button type="button" class="priority" data-priority="low" aria-label="Low priority">Low</button>
+                            <button type="button" class="priority" data-priority="medium" aria-label="Medium priority">Medium</button>
+                            <button type="button" class="priority" data-priority="high" aria-label="High priority">High</button>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
 
             <div class="cta-wrapper">
                 <button id="addTaskButton" aria-label="Add a new journey step">Add Step</button>
@@ -123,8 +156,11 @@
         </div>
 
         <div id="emptyState" class="empty-state hidden" aria-live="polite">
-            <p><strong>Start your journey:</strong> add a step and press Enter or click “Add Step”.</p>
-            <p>Your insights and wisdom will appear once you begin tracking steps.</p>
+            <div class="carousel">
+                <p id="carouselPrompt" class="carousel-prompt"></p>
+                <button id="shufflePrompt" type="button" aria-label="Shuffle creative prompt">Shuffle</button>
+            </div>
+            <p class="carousel-caption">Let a playful prompt spark the next step in your story.</p>
         </div>
 
         <div id="starterHint" class="starter-hint hidden" role="status" aria-live="polite">
@@ -137,11 +173,17 @@
 
         <div id="wisdomDisplay" class="hidden" role="region" aria-live="polite" aria-expanded="false">
 
-            <p><strong>Wisdom for this step:</strong></p>
+            <div class="wisdom-header">
+                <p class="wisdom-title"><strong>Wisdom for this step:</strong></p>
+                <button id="refreshWisdom" type="button" aria-label="Refresh insight" class="micro-button">Refresh insight</button>
+            </div>
 
-            <p id="wisdomText"></p>
+            <p id="wisdomText" class="wisdom-quote"></p>
+            <p id="wisdomAttribution" class="wisdom-attribution"></p>
 
         </div>
+
+        <div id="milestoneStrip" class="milestone-strip" aria-label="Milestones" role="group"></div>
 
     </div>
 
