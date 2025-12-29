@@ -1,5 +1,3 @@
-console.log("JavaScript file loaded!");
-
 function computeInsights(tasks) {
     const totalTasks = tasks.length;
     const completedTasks = tasks.filter(task => task.completed).length;
@@ -156,6 +154,7 @@ if (typeof document !== 'undefined') {
         let lastDeletedTasks = [];
         let undoTimeoutId = null;
         const saveFeedback = createSaveFeedbackController(saveStatus);
+        updateUndoButtonState(false);
 
         initializeHelperBubble();
         renderTasks();
@@ -564,7 +563,10 @@ if (typeof document !== 'undefined') {
 
         function isWisdomEnabled() {
             const stored = localStorage.getItem(wisdomToggleKey);
-            if (stored === null) return true;
+            if (stored === null) {
+                localStorage.setItem(wisdomToggleKey, 'true');
+                return true;
+            }
             return stored === 'true';
         }
 

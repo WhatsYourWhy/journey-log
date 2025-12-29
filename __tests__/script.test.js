@@ -1,9 +1,11 @@
 const { test, expect } = require('@playwright/test');
 const {
+    computeInsights,
     updateInsights,
     updateWisdomVisibility,
     createSaveFeedbackController,
-    restoreDeletedTasks
+    restoreDeletedTasks,
+    getSelectAllState
 } = require('../script.js');
 
 function createSpy() {
@@ -205,6 +207,23 @@ test.describe('restoreDeletedTasks', () => {
 
         expect(result).toEqual(currentTasks);
     });
+
+    test('ignores duplicates and normalizes restored selection flag', () => {
+        const currentTasks = [
+            { id: 1, description: 'Existing', completed: false, selected: true }
+        ];
+        const deletedTasks = [
+            { id: 1, description: 'Existing duplicate', completed: true, selected: true },
+            { id: 2, description: 'Newly deleted', completed: false, selected: 'truthy' }
+        ];
+
+        const result = restoreDeletedTasks(currentTasks, deletedTasks);
+
+        expect(result).toEqual([
+            { id: 1, description: 'Existing', completed: false, selected: true },
+            { id: 2, description: 'Newly deleted', completed: false, selected: true }
+        ]);
+    });
 });
 
 test.describe('createSaveFeedbackController', () => {
@@ -235,5 +254,44 @@ test.describe('createSaveFeedbackController', () => {
         expect(statusElement.textContent).toBe('');
         expect(statusElement.classList.has('visible')).toBe(false);
         expect(statusElement.getAttribute('aria-hidden')).toBe('true');
+    });
+});
+
+test.describe('computeInsights and getSelectAllState', () => {
+    test('summarizes task progress', () => {
+        const tasks = [
+            { id: 1, completed: true },
+            { id: 2, completed: false }
+        ];
+
+        const result = computeInsights(tasks);
+
+        expect(result).toEqual({
+            totalTasks: 2,
+            completedTasks: 1,
+            activeTasks: 1,
+            progress: 50
+        });
+    });
+
+    test('derives select-all state', () => {
+        const unselected = getSelectAllState([
+            { id: 1, selected: false },
+            { id: 2, selected: false }
+        ]);
+        expect(unselected).toEqual({ checked: false, indeterminate: false });
+
+        const partial = getSelectAllState([
+            { id: 1, selected: true },
+            { id: 2, selected: false },
+            { id: 3, selected: false }
+        ]);
+        expect(partial).toEqual({ checked: false, indeterminate: true });
+
+        const all = getSelectAllState([
+            { id: 1, selected: true },
+            { id: 2, selected: true }
+        ]);
+        expect(all).toEqual({ checked: true, indeterminate: false });
     });
 });
