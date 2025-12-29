@@ -134,8 +134,9 @@ function getNextOpenNoteId(currentOpenId, toggledId) {
     return toggledId;
 }
 
-function pickQuoteForTask(task, wisdomSet) {
+function pickQuoteForTask(task, wisdomSet, options = {}) {
     if (!task || !wisdomSet) return null;
+    const excludeText = options.excludeText;
     const pools = [];
     if (task.mood && Array.isArray(wisdomSet.mood?.[task.mood])) {
         pools.push(...wisdomSet.mood[task.mood]);
@@ -150,8 +151,10 @@ function pickQuoteForTask(task, wisdomSet) {
         pools.push(...(wisdomSet.fallback ?? []));
     }
     if (pools.length === 0) return null;
-    const randomIndex = Math.floor(Math.random() * pools.length);
-    return pools[randomIndex];
+    const candidates = excludeText ? pools.filter(quote => quote?.text !== excludeText) : pools;
+    const available = candidates.length > 0 ? candidates : pools;
+    const randomIndex = Math.floor(Math.random() * available.length);
+    return available[randomIndex];
 }
 
 if (typeof document !== 'undefined') {
@@ -188,9 +191,13 @@ if (typeof document !== 'undefined') {
         const carouselPrompt = document.getElementById('carouselPrompt');
         const shufflePrompt = document.getElementById('shufflePrompt');
         const milestoneStrip = document.getElementById('milestoneStrip');
+        const carouselIcon = document.querySelector('.carousel-icon');
         const moodSelect = document.getElementById('moodSelect');
         const categorySelect = document.getElementById('categorySelect');
         const priorityButtons = document.querySelectorAll('.priority');
+        const prefersReducedMotionQuery = typeof window.matchMedia === 'function'
+            ? window.matchMedia('(prefers-reduced-motion: reduce)')
+            : { matches: false };
 
         const helperBubbleKey = 'journeySeenAddHelper';
         const wisdomToggleKey = 'journeyWisdomEnabled';
@@ -200,62 +207,79 @@ if (typeof document !== 'undefined') {
         const themeClasses = supportedThemes.map(theme => `${theme}-theme`);
         const defaultTheme = 'comfort';
         const milestoneThresholds = [5, 10, 20];
+        const milestoneMessages = {
+            5: 'You found your rhythm!',
+            10: 'Momentum unlocked—keep moving.',
+            20: 'Your story is unfolding fast!'
+        };
         const promptCarousel = [
-            'Sketch a mini ritual that makes today feel special.',
-            'Plan a 5-minute adventure that sparks curiosity.',
-            'Write a one-line story for a step you want to take.',
-            'Find a small act of kindness you can do right now.',
-            'Turn a routine into a tiny celebration today.'
+            { text: 'Sketch a mini ritual that makes today feel special.', icon: '🕯️' },
+            { text: 'Plan a 5-minute adventure that sparks curiosity.', icon: '🧭' },
+            { text: 'Write a one-line story for a step you want to take.', icon: '📜' },
+            { text: 'Find a small act of kindness you can do right now.', icon: '🤝' },
+            { text: 'Turn a routine into a tiny celebration today.', icon: '🎉' }
         ];
         const wisdomQuotes = {
             mood: {
                 bright: [
                     { text: 'Your spark lights the path ahead.', author: 'Journey Log' },
-                    { text: 'Joy is a compass—follow where it points.', author: 'Journey Log' }
+                    { text: 'Joy is a compass—follow where it points.', author: 'Journey Log' },
+                    { text: 'Let this glow guide your next move.', author: 'Journey Log' }
                 ],
                 calm: [
                     { text: 'Steady breaths make steady steps.', author: 'Journey Log' },
-                    { text: 'Quiet focus is still forward motion.', author: 'Journey Log' }
+                    { text: 'Quiet focus is still forward motion.', author: 'Journey Log' },
+                    { text: 'Gentle pace, steady progress.', author: 'Journey Log' }
                 ],
                 focused: [
                     { text: 'Precision today, momentum tomorrow.', author: 'Journey Log' },
-                    { text: 'Aim true; the path shortens.', author: 'Journey Log' }
+                    { text: 'Aim true; the path shortens.', author: 'Journey Log' },
+                    { text: 'Each laser-fine step moves mountains.', author: 'Journey Log' }
                 ],
                 reflective: [
                     { text: 'Looking back helps the next stride land.', author: 'Journey Log' },
-                    { text: 'Pause, notice, and carry the insight forward.', author: 'Journey Log' }
+                    { text: 'Pause, notice, and carry the insight forward.', author: 'Journey Log' },
+                    { text: 'Your reflection is a compass in disguise.', author: 'Journey Log' }
                 ]
             },
             category: {
                 wellness: [
-                    { text: 'Care for your energy and the journey cares for you.', author: 'Journey Log' }
+                    { text: 'Care for your energy and the journey cares for you.', author: 'Journey Log' },
+                    { text: 'Rest and action are teammates, not rivals.', author: 'Journey Log' }
                 ],
                 creative: [
-                    { text: 'Tiny experiments build big worlds.', author: 'Journey Log' }
+                    { text: 'Tiny experiments build big worlds.', author: 'Journey Log' },
+                    { text: 'Curiosity is your co-pilot today.', author: 'Journey Log' }
                 ],
                 planning: [
-                    { text: 'A map drawn today shortens tomorrow.', author: 'Journey Log' }
+                    { text: 'A map drawn today shortens tomorrow.', author: 'Journey Log' },
+                    { text: 'Every outline frees up future you.', author: 'Journey Log' }
                 ],
                 connection: [
-                    { text: 'Bridges grow stronger one hello at a time.', author: 'Journey Log' }
+                    { text: 'Bridges grow stronger one hello at a time.', author: 'Journey Log' },
+                    { text: 'A sincere note can turn into a landmark moment.', author: 'Journey Log' }
                 ]
             },
             priority: {
                 low: [
-                    { text: 'Soft steps still leave footprints.', author: 'Journey Log' }
+                    { text: 'Soft steps still leave footprints.', author: 'Journey Log' },
+                    { text: 'Gentle pacing keeps the journey light.', author: 'Journey Log' }
                 ],
                 medium: [
-                    { text: 'Balanced effort keeps you moving.', author: 'Journey Log' }
+                    { text: 'Balanced effort keeps you moving.', author: 'Journey Log' },
+                    { text: 'You’re tuning the tempo just right.', author: 'Journey Log' }
                 ],
                 high: [
-                    { text: 'When it matters most, every move counts.', author: 'Journey Log' }
+                    { text: 'When it matters most, every move counts.', author: 'Journey Log' },
+                    { text: 'This is a keystone—place it with care.', author: 'Journey Log' }
                 ]
             },
             fallback: [
                 { text: 'The journey of a thousand miles begins with a single step.', author: 'Lao Tzu' },
                 { text: 'Believe you can and you’re halfway there.', author: 'Theodore Roosevelt' },
                 { text: 'Our greatest glory is not in never failing, but in rising up every time we fail.', author: 'Ralph Waldo Emerson' },
-                { text: 'The future belongs to those who believe in the beauty of their dreams.', author: 'Eleanor Roosevelt' }
+                { text: 'The future belongs to those who believe in the beauty of their dreams.', author: 'Eleanor Roosevelt' },
+                { text: 'Keep going—your story is unfolding one line at a time.', author: 'Journey Log' }
             ]
         };
 
@@ -267,6 +291,9 @@ if (typeof document !== 'undefined') {
         let carouselIndex = 0;
         let carouselTimer = null;
         let pendingPriority = '';
+        let lastWisdomQuoteText = '';
+        let lastEarnedMilestone = Number(localStorage.getItem(milestoneKey)) || 0;
+        const prefersReducedMotion = prefersReducedMotionQuery.matches;
         const saveFeedback = createSaveFeedbackController(saveStatus);
         updateUndoButtonState(false);
 
@@ -339,6 +366,7 @@ if (typeof document !== 'undefined') {
         priorityButtons.forEach(button => {
             button.addEventListener('click', () => setPrioritySelection(button.dataset.priority));
         });
+        setPrioritySelection('');
 
         refreshWisdomButton?.addEventListener('click', () => {
             if (!activeWisdomTaskId) return;
@@ -459,6 +487,7 @@ if (typeof document !== 'undefined') {
                 noteToggle.setAttribute('aria-expanded', openNoteId === task.id ? 'true' : 'false');
                 noteToggle.setAttribute('aria-label', task.note ? `Edit note for ${task.description}` : `Add note for ${task.description}`);
                 noteToggle.textContent = task.note ? 'Note added' : 'Add note';
+                noteToggle.classList.toggle('note-has-text', !!task.note);
                 noteToggle.addEventListener('click', () => toggleNote(task.id));
 
                 const deleteButton = document.createElement('button');
@@ -507,7 +536,7 @@ if (typeof document !== 'undefined') {
                 taskList.appendChild(listItem);
             });
             const insightData = updateInsights(tasks, { totalCount, completedCount, activeCount, progressPercent, progressFill });
-            updateMilestones(insightData.completedTasks);
+            updateMilestones(insightData);
             syncSelectAllCheckbox();
             updateSelectionActions();
             if (focusTarget) {
@@ -614,6 +643,7 @@ if (typeof document !== 'undefined') {
             wisdomText.textContent = '';
             wisdomAttribution.textContent = '';
             wisdomDisplay.setAttribute('aria-expanded', 'false');
+            lastWisdomQuoteText = '';
         }
 
         function clearCompletedTasks() {
@@ -888,7 +918,9 @@ if (typeof document !== 'undefined') {
             if (!value) return;
             const badge = document.createElement('span');
             badge.classList.add('meta-badge', `badge-${type}`);
-            badge.textContent = getBadgeLabel(type, value);
+            badge.dataset.badgeType = type;
+            badge.textContent = `${getBadgeIcon(type, value)} ${getBadgeLabel(type, value)}`.trim();
+            badge.setAttribute('aria-label', getBadgeLabel(type, value));
             container.appendChild(badge);
         }
 
@@ -916,10 +948,38 @@ if (typeof document !== 'undefined') {
             return map[type]?.[value] ?? value;
         }
 
+        function getBadgeIcon(type, value) {
+            const icons = {
+                mood: {
+                    bright: '😊',
+                    calm: '🧘',
+                    focused: '🎯',
+                    reflective: '🌙'
+                },
+                category: {
+                    wellness: '💚',
+                    creative: '🎨',
+                    planning: '🗺️',
+                    connection: '🤝'
+                },
+                priority: {
+                    low: '⬇️',
+                    medium: '⏳',
+                    high: '🚀'
+                },
+                note: {
+                    note: '📝'
+                }
+            };
+            return icons[type]?.[value] ?? (type === 'note' ? '📝' : '');
+        }
+
         function setPrioritySelection(priority) {
             pendingPriority = priority || '';
             priorityButtons.forEach(button => {
-                button.classList.toggle('active', button.dataset.priority === pendingPriority);
+                const isActive = button.dataset.priority === pendingPriority;
+                button.classList.toggle('active', isActive);
+                button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
             });
         }
 
@@ -932,27 +992,32 @@ if (typeof document !== 'undefined') {
             }
         }
 
-        function updateMilestones(completedCount) {
+        function updateMilestones(insights) {
             if (!milestoneStrip) return;
+            const completedCount = insights?.completedTasks ?? 0;
             const state = deriveMilestoneState(completedCount, milestoneThresholds);
-            const lastStored = Number(localStorage.getItem(milestoneKey)) || 0;
             milestoneStrip.innerHTML = '';
+            milestoneStrip.dataset.nextMilestone = state.next ?? '';
             milestoneThresholds.forEach(value => {
                 const marker = document.createElement('div');
                 marker.classList.add('milestone-marker');
                 const isUnlocked = state.unlocked.includes(value);
+                const messageText = milestoneMessages[value] ?? 'Milestone unlocked';
                 marker.dataset.value = value;
                 marker.setAttribute('role', 'button');
                 marker.setAttribute('tabindex', '0');
-                marker.setAttribute('aria-label', `Milestone at ${value} completed steps`);
+                marker.setAttribute('aria-label', isUnlocked ? `Milestone ${value} reached. ${messageText}` : `Milestone at ${value} completed steps`);
                 const label = document.createElement('span');
+                label.classList.add('milestone-count');
                 label.textContent = `${value}`;
+                const message = document.createElement('p');
+                message.classList.add('milestone-message');
+                message.textContent = messageText;
                 marker.appendChild(label);
+                marker.appendChild(message);
                 if (isUnlocked) {
                     marker.classList.add('unlocked');
-                }
-                if (isUnlocked) {
-                    marker.title = `Unlocked milestone ${value}`;
+                    marker.title = milestoneMessages[value] ?? `Unlocked milestone ${value}`;
                 } else if (state.next === value) {
                     marker.title = `Unlocks at ${value} completed steps`;
                 } else {
@@ -966,20 +1031,25 @@ if (typeof document !== 'undefined') {
                         handleTaskFocusFromMilestone(value);
                     }
                 });
-                if (state.lastUnlocked === value && value > lastStored) {
+                if (state.lastUnlocked === value && value > lastEarnedMilestone) {
                     marker.classList.add('milestone-flare');
                     setTimeout(() => marker.classList.remove('milestone-flare'), 2400);
-                    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    if (!prefersReducedMotion) {
                         milestoneStrip.classList.add('confetti');
                         setTimeout(() => milestoneStrip.classList.remove('confetti'), 1200);
                     }
+                    lastEarnedMilestone = value;
                     localStorage.setItem(milestoneKey, String(value));
                 }
             });
+            if (state.lastUnlocked) {
+                lastEarnedMilestone = Math.max(lastEarnedMilestone, state.lastUnlocked);
+            }
         }
 
         function handleTaskFocusFromMilestone(value) {
-            const task = tasks.find(t => t.completed);
+            const completedTasks = tasks.filter(t => t.completed).sort((a, b) => b.id - a.id);
+            const task = completedTasks[0];
             if (task) {
                 displayWisdomForTask(task);
             }
@@ -1004,7 +1074,8 @@ if (typeof document !== 'undefined') {
                 return;
             }
             activeWisdomTaskId = task.id;
-            const quote = pickQuoteForTask(task, wisdomQuotes) || pickQuoteForTask({}, wisdomQuotes);
+            const excludeText = options.forceRefresh ? lastWisdomQuoteText : lastWisdomQuoteText;
+            const quote = pickQuoteForTask(task, wisdomQuotes, { excludeText }) || pickQuoteForTask({}, wisdomQuotes, { excludeText });
             if (!quote) return;
             renderWisdomText(quote, options.forceRefresh);
             showWisdom();
@@ -1015,6 +1086,15 @@ if (typeof document !== 'undefined') {
             if (!force && wisdomText.textContent === quote.text) return;
             wisdomText.textContent = quote.text;
             wisdomAttribution.textContent = quote.author ? `— ${quote.author}` : '';
+            lastWisdomQuoteText = quote.text;
+            if (!prefersReducedMotion && typeof requestAnimationFrame === 'function') {
+                wisdomText.classList.remove('wisdom-transition');
+                wisdomAttribution.classList.remove('wisdom-transition');
+                requestAnimationFrame(() => {
+                    wisdomText.classList.add('wisdom-transition');
+                    wisdomAttribution.classList.add('wisdom-transition');
+                });
+            }
         }
 
         function toggleNote(taskId) {
@@ -1030,7 +1110,7 @@ if (typeof document !== 'undefined') {
 
         function startPromptCarousel() {
             if (!carouselPrompt) return;
-            carouselPrompt.textContent = promptCarousel[carouselIndex];
+            renderCarouselPrompt();
             if (carouselTimer) {
                 clearInterval(carouselTimer);
             }
@@ -1041,10 +1121,24 @@ if (typeof document !== 'undefined') {
             }, 8000);
         }
 
+        function renderCarouselPrompt() {
+            if (!carouselPrompt) return;
+            const prompt = promptCarousel[carouselIndex] ?? promptCarousel[0];
+            carouselPrompt.textContent = prompt?.text ?? '';
+            if (carouselIcon) {
+                carouselIcon.textContent = prompt?.icon ?? '✨';
+            }
+        }
+
         function shuffleCarouselPrompt() {
             if (!carouselPrompt) return;
-            carouselIndex = (carouselIndex + 1) % promptCarousel.length;
-            carouselPrompt.textContent = promptCarousel[carouselIndex];
+            const previousIndex = carouselIndex;
+            if (promptCarousel.length > 1) {
+                do {
+                    carouselIndex = (carouselIndex + 1) % promptCarousel.length;
+                } while (carouselIndex === previousIndex);
+            }
+            renderCarouselPrompt();
         }
 
         function handleTaskListEmpty() {
@@ -1059,7 +1153,7 @@ if (typeof document !== 'undefined') {
             if (!emptyState) return;
             handleTaskListEmpty();
             if (tasks.length === 0 && carouselPrompt) {
-                carouselPrompt.textContent = promptCarousel[carouselIndex];
+                renderCarouselPrompt();
             }
         }
 

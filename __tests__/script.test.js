@@ -336,6 +336,22 @@ test.describe('note handling helpers', () => {
         expect(getNextOpenNoteId(5, 5)).toBeNull();
         expect(getNextOpenNoteId(5, 6)).toBe(6);
     });
+
+    test('keeps completion state and metadata when updating notes', () => {
+        const tasks = [
+            { id: 1, note: '', completed: true, mood: 'bright', selected: true }
+        ];
+
+        const updated = updateTaskNote(tasks, 1, 'Reflection');
+
+        expect(updated[0]).toEqual({
+            id: 1,
+            note: 'Reflection',
+            completed: true,
+            mood: 'bright',
+            selected: true
+        });
+    });
 });
 
 test.describe('milestones and wisdom', () => {
@@ -361,5 +377,20 @@ test.describe('milestones and wisdom', () => {
         const quote = pickQuoteForTask(task, wisdomSet);
 
         expect(['Hello', 'High']).toContain(quote.text);
+    });
+
+    test('avoids repeating the same quote when alternative exists', () => {
+        const task = { mood: 'bright', category: '', priority: '' };
+        const wisdomSet = {
+            mood: { bright: [{ text: 'First', author: 'Test' }, { text: 'Second', author: 'Test' }] },
+            category: {},
+            priority: {},
+            fallback: []
+        };
+
+        const first = pickQuoteForTask(task, wisdomSet);
+        const second = pickQuoteForTask(task, wisdomSet, { excludeText: first.text });
+
+        expect(second.text).not.toBe(first.text);
     });
 });
