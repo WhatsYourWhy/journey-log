@@ -299,6 +299,7 @@ if (typeof document !== 'undefined') {
 
         initializeHelperBubble();
         renderTasks();
+        updateSelectionActions();
         const wisdomEnabled = syncWisdomPreference();
         updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled });
         taskInput?.focus();
@@ -728,10 +729,11 @@ if (typeof document !== 'undefined') {
         }
 
         function updateSelectionActions() {
-            if (clearSelectedButton) {
-                const selectedCount = tasks.filter(task => task.selected).length;
-                clearSelectedButton.disabled = selectedCount === 0;
-            }
+            if (!clearSelectedButton) return;
+            const selectedCount = tasks.filter(task => task.selected).length;
+            const disableActions = selectedCount === 0;
+            clearSelectedButton.disabled = disableActions;
+            clearSelectedButton.setAttribute('aria-disabled', disableActions ? 'true' : 'false');
         }
 
         function rememberDeletedTasks(removedTasks) {
