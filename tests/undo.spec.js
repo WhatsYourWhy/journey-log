@@ -30,4 +30,34 @@ test.describe('Undo last delete', () => {
     await expect(taskTexts).toHaveText(['Keep me', 'Remove me']);
     await expect(undoButton).toBeDisabled();
   });
+
+  test('Clear selected button reflects selection state and stays quiet when disabled', async ({ page }) => {
+    await page.goto(indexFileUrl);
+    await page.evaluate(() => localStorage.clear());
+
+    const taskInput = page.locator('#taskInput');
+    const addButton = page.getByRole('button', { name: /Add a new journey step/i });
+    const clearSelectedButton = page.getByRole('button', { name: /Clear selected/i });
+    const selectionCheckbox = page.getByTestId('select-checkbox').first();
+    const validationMessage = page.getByTestId('input-validation');
+
+    await expect(clearSelectedButton).toBeDisabled();
+    await expect(validationMessage).toBeHidden();
+
+    await taskInput.fill('Selectable task');
+    await addButton.click();
+
+    await expect(clearSelectedButton).toBeDisabled();
+
+    await selectionCheckbox.check();
+    await expect(clearSelectedButton).toBeEnabled();
+
+    await selectionCheckbox.uncheck();
+    await expect(clearSelectedButton).toBeDisabled();
+
+    await clearSelectedButton.click({ force: true });
+    await expect(clearSelectedButton).toBeDisabled();
+    await expect(validationMessage).toBeHidden();
+    await expect(validationMessage).toBeEmpty();
+  });
 });
