@@ -199,6 +199,8 @@ if (typeof document !== 'undefined') {
             ? window.matchMedia('(prefers-reduced-motion: reduce)')
             : { matches: false };
 
+        updateSelectionActions();
+
         const helperBubbleKey = 'journeySeenAddHelper';
         const wisdomToggleKey = 'journeyWisdomEnabled';
         const milestoneKey = 'journeyMilestone';
@@ -693,7 +695,7 @@ if (typeof document !== 'undefined') {
         function isTypingInInput(element) {
             if (!element) return false;
             const tagName = element.tagName;
-            if (tagName === 'TEXTAREA' || tagName === 'SELECT') {
+            if (tagName === 'TEXTAREA') {
                 return true;
             }
 
