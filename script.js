@@ -712,10 +712,11 @@ if (typeof document !== 'undefined') {
             const typingInInput = isTypingInInput(activeElement);
 
             if (event.key === 'Enter' && !event.shiftKey) {
-                if (activeElement === taskInput) {
-                    event.preventDefault();
-                    addTaskButton?.click();
+                if (typingInInput && activeElement !== taskInput) {
+                    return;
                 }
+                event.preventDefault();
+                addTaskButton?.click();
                 return;
             }
 
