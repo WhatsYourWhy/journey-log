@@ -10,7 +10,7 @@ Journey Log is a creative-first checklist that treats tasks as steps in your sto
 - **Contextual wisdom:** Completing a step unlocks a tailored quote based on its mood, category, or priority. Refresh the insight without toggling completion.
 - **Theme + artful mode:** Comfort, Forest, Ocean, Midnight, and High contrast themes adapt typography, gradients, and cards. Toggle “Artful mode” to layer illustrations (automatically disabled for High contrast for accessibility).
 - **Bulk selection and undo:** Select steps independently from completion status, clear selected or completed items, and undo recent deletes within the grace window.
-- **Keyboard-friendly:** Press Enter in the input to add a step, or use Ctrl/Cmd + Enter to add from anywhere. Use Ctrl/Cmd + Shift + C to clear completed steps.
+- **Keyboard-friendly:** Press Enter in the input to add a step, or use Ctrl/Cmd + Enter to add when you’re not typing in another text field. Use Ctrl/Cmd + Shift + C to clear completed steps.
 - **Persistent insights:** Total, active, completed counts and a live progress bar stay in sync with your actions and retain state via localStorage.
 
 ## Technologies

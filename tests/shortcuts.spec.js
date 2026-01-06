@@ -29,4 +29,27 @@ test.describe('Keyboard shortcuts', () => {
     await expect(taskListItems).toHaveCount(1);
     await expect(taskTextItems).toHaveText(['Second task']);
   });
+
+  test('Ctrl/Cmd+Enter does not add while typing in other text inputs', async ({ page }) => {
+    await page.goto(indexFileUrl);
+
+    const taskInput = page.locator('#taskInput');
+    const taskListItems = page.locator('#taskList li');
+
+    await taskInput.click();
+    await taskInput.fill('Primary step');
+    await page.keyboard.press('Control+Enter');
+    await expect(taskListItems).toHaveCount(1);
+
+    const firstItem = taskListItems.first();
+    await firstItem.getByRole('button', { name: /add note/i }).click();
+    const noteInput = firstItem.getByLabel(/add a note for primary step/i);
+
+    await noteInput.click();
+    await noteInput.fill('Typing a note should not submit');
+    await page.keyboard.press('Control+Enter');
+
+    await expect(taskListItems).toHaveCount(1);
+    await expect(taskInput).toHaveValue('');
+  });
 });
