@@ -279,6 +279,9 @@ test.describe('computeInsights and getSelectAllState', () => {
     });
 
     test('derives select-all state', () => {
+        const initial = getSelectAllState();
+        expect(initial).toEqual({ checked: false, indeterminate: false });
+
         const unselected = getSelectAllState([
             { id: 1, selected: false },
             { id: 2, selected: false }
