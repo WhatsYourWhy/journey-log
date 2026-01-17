@@ -199,8 +199,6 @@ if (typeof document !== 'undefined') {
             ? window.matchMedia('(prefers-reduced-motion: reduce)')
             : { matches: false };
 
-        updateSelectionActions();
-
         const helperBubbleKey = 'journeySeenAddHelper';
         const wisdomToggleKey = 'journeyWisdomEnabled';
         const milestoneKey = 'journeyMilestone';
@@ -298,6 +296,7 @@ if (typeof document !== 'undefined') {
         const prefersReducedMotion = prefersReducedMotionQuery.matches;
         const saveFeedback = createSaveFeedbackController(saveStatus);
         updateUndoButtonState(false);
+        updateSelectionActions();
 
         initializeHelperBubble();
         renderTasks();
