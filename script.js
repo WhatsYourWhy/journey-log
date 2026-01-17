@@ -42,6 +42,9 @@ function toggleAllTasks(tasks, shouldComplete) {
 }
 
 function getSelectAllState(tasks) {
+    if (!Array.isArray(tasks)) {
+        return { checked: false, indeterminate: false };
+    }
     const totalTasks = tasks.length;
     if (totalTasks === 0) {
         return { checked: false, indeterminate: false };
