@@ -320,7 +320,6 @@ if (typeof document !== 'undefined') {
         revealInputSection();
         applyTheme(localStorage.getItem('journeyTheme'));
         syncArtfulMode();
-        startPromptCarousel();
 
         themeSelect?.addEventListener('change', (event) => applyTheme(event.target.value));
         artfulModeToggle?.addEventListener('change', handleArtfulToggle);
@@ -445,6 +444,7 @@ if (typeof document !== 'undefined') {
                 starterHint.classList.add('hidden');
             }
             setPromptForEmptyState();
+            startPromptCarousel();
 
             tasks.forEach(task => {
                 const listItem = document.createElement('li');
@@ -1126,10 +1126,14 @@ if (typeof document !== 'undefined') {
 
         function startPromptCarousel() {
             if (!carouselPrompt) return;
-            renderCarouselPrompt();
             if (carouselTimer) {
                 clearInterval(carouselTimer);
+                carouselTimer = null;
             }
+            if (tasks.length !== 0) {
+                return;
+            }
+            renderCarouselPrompt();
             carouselTimer = setInterval(() => {
                 if (tasks.length === 0) {
                     shuffleCarouselPrompt();
