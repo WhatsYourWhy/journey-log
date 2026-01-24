@@ -170,6 +170,13 @@ function pickQuoteForTask(task, wisdomSet, options = {}) {
     return available[randomIndex];
 }
 
+function resolveWisdomExcludeText(lastQuoteText, forceRefresh) {
+    if (!forceRefresh) {
+        return undefined;
+    }
+    return lastQuoteText || undefined;
+}
+
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
         const clearCompletedButton = document.getElementById('clearCompletedButton');
@@ -1090,7 +1097,7 @@ if (typeof document !== 'undefined') {
                 return;
             }
             activeWisdomTaskId = task.id;
-            const excludeText = options.forceRefresh ? lastWisdomQuoteText : lastWisdomQuoteText;
+            const excludeText = resolveWisdomExcludeText(lastWisdomQuoteText, options.forceRefresh);
             const quote = pickQuoteForTask(task, wisdomQuotes, { excludeText }) || pickQuoteForTask({}, wisdomQuotes, { excludeText });
             if (!quote) return;
             renderWisdomText(quote, options.forceRefresh);
@@ -1207,6 +1214,7 @@ if (typeof module !== 'undefined') {
         getCompletedTaskForMilestone,
         updateTaskNote,
         getNextOpenNoteId,
-        pickQuoteForTask
+        pickQuoteForTask,
+        resolveWisdomExcludeText
     };
 }
