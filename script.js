@@ -37,10 +37,6 @@ function updateWisdomVisibility(tasks, showWisdom, hideWisdom, options = {}) {
     return hasCompletedTasks;
 }
 
-function toggleAllTasks(tasks, shouldComplete) {
-    return tasks.map(task => ({ ...task, completed: shouldComplete }));
-}
-
 function getSelectAllState(tasks) {
     if (!Array.isArray(tasks)) {
         return { checked: false, indeterminate: false };
@@ -1200,7 +1196,6 @@ if (typeof module !== 'undefined') {
         computeInsights,
         updateInsights,
         updateWisdomVisibility,
-        toggleAllTasks,
         getSelectAllState,
         createSaveFeedbackController,
         restoreDeletedTasks,
