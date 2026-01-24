@@ -7,6 +7,7 @@ const {
     restoreDeletedTasks,
     getSelectAllState,
     deriveMilestoneState,
+    getCompletedTaskForMilestone,
     updateTaskNote,
     getNextOpenNoteId,
     pickQuoteForTask
@@ -380,6 +381,30 @@ test.describe('milestones and wisdom', () => {
         const quote = pickQuoteForTask(task, wisdomSet);
 
         expect(['Hello', 'High']).toContain(quote.text);
+    });
+
+    test('selects the milestone completion task by index', () => {
+        const tasks = [
+            { id: 1, completed: true },
+            { id: 2, completed: true },
+            { id: 3, completed: false },
+            { id: 4, completed: true },
+            { id: 5, completed: true },
+            { id: 6, completed: true }
+        ];
+
+        expect(getCompletedTaskForMilestone(tasks, 3)).toEqual({ id: 4, completed: true });
+        expect(getCompletedTaskForMilestone(tasks, 5)).toEqual({ id: 6, completed: true });
+    });
+
+    test('falls back to the most recent completed task when milestone exceeds count', () => {
+        const tasks = [
+            { id: 10, completed: true },
+            { id: 11, completed: false },
+            { id: 12, completed: true }
+        ];
+
+        expect(getCompletedTaskForMilestone(tasks, 5)).toEqual({ id: 12, completed: true });
     });
 
     test('avoids repeating the same quote when alternative exists', () => {

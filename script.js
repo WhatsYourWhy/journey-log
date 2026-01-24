@@ -126,6 +126,20 @@ function deriveMilestoneState(completedCount, thresholds) {
     return { unlocked, next, lastUnlocked };
 }
 
+function getCompletedTaskForMilestone(tasks, milestoneValue) {
+    if (!Array.isArray(tasks)) return null;
+    const completedTasks = tasks
+        .filter(task => task.completed)
+        .sort((a, b) => a.id - b.id);
+    if (completedTasks.length === 0) return null;
+    const milestoneCount = Number(milestoneValue);
+    if (!Number.isFinite(milestoneCount) || milestoneCount <= 0) {
+        return completedTasks[completedTasks.length - 1];
+    }
+    const targetIndex = Math.min(milestoneCount, completedTasks.length) - 1;
+    return completedTasks[targetIndex];
+}
+
 function updateTaskNote(tasks, taskId, noteText) {
     return tasks.map(task => task.id === taskId ? { ...task, note: noteText } : task);
 }
@@ -1055,8 +1069,7 @@ if (typeof document !== 'undefined') {
         }
 
         function handleTaskFocusFromMilestone(value) {
-            const completedTasks = tasks.filter(t => t.completed).sort((a, b) => b.id - a.id);
-            const task = completedTasks[0];
+            const task = getCompletedTaskForMilestone(tasks, value);
             if (task) {
                 displayWisdomForTask(task);
             }
@@ -1192,6 +1205,7 @@ if (typeof module !== 'undefined') {
         createSaveFeedbackController,
         restoreDeletedTasks,
         deriveMilestoneState,
+        getCompletedTaskForMilestone,
         updateTaskNote,
         getNextOpenNoteId,
         pickQuoteForTask
