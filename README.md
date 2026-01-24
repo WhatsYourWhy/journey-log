@@ -1,17 +1,17 @@
 # The Journey Log
 
-Journey Log is a creative-first checklist that treats tasks as steps in your story. It blends practical task management with artful themes, contextual wisdom, and reflective notes.
+A browser-based checklist that stores steps in localStorage, adds optional mood/category/priority metadata, and surfaces quotes and milestones as you complete work.
 
-## Features
+## What it does
 
-- **Rich step metadata:** Capture the mood, category, and priority of each step. Badges surface these attributes inline so you can scan the story of your day.
-- **Inline micro-journaling:** Add quick notes to any step without leaving the list. Notes autosave and reveal a subtle badge when present.
-- **Creative prompts and milestones:** An empty-state carousel offers spark-ready prompts, while a milestone strip celebrates progress at 5/10/20 completed steps with gentle flares (respecting reduced-motion preferences).
-- **Contextual wisdom:** Completing a step unlocks a tailored quote based on its mood, category, or priority. Refresh the insight without toggling completion.
-- **Theme + artful mode:** Comfort, Forest, Ocean, Midnight, and High contrast themes adapt typography, gradients, and cards. Toggle “Artful mode” to layer illustrations (automatically disabled for high contrast for accessibility).
-- **Bulk selection and undo:** Select steps independently from completion status, clear selected or completed items, and undo recent deletes within the grace window.
-- **Keyboard-friendly:** Press Enter in the input to add a step, or use Ctrl/Cmd + Enter to add when you’re not typing in another text field. Use Ctrl/Cmd + Shift + C to clear completed steps.
-- **Persistent insights:** Total, active, completed counts and a live progress bar stay in sync with your actions and retain state via localStorage.
+- **Step metadata:** Optional mood, category, and priority badges per step.
+- **Notes:** Add a note per step; edits save automatically and show a note badge.
+- **Prompts + milestones:** Empty-state prompt carousel and milestone markers at 5/10/20 completed steps (animations respect reduced-motion settings).
+- **Wisdom panel:** Completing a step shows a quote tied to its mood/category/priority, with a refresh button and a toggle to disable wisdom entirely.
+- **Themes:** Comfort, Forest, Ocean, Midnight, and High contrast themes. Artful mode layers illustrations, but is disabled in high contrast.
+- **Bulk actions + undo:** Select steps independently from completion, clear selected or completed steps, and undo recent deletes within an 8-second window.
+- **Keyboard shortcuts:** Enter adds a step from the input. Ctrl/Cmd + Enter adds a step from elsewhere (except other text inputs). Ctrl/Cmd + Shift + C clears completed steps.
+- **Insights:** Total/active/completed counts and progress bar update from stored steps.
 
 ## Technologies
 
@@ -24,10 +24,15 @@ Journey Log is a creative-first checklist that treats tasks as steps in your sto
 1. Clone or download the repository.
 2. Open `index.html` in your browser.
 3. Choose a theme and optionally enable Artful mode.
-4. Add a step, then optionally tag its **mood**, **category**, **priority**, and **note**.
-5. Mark steps complete to reveal contextual wisdom; refresh insights with the micro-button.
-6. Use selection checkboxes to clear chosen steps, or “Clear Completed Steps” to tidy finished work. “Undo delete” appears briefly after removals.
-7. Return later—tasks, themes, artful mode, and milestones persist locally.
+4. Add a step, optionally tag mood/category/priority, and add a note when needed.
+5. Mark steps complete to see the wisdom panel and milestone updates.
+6. Use selection checkboxes to clear selected steps or use “Clear Completed Steps.” Use “Undo delete” shortly after removals.
+
+## Usage examples
+
+- **Add a step with metadata:** Type “Plan a 10-minute walk,” set mood to Calm and category to Wellness, choose Low priority, then click **Add Step**.
+- **Add a note:** Click **Add note** on a step and type a quick reflection; the note saves immediately.
+- **Keyboard shortcut:** Press Ctrl/Cmd + Enter to add a step when focus isn’t in another text field.
 
 ## Testing
 
