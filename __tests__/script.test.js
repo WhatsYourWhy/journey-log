@@ -10,7 +10,8 @@ const {
     getCompletedTaskForMilestone,
     updateTaskNote,
     getNextOpenNoteId,
-    pickQuoteForTask
+    pickQuoteForTask,
+    resolveWisdomExcludeText
 } = require('../script.js');
 
 function createSpy() {
@@ -420,5 +421,38 @@ test.describe('milestones and wisdom', () => {
         const second = pickQuoteForTask(task, wisdomSet, { excludeText: first.text });
 
         expect(second.text).not.toBe(first.text);
+    });
+
+    test('respects force refresh exclusion when available', () => {
+        const task = { mood: 'bright', category: '', priority: '' };
+        const wisdomSet = {
+            mood: { bright: [{ text: 'First', author: 'Test' }, { text: 'Second', author: 'Test' }] },
+            category: {},
+            priority: {},
+            fallback: []
+        };
+
+        const excludeText = resolveWisdomExcludeText('First', true);
+        const quote = pickQuoteForTask(task, wisdomSet, { excludeText });
+
+        expect(quote.text).toBe('Second');
+    });
+
+    test('does not exclude previous quote without force refresh', () => {
+        const task = { mood: 'bright', category: '', priority: '' };
+        const wisdomSet = {
+            mood: { bright: [{ text: 'First', author: 'Test' }, { text: 'Second', author: 'Test' }] },
+            category: {},
+            priority: {},
+            fallback: []
+        };
+
+        const originalRandom = Math.random;
+        Math.random = () => 0;
+        const excludeText = resolveWisdomExcludeText('First', false);
+        const quote = pickQuoteForTask(task, wisdomSet, { excludeText });
+        Math.random = originalRandom;
+
+        expect(quote.text).toBe('First');
     });
 });
