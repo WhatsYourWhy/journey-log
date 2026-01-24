@@ -60,4 +60,26 @@ test.describe('Undo last delete', () => {
     await expect(validationMessage).toBeHidden();
     await expect(validationMessage).toBeEmpty();
   });
+
+  test('clears undo buffer and hides undo button after timeout', async ({ page }) => {
+    await page.goto(indexFileUrl);
+    await page.evaluate(() => localStorage.clear());
+
+    const taskInput = page.locator('#taskInput');
+    const addButton = page.getByRole('button', { name: /Add a new journey step/i });
+    const undoButton = page.locator('#undoDeleteButton');
+
+    await taskInput.fill('Time-sensitive task');
+    await addButton.click();
+
+    const deleteButton = page.locator('li', { hasText: 'Time-sensitive task' }).getByRole('button', { name: /Delete/i });
+    await deleteButton.click();
+
+    await expect(undoButton).toBeEnabled();
+
+    await page.waitForTimeout(8000);
+
+    await expect(undoButton).toBeDisabled();
+    await expect(undoButton).toBeHidden();
+  });
 });
