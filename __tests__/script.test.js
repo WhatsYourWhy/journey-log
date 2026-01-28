@@ -408,6 +408,18 @@ test.describe('milestones and wisdom', () => {
         expect(getCompletedTaskForMilestone(tasks, 5)).toEqual({ id: 12, completed: true });
     });
 
+    test('falls back to the most recent completed task when milestone value is invalid', () => {
+        const tasks = [
+            { id: 20, completed: true },
+            { id: 21, completed: false },
+            { id: 22, completed: true }
+        ];
+
+        expect(getCompletedTaskForMilestone(tasks, 0)).toEqual({ id: 22, completed: true });
+        expect(getCompletedTaskForMilestone(tasks, NaN)).toEqual({ id: 22, completed: true });
+        expect(getCompletedTaskForMilestone(tasks, 'not-a-number')).toEqual({ id: 22, completed: true });
+    });
+
     test('avoids repeating the same quote when alternative exists', () => {
         const task = { mood: 'bright', category: '', priority: '' };
         const wisdomSet = {

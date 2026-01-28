@@ -177,6 +177,20 @@ function resolveWisdomExcludeText(lastQuoteText, forceRefresh) {
     return lastQuoteText || undefined;
 }
 
+let lastTaskIdTimestamp = 0;
+let taskIdSequence = 0;
+
+function createTaskId() {
+    const now = Date.now();
+    if (now === lastTaskIdTimestamp) {
+        taskIdSequence += 1;
+    } else {
+        lastTaskIdTimestamp = now;
+        taskIdSequence = 0;
+    }
+    return (now * 1000) + taskIdSequence;
+}
+
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
         const clearCompletedButton = document.getElementById('clearCompletedButton');
@@ -398,7 +412,7 @@ if (typeof document !== 'undefined') {
 
         function addTask(description, meta = {}) {
             const task = {
-                id: Date.now(),
+                id: createTaskId(),
                 description: description,
                 completed: false,
                 selected: false,
