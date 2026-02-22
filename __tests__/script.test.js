@@ -10,6 +10,7 @@ const {
     getCompletedTaskForMilestone,
     updateTaskNote,
     getNextOpenNoteId,
+    createPerTaskDebouncer,
     pickQuoteForTask,
     resolveWisdomExcludeText
 } = require('../script.js');
@@ -466,5 +467,54 @@ test.describe('milestones and wisdom', () => {
         Math.random = originalRandom;
 
         expect(quote.text).toBe('First');
+    });
+});
+
+test.describe('per-task note persistence debounce', () => {
+    test('debounces persistence independently per task id', () => {
+        const timers = createFakeScheduler();
+        const calls = [];
+        const debouncer = createPerTaskDebouncer((taskId, value) => {
+            calls.push({ taskId, value });
+        }, {
+            delay: 20,
+            scheduler: timers.scheduler,
+            clearer: timers.clearer
+        });
+
+        debouncer.schedule(1, 'a');
+        debouncer.schedule(1, 'ab');
+        debouncer.schedule(2, 'x');
+
+        expect(timers.pendingCount()).toBe(2);
+
+        timers.runNext();
+        timers.runNext();
+
+        expect(calls).toEqual([
+            { taskId: 1, value: 'ab' },
+            { taskId: 2, value: 'x' }
+        ]);
+    });
+
+    test('flushes pending persistence immediately', () => {
+        const timers = createFakeScheduler();
+        const calls = [];
+        const debouncer = createPerTaskDebouncer((taskId, value) => {
+            calls.push({ taskId, value });
+        }, {
+            delay: 20,
+            scheduler: timers.scheduler,
+            clearer: timers.clearer
+        });
+
+        debouncer.schedule(10, 'draft');
+        expect(debouncer.has(10)).toBe(true);
+
+        debouncer.flush(10, 'final');
+
+        expect(debouncer.has(10)).toBe(false);
+        expect(calls).toEqual([{ taskId: 10, value: 'final' }]);
+        expect(timers.pendingCount()).toBe(0);
     });
 });
