@@ -83,9 +83,9 @@ function createSaveFeedbackController(statusElement, options = {}) {
     let showTimer = null;
     let hideTimer = null;
 
-    const show = () => {
+    const show = (message = 'Saved') => {
         if (!statusElement) return;
-        statusElement.textContent = 'Saved';
+        statusElement.textContent = message;
         statusElement.classList.add('visible');
         statusElement.setAttribute('aria-hidden', 'false');
     };
@@ -97,7 +97,7 @@ function createSaveFeedbackController(statusElement, options = {}) {
         statusElement.textContent = '';
     };
 
-    function trigger() {
+    function triggerMessage(message = 'Saved') {
         if (!statusElement) return;
         if (showTimer) {
             clearer(showTimer);
@@ -107,12 +107,16 @@ function createSaveFeedbackController(statusElement, options = {}) {
         }
 
         showTimer = scheduler(() => {
-            show();
+            show(message);
             hideTimer = scheduler(hide, displayDuration);
         }, showDelay);
     }
 
-    return { trigger };
+    function trigger() {
+        triggerMessage('Saved');
+    }
+
+    return { trigger, triggerMessage };
 }
 
 function deriveMilestoneState(completedCount, thresholds) {
@@ -326,9 +330,51 @@ if (typeof document !== 'undefined') {
         let carouselTimer = null;
         let pendingPriority = '';
         let lastWisdomQuoteText = '';
-        let lastEarnedMilestone = Number(localStorage.getItem(milestoneKey)) || 0;
         const prefersReducedMotion = prefersReducedMotionQuery.matches;
         const saveFeedback = createSaveFeedbackController(saveStatus);
+
+        function showPersistenceStatus(message) {
+            if (saveFeedback?.triggerMessage) {
+                saveFeedback.triggerMessage(message);
+                return;
+            }
+            showValidationMessage(message);
+        }
+
+        const safeStorage = {
+            get(key, fallbackValue = null) {
+                try {
+                    const value = localStorage.getItem(key);
+                    return value === null ? fallbackValue : value;
+                } catch (error) {
+                    console.warn(`Failed to read "${key}" from localStorage.`, error);
+                    showPersistenceStatus('Storage unavailable: changes may not persist.');
+                    return fallbackValue;
+                }
+            },
+            set(key, value) {
+                try {
+                    localStorage.setItem(key, value);
+                    return true;
+                } catch (error) {
+                    console.warn(`Failed to write "${key}" to localStorage.`, error);
+                    showPersistenceStatus('Storage unavailable: unable to save right now.');
+                    return false;
+                }
+            },
+            remove(key) {
+                try {
+                    localStorage.removeItem(key);
+                    return true;
+                } catch (error) {
+                    console.warn(`Failed to remove "${key}" from localStorage.`, error);
+                    showPersistenceStatus('Storage unavailable: unable to clear saved data.');
+                    return false;
+                }
+            }
+        };
+
+        let lastEarnedMilestone = Number(safeStorage.get(milestoneKey, '0')) || 0;
         updateUndoButtonState(false);
         updateSelectionActions();
 
@@ -339,7 +385,7 @@ if (typeof document !== 'undefined') {
         updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled });
         taskInput?.focus();
         revealInputSection();
-        applyTheme(localStorage.getItem('journeyTheme'));
+        applyTheme(safeStorage.get('journeyTheme', defaultTheme));
         syncArtfulMode();
 
         themeSelect?.addEventListener('change', (event) => applyTheme(event.target.value));
@@ -620,8 +666,10 @@ if (typeof document !== 'undefined') {
         }
 
         function saveTasks() {
-            localStorage.setItem('journeyTasks', JSON.stringify(tasks));
-            saveFeedback.trigger();
+            const saved = safeStorage.set('journeyTasks', JSON.stringify(tasks));
+            if (saved) {
+                saveFeedback.trigger();
+            }
         }
 
         function normalizeTask(task) {
@@ -639,7 +687,7 @@ if (typeof document !== 'undefined') {
         }
 
         function loadTasks() {
-            const storedTasks = localStorage.getItem('journeyTasks');
+            const storedTasks = safeStorage.get('journeyTasks', '');
             if (!storedTasks) {
                 return [];
             }
@@ -651,7 +699,7 @@ if (typeof document !== 'undefined') {
                     : [];
             } catch (error) {
                 console.warn('Failed to parse stored tasks, clearing corrupted data.', error);
-                localStorage.removeItem('journeyTasks');
+                safeStorage.remove('journeyTasks');
                 return [];
             }
         }
@@ -828,9 +876,9 @@ if (typeof document !== 'undefined') {
         }
 
         function isWisdomEnabled() {
-            const stored = localStorage.getItem(wisdomToggleKey);
+            const stored = safeStorage.get(wisdomToggleKey, null);
             if (stored === null) {
-                localStorage.setItem(wisdomToggleKey, 'true');
+                safeStorage.set(wisdomToggleKey, 'true');
                 return true;
             }
             return stored === 'true';
@@ -855,12 +903,12 @@ if (typeof document !== 'undefined') {
             addHelperBubble.classList.add('hidden');
             addHelperBubble.setAttribute('aria-hidden', 'true');
             if (markSeen) {
-                localStorage.setItem(helperBubbleKey, 'true');
+                safeStorage.set(helperBubbleKey, 'true');
             }
         }
 
         function initializeHelperBubble() {
-            const helperSeen = localStorage.getItem(helperBubbleKey) === 'true';
+            const helperSeen = safeStorage.get(helperBubbleKey, 'false') === 'true';
             if (tasks.length > 0) {
                 hideHelperBubble(true);
                 return;
@@ -906,7 +954,7 @@ if (typeof document !== 'undefined') {
                 if (artfulModeToggle) {
                     artfulModeToggle.checked = false;
                     artfulModeToggle.disabled = true;
-                    localStorage.setItem(artfulModeKey, 'false');
+                    safeStorage.set(artfulModeKey, 'false');
                     updateArtfulState();
                 }
             } else {
@@ -923,12 +971,12 @@ if (typeof document !== 'undefined') {
             if (themeSelect && themeSelect.value !== normalizedTheme) {
                 themeSelect.value = normalizedTheme;
             }
-            localStorage.setItem('journeyTheme', normalizedTheme);
+            safeStorage.set('journeyTheme', normalizedTheme);
         }
 
         function syncArtfulMode() {
             if (!artfulModeToggle) return;
-            const stored = localStorage.getItem(artfulModeKey);
+            const stored = safeStorage.get(artfulModeKey, null);
             const normalizedTheme = bodyElement.dataset.theme || defaultTheme;
             const defaultEnabled = normalizedTheme === 'high-contrast' ? false : (stored === 'true');
             artfulModeToggle.checked = normalizedTheme === 'high-contrast' ? false : defaultEnabled;
@@ -937,7 +985,7 @@ if (typeof document !== 'undefined') {
 
         function handleArtfulToggle() {
             if (!artfulModeToggle) return;
-            localStorage.setItem(artfulModeKey, artfulModeToggle.checked ? 'true' : 'false');
+            safeStorage.set(artfulModeKey, artfulModeToggle.checked ? 'true' : 'false');
             updateArtfulState();
         }
 
@@ -1077,7 +1125,7 @@ if (typeof document !== 'undefined') {
                         setTimeout(() => milestoneStrip.classList.remove('confetti'), 1200);
                     }
                     lastEarnedMilestone = value;
-                    localStorage.setItem(milestoneKey, String(value));
+                    safeStorage.set(milestoneKey, String(value));
                 }
             });
             if (state.lastUnlocked) {
@@ -1205,7 +1253,7 @@ if (typeof document !== 'undefined') {
         document.addEventListener('keydown', handleKeyboardShortcuts);
         wisdomToggle?.addEventListener('change', () => {
             const newValue = wisdomToggle.checked;
-            localStorage.setItem(wisdomToggleKey, newValue ? 'true' : 'false');
+            safeStorage.set(wisdomToggleKey, newValue ? 'true' : 'false');
             updateWisdomVisibility(tasks, showWisdom, hideWisdom, { wisdomEnabled: newValue });
             if (!newValue) {
                 hideWisdom();
