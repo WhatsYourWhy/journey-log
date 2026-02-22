@@ -471,11 +471,13 @@ if (typeof document !== 'undefined') {
             taskInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
 
-        taskInput?.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                handleAddFromInput();
+        taskInput?.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter' || event.isComposing) {
+                return;
             }
+
+            event.preventDefault();
+            handleAddFromInput();
         });
 
         shufflePrompt?.addEventListener('click', shuffleCarouselPrompt);
