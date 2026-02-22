@@ -151,6 +151,41 @@ function getNextOpenNoteId(currentOpenId, toggledId) {
     return toggledId;
 }
 
+function createPerTaskDebouncer(action, options = {}) {
+    const delay = options.delay ?? 250;
+    const scheduler = options.scheduler ?? setTimeout;
+    const clearer = options.clearer ?? clearTimeout;
+    const timers = new Map();
+
+    function cancel(taskId) {
+        const timerId = timers.get(taskId);
+        if (!timerId) return;
+        clearer(timerId);
+        timers.delete(taskId);
+    }
+
+    function schedule(taskId, ...args) {
+        cancel(taskId);
+        const timerId = scheduler(() => {
+            timers.delete(taskId);
+            action(taskId, ...args);
+        }, delay);
+        timers.set(taskId, timerId);
+    }
+
+    function flush(taskId, ...args) {
+        if (!timers.has(taskId)) return;
+        cancel(taskId);
+        action(taskId, ...args);
+    }
+
+    function has(taskId) {
+        return timers.has(taskId);
+    }
+
+    return { schedule, flush, cancel, has };
+}
+
 function pickQuoteForTask(task, wisdomSet, options = {}) {
     if (!task || !wisdomSet) return null;
     const excludeText = options.excludeText;
@@ -330,6 +365,7 @@ if (typeof document !== 'undefined') {
         let carouselTimer = null;
         let pendingPriority = '';
         let lastWisdomQuoteText = '';
+        const noteSaveDebouncer = createPerTaskDebouncer(() => saveTasks(), { delay: 250 });
         const prefersReducedMotion = prefersReducedMotionQuery.matches;
         const saveFeedback = createSaveFeedbackController(saveStatus);
 
@@ -597,6 +633,7 @@ if (typeof document !== 'undefined') {
                 noteInput.dataset.control = 'note-input';
                 noteInput.setAttribute('aria-label', `Add a note for ${task.description}`);
                 noteInput.addEventListener('input', (event) => handleNoteInput(task.id, event.target.value));
+                noteInput.addEventListener('blur', () => flushTaskNoteSave(task.id));
 
                 noteContainer.appendChild(noteLabel);
                 noteContainer.appendChild(noteInput);
@@ -658,6 +695,7 @@ if (typeof document !== 'undefined') {
             if (removedTasks.length === 0) {
                 return;
             }
+            clearTaskNoteSaveTimer(taskId);
             rememberDeletedTasks(removedTasks);
             tasks = tasks.filter(task => task.id !== taskId);
             saveTasks();
@@ -736,6 +774,7 @@ if (typeof document !== 'undefined') {
             if (completedTasks.length === 0) {
                 return;
             }
+            completedTasks.forEach(task => clearTaskNoteSaveTimer(task.id));
             rememberDeletedTasks(completedTasks);
             tasks = tasks.filter(task => !task.completed);
             saveTasks();
@@ -750,6 +789,7 @@ if (typeof document !== 'undefined') {
                 showValidationMessage('Select one or more steps to clear.');
                 return;
             }
+            selectedTasks.forEach(task => clearTaskNoteSaveTimer(task.id));
             rememberDeletedTasks(selectedTasks);
             tasks = tasks.filter(task => !task.selected);
             saveTasks();
@@ -1187,10 +1227,60 @@ if (typeof document !== 'undefined') {
             renderTasks();
         }
 
+        function updateTaskNoteUI(taskId) {
+            const task = tasks.find(candidate => candidate.id === taskId);
+            if (!task) return;
+            const taskItem = taskList?.querySelector(`li[data-task-id="${taskId}"]`);
+            if (!taskItem) return;
+
+            const hasNote = (task.note ?? '').trim().length > 0;
+            const noteToggle = taskItem.querySelector('[data-control="note-toggle"]');
+            if (noteToggle) {
+                noteToggle.setAttribute('aria-label', hasNote ? `Edit note for ${task.description}` : `Add note for ${task.description}`);
+                noteToggle.setAttribute('aria-expanded', openNoteId === taskId ? 'true' : 'false');
+                noteToggle.textContent = hasNote ? 'Note added' : 'Add note';
+                noteToggle.classList.toggle('note-has-text', hasNote);
+            }
+
+            const taskContent = taskItem.querySelector('.task-content');
+            if (!taskContent) return;
+            const existingBadgeRow = taskContent.querySelector('.badge-row');
+            const existingNoteBadge = existingBadgeRow?.querySelector('.badge-note');
+
+            if (hasNote && !existingNoteBadge) {
+                const badgeRow = existingBadgeRow ?? document.createElement('div');
+                if (!existingBadgeRow) {
+                    badgeRow.classList.add('badge-row');
+                    taskContent.insertBefore(badgeRow, noteToggle ?? taskContent.firstChild);
+                }
+                appendBadgeIfValue(badgeRow, 'note', 'note');
+                return;
+            }
+
+            if (!hasNote && existingNoteBadge) {
+                existingNoteBadge.remove();
+                if (existingBadgeRow.children.length === 0) {
+                    existingBadgeRow.remove();
+                }
+            }
+        }
+
+        function clearTaskNoteSaveTimer(taskId) {
+            noteSaveDebouncer.cancel(taskId);
+        }
+
+        function scheduleTaskNoteSave(taskId) {
+            noteSaveDebouncer.schedule(taskId);
+        }
+
+        function flushTaskNoteSave(taskId) {
+            noteSaveDebouncer.flush(taskId);
+        }
+
         function handleNoteInput(taskId, value) {
             tasks = updateTaskNote(tasks, taskId, value);
-            saveTasks();
-            renderTasks({ taskId, control: 'note-input' });
+            updateTaskNoteUI(taskId);
+            scheduleTaskNoteSave(taskId);
         }
 
         function startPromptCarousel() {
@@ -1276,6 +1366,7 @@ if (typeof module !== 'undefined') {
         getCompletedTaskForMilestone,
         updateTaskNote,
         getNextOpenNoteId,
+        createPerTaskDebouncer,
         pickQuoteForTask,
         resolveWisdomExcludeText
     };
