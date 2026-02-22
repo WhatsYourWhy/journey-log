@@ -36,8 +36,7 @@ A browser-based checklist that stores steps in localStorage, adds optional mood/
 
 ## Testing
 
-- Run Playwright tests with `npm test`.
-- Note: Playwright defaults to the `tests/` directory, so the unit-style specs in `__tests__/` are not picked up unless you move them under `tests/` or add a Playwright config that points at `__tests__/` instead.
+- Run all automated tests with `npm test`.
 
 ## Credits
 
