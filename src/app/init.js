@@ -377,7 +377,7 @@
         updateWisdomVisibility(state.tasks, showWisdom, hideWisdom, { wisdomEnabled });
         taskInput?.focus();
         revealInputSection();
-        applyTheme(safeStorage.get('journeyTheme', defaultTheme));
+        applyTheme(safeStorage.get('journeyTheme', defaultTheme), { trackAnalytics: false });
         syncArtfulMode();
 
         themeSelect?.addEventListener('change', (event) => applyTheme(event.target.value));
@@ -1030,7 +1030,8 @@
             return supportedThemes.includes(theme) ? theme : defaultTheme;
         }
 
-        function applyTheme(themeValue) {
+        function applyTheme(themeValue, options = {}) {
+            const { trackAnalytics = true } = options;
             const normalizedTheme = normalizeTheme(themeValue);
             const previousTheme = bodyElement.dataset.theme || defaultTheme;
             document.documentElement.classList.remove(...themeClasses);
@@ -1071,7 +1072,7 @@
                 themeSelect.value = normalizedTheme;
             }
             safeStorage.set('journeyTheme', normalizedTheme);
-            if (previousTheme !== normalizedTheme) {
+            if (trackAnalytics && previousTheme !== normalizedTheme) {
                 analyticsDispatcher.dispatch(ANALYTICS_EVENTS.THEME_CHANGED, {
                     theme: normalizedTheme
                 });
