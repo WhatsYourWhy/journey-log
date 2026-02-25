@@ -175,6 +175,8 @@
         const inputValidation = document.getElementById('inputValidation');
         const saveStatus = document.getElementById('saveStatus');
         const startCueButton = document.getElementById('startCueButton');
+        const advancedToolsToggle = document.getElementById('advancedToolsToggle');
+        const advancedToolsPanel = document.getElementById('advancedToolsPanel');
         const taskList = document.getElementById('taskList');
         const inputSection = document.querySelector('.input-section');
         const selectAllCheckbox = document.getElementById('selectAllCheckbox');
@@ -205,12 +207,18 @@
             : { matches: false };
 
         const helperBubbleKey = 'journeySeenAddHelper';
+        const onboardingStageKey = 'journeyOnboardingStage';
         const wisdomToggleKey = 'journeyWisdomEnabled';
         const milestoneKey = 'journeyMilestone';
         const artfulModeKey = 'journeyArtfulMode';
         const supportedThemes = ['comfort', 'forest', 'ocean', 'dark', 'high-contrast'];
         const themeClasses = supportedThemes.map(theme => `${theme}-theme`);
         const defaultTheme = 'comfort';
+        const onboardingStages = {
+            simple: 'simple',
+            started: 'started',
+            complete: 'complete'
+        };
         const milestoneThresholds = [5, 10, 20];
         const milestoneMessages = {
             5: 'You found your rhythm!',
@@ -287,6 +295,18 @@
                 { text: 'Keep going—your story is unfolding one line at a time.', author: 'Journey Log' }
             ]
         };
+        const prefersReducedMotion = prefersReducedMotionQuery.matches;
+        const saveFeedback = createSaveFeedbackController(saveStatus);
+
+        function showPersistenceStatus(message) {
+            if (saveFeedback?.triggerMessage) {
+                saveFeedback.triggerMessage(message);
+                return;
+            }
+            showValidationMessage(message);
+        }
+
+        const safeStorage = createSafeStorage(localStorage, { showPersistenceStatus });
 
         const state = {
             tasks: loadTasks(),
@@ -297,7 +317,9 @@
             carouselIndex: 0,
             carouselTimer: null,
             pendingPriority: '',
-            lastWisdomQuoteText: ''
+            lastWisdomQuoteText: '',
+            onboardingStage: onboardingStages.simple,
+            isAdvancedToolsVisible: false
         };
 
         const actions = {
@@ -333,31 +355,34 @@
             },
             clearCarouselTimer() {
                 state.carouselTimer = null;
+            },
+            setOnboardingStage(stage) {
+                state.onboardingStage = stage;
+            },
+            setAdvancedToolsVisible(isVisible) {
+                state.isAdvancedToolsVisible = isVisible;
             }
         };
         const noteSaveDebouncer = createPerTaskDebouncer(() => saveTasks(), { delay: 250 });
-        const prefersReducedMotion = prefersReducedMotionQuery.matches;
-        const saveFeedback = createSaveFeedbackController(saveStatus);
-
-        function showPersistenceStatus(message) {
-            if (saveFeedback?.triggerMessage) {
-                saveFeedback.triggerMessage(message);
-                return;
-            }
-            showValidationMessage(message);
-        }
-
-        const safeStorage = createSafeStorage(localStorage, { showPersistenceStatus });
 
         let lastEarnedMilestone = Number(safeStorage.get(milestoneKey, '0')) || 0;
+        normalizeOnboardingStage();
+        const hasCompletedTask = state.tasks.some(task => task.completed);
+        const shouldAutoRevealAdvancedTools = hasCompletedTask || state.onboardingStage === onboardingStages.complete;
+        actions.setAdvancedToolsVisible(shouldAutoRevealAdvancedTools);
         updateUndoButtonState(false);
         updateSelectionActions();
 
+        syncAdvancedToolsUI();
         initializeHelperBubble();
         renderTasks();
         updateSelectionActions();
         const wisdomEnabled = syncWisdomPreference();
-        updateWisdomVisibility(state.tasks, showWisdom, hideWisdom, { wisdomEnabled });
+        if (state.isAdvancedToolsVisible) {
+            updateWisdomVisibility(state.tasks, showWisdom, hideWisdom, { wisdomEnabled });
+        } else {
+            hideWisdom();
+        }
         taskInput?.focus();
         revealInputSection();
         applyTheme(safeStorage.get('journeyTheme', defaultTheme));
@@ -406,8 +431,15 @@
         addTaskButtonSecondary?.addEventListener('click', handleAddFromInput);
 
         startCueButton?.addEventListener('click', () => {
+            if (state.onboardingStage === onboardingStages.simple) {
+                setOnboardingStage(onboardingStages.started);
+            }
             taskInput?.focus();
             taskInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        advancedToolsToggle?.addEventListener('click', () => {
+            setAdvancedToolsVisibility(!state.isAdvancedToolsVisible);
         });
 
         taskInput?.addEventListener('keydown', (event) => {
@@ -448,6 +480,9 @@
             saveTasks();
             renderTasks();
             dismissHelperBubble();
+            if (state.onboardingStage === onboardingStages.simple) {
+                setOnboardingStage(onboardingStages.started);
+            }
         }
 
         function captureFocusDetails(options = {}) {
@@ -495,19 +530,7 @@
                 listItem.dataset.taskId = task.id;
                 listItem.classList.toggle('completed', task.completed);
 
-                const selectionWrapper = document.createElement('div');
-                selectionWrapper.classList.add('selection-toggle');
-
-                const selectionCheckbox = document.createElement('input');
-                selectionCheckbox.type = 'checkbox';
-                selectionCheckbox.checked = !!task.selected;
-                selectionCheckbox.setAttribute('aria-label', `Select ${task.description}`);
-                selectionCheckbox.dataset.taskId = task.id;
-                selectionCheckbox.dataset.control = 'selection';
-                selectionCheckbox.setAttribute('data-testid', 'select-checkbox');
-                selectionCheckbox.addEventListener('change', (event) => toggleSelection(task.id, event.target.checked));
-
-                selectionWrapper.appendChild(selectionCheckbox);
+                const showAdvancedTaskControls = state.isAdvancedToolsVisible;
 
                 const completionCheckbox = document.createElement('input');
                 completionCheckbox.type = 'checkbox';
@@ -538,16 +561,19 @@
                     appendBadgeIfValue(badgeRow, 'note', 'note');
                 }
 
-                const noteToggle = document.createElement('button');
-                noteToggle.type = 'button';
-                noteToggle.classList.add('note-toggle');
-                noteToggle.dataset.taskId = task.id;
-                noteToggle.dataset.control = 'note-toggle';
-                noteToggle.setAttribute('aria-expanded', state.openNoteId === task.id ? 'true' : 'false');
-                noteToggle.setAttribute('aria-label', task.note ? `Edit note for ${task.description}` : `Add note for ${task.description}`);
-                noteToggle.textContent = task.note ? 'Note added' : 'Add note';
-                noteToggle.classList.toggle('note-has-text', !!task.note);
-                noteToggle.addEventListener('click', () => toggleNote(task.id));
+                let noteToggle = null;
+                if (showAdvancedTaskControls) {
+                    noteToggle = document.createElement('button');
+                    noteToggle.type = 'button';
+                    noteToggle.classList.add('note-toggle');
+                    noteToggle.dataset.taskId = task.id;
+                    noteToggle.dataset.control = 'note-toggle';
+                    noteToggle.setAttribute('aria-expanded', state.openNoteId === task.id ? 'true' : 'false');
+                    noteToggle.setAttribute('aria-label', task.note ? `Edit note for ${task.description}` : `Add note for ${task.description}`);
+                    noteToggle.textContent = task.note ? 'Note added' : 'Add note';
+                    noteToggle.classList.toggle('note-has-text', !!task.note);
+                    noteToggle.addEventListener('click', () => toggleNote(task.id));
+                }
 
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete';
@@ -558,35 +584,54 @@
 
                 const noteContainer = document.createElement('div');
                 noteContainer.classList.add('note-container');
-                if (state.openNoteId !== task.id) {
+                if (!showAdvancedTaskControls || state.openNoteId !== task.id) {
                     noteContainer.classList.add('hidden');
                 }
 
-                const noteLabel = document.createElement('label');
-                noteLabel.classList.add('sr-only');
-                noteLabel.setAttribute('for', `note-${task.id}`);
-                noteLabel.textContent = `Note for ${task.description}`;
+                if (showAdvancedTaskControls) {
+                    const noteLabel = document.createElement('label');
+                    noteLabel.classList.add('sr-only');
+                    noteLabel.setAttribute('for', `note-${task.id}`);
+                    noteLabel.textContent = `Note for ${task.description}`;
 
-                const noteInput = document.createElement('textarea');
-                noteInput.id = `note-${task.id}`;
-                noteInput.value = task.note ?? '';
-                noteInput.dataset.taskId = task.id;
-                noteInput.dataset.control = 'note-input';
-                noteInput.setAttribute('aria-label', `Add a note for ${task.description}`);
-                noteInput.addEventListener('input', (event) => handleNoteInput(task.id, event.target.value));
-                noteInput.addEventListener('blur', () => flushTaskNoteSave(task.id));
+                    const noteInput = document.createElement('textarea');
+                    noteInput.id = `note-${task.id}`;
+                    noteInput.value = task.note ?? '';
+                    noteInput.dataset.taskId = task.id;
+                    noteInput.dataset.control = 'note-input';
+                    noteInput.setAttribute('aria-label', `Add a note for ${task.description}`);
+                    noteInput.addEventListener('input', (event) => handleNoteInput(task.id, event.target.value));
+                    noteInput.addEventListener('blur', () => flushTaskNoteSave(task.id));
 
-                noteContainer.appendChild(noteLabel);
-                noteContainer.appendChild(noteInput);
+                    noteContainer.appendChild(noteLabel);
+                    noteContainer.appendChild(noteInput);
+                }
 
                 taskContent.appendChild(taskSpan);
                 if (badgeRow.children.length > 0) {
                     taskContent.appendChild(badgeRow);
                 }
-                taskContent.appendChild(noteToggle);
-                taskContent.appendChild(noteContainer);
+                if (noteToggle) {
+                    taskContent.appendChild(noteToggle);
+                    taskContent.appendChild(noteContainer);
+                }
 
-                listItem.appendChild(selectionWrapper);
+                if (showAdvancedTaskControls) {
+                    const selectionWrapper = document.createElement('div');
+                    selectionWrapper.classList.add('selection-toggle');
+
+                    const selectionCheckbox = document.createElement('input');
+                    selectionCheckbox.type = 'checkbox';
+                    selectionCheckbox.checked = !!task.selected;
+                    selectionCheckbox.setAttribute('aria-label', `Select ${task.description}`);
+                    selectionCheckbox.dataset.taskId = task.id;
+                    selectionCheckbox.dataset.control = 'selection';
+                    selectionCheckbox.setAttribute('data-testid', 'select-checkbox');
+                    selectionCheckbox.addEventListener('change', (event) => toggleSelection(task.id, event.target.checked));
+
+                    selectionWrapper.appendChild(selectionCheckbox);
+                    listItem.appendChild(selectionWrapper);
+                }
                 listItem.appendChild(completionCheckbox);
                 listItem.appendChild(taskContent);
                 listItem.appendChild(deleteButton);
@@ -602,7 +647,11 @@
             if (focusTarget) {
                 restoreFocus(focusTarget);
             }
-            updateWisdomVisibility(state.tasks, showWisdom, hideWisdom, { wisdomEnabled: isWisdomEnabled() });
+            if (state.isAdvancedToolsVisible) {
+                updateWisdomVisibility(state.tasks, showWisdom, hideWisdom, { wisdomEnabled: isWisdomEnabled() });
+            } else {
+                hideWisdom();
+            }
         }
 
         function toggleComplete(taskId) {
@@ -614,6 +663,7 @@
             renderTasks(focusTarget);
             const target = state.tasks.find(task => task.id === taskId);
             if (target?.completed) {
+                handleFirstCompletionReveal();
                 displayWisdomForTask(target);
             } else if (state.activeWisdomTaskId === taskId) {
                 actions.setActiveWisdomTaskId(null);
@@ -931,6 +981,61 @@
                 inputValidation.textContent = '';
                 inputValidation.classList.add('hidden');
                 inputValidation.setAttribute('aria-hidden', 'true');
+            }
+        }
+
+        function normalizeOnboardingStage() {
+            const storedStage = safeStorage.get(onboardingStageKey, null);
+            const inferredStage = (storedStage === null && state.tasks.length > 0)
+                ? onboardingStages.complete
+                : (storedStage ?? onboardingStages.simple);
+            const normalizedStage = Object.values(onboardingStages).includes(inferredStage)
+                ? inferredStage
+                : onboardingStages.simple;
+            actions.setOnboardingStage(normalizedStage);
+            safeStorage.set(onboardingStageKey, normalizedStage);
+        }
+
+        function setOnboardingStage(stage) {
+            if (!Object.values(onboardingStages).includes(stage)) {
+                return;
+            }
+            actions.setOnboardingStage(stage);
+            safeStorage.set(onboardingStageKey, stage);
+        }
+
+        function setAdvancedToolsVisibility(isVisible) {
+            actions.setAdvancedToolsVisible(!!isVisible);
+            syncAdvancedToolsUI();
+            renderTasks();
+        }
+
+        function syncAdvancedToolsUI() {
+            const isVisible = !!state.isAdvancedToolsVisible;
+            const advancedControls = document.querySelectorAll('[data-advanced-control="true"]');
+            if (advancedToolsToggle) {
+                advancedToolsToggle.setAttribute('aria-expanded', isVisible ? 'true' : 'false');
+                advancedToolsToggle.textContent = isVisible ? 'Hide more tools' : 'Show more tools';
+            }
+            if (advancedToolsPanel) {
+                advancedToolsPanel.hidden = !isVisible;
+                advancedToolsPanel.setAttribute('aria-hidden', isVisible ? 'false' : 'true');
+            }
+            advancedControls.forEach((control) => {
+                control.hidden = !isVisible;
+                control.setAttribute('aria-hidden', isVisible ? 'false' : 'true');
+            });
+        }
+
+        function handleFirstCompletionReveal() {
+            if (state.onboardingStage === onboardingStages.complete) {
+                return;
+            }
+            setOnboardingStage(onboardingStages.complete);
+            if (!state.isAdvancedToolsVisible) {
+                actions.setAdvancedToolsVisible(true);
+                syncAdvancedToolsUI();
+                renderTasks();
             }
         }
 
