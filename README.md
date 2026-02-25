@@ -34,6 +34,14 @@ A browser-based checklist that stores steps in localStorage, adds optional mood/
 - **Add a note:** Click **Add note** on a step and type a quick reflection; the note saves immediately.
 - **Keyboard shortcut:** Press Ctrl/Cmd + Enter to add a step when focus isn’t in another text field.
 
+## Install on iOS/Android
+
+You can add The Journey Log to your home screen so it opens like an app:
+
+- **Android (Chrome/Edge):** Open the site, tap the browser menu (`⋮`), then choose **Install app** or **Add to Home screen**.
+- **iPhone/iPad (Safari):** Open the site, tap **Share** (`⬆`), then choose **Add to Home Screen**.
+- After installing, launch it from your home screen/app drawer for a full-screen app experience.
+
 ## Testing
 
 - Run all automated tests with `npm test`.

@@ -232,6 +232,18 @@ function createTaskId() {
 
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => {
+                    document.documentElement.setAttribute('data-sw-status', 'registered');
+                })
+                .catch(() => {
+                    document.documentElement.setAttribute('data-sw-status', 'failed');
+                });
+        } else {
+            document.documentElement.setAttribute('data-sw-status', 'unsupported');
+        }
+
         const clearCompletedButton = document.getElementById('clearCompletedButton');
         const clearSelectedButton = document.getElementById('clearSelectedButton');
         const undoDeleteButton = document.getElementById('undoDeleteButton');
