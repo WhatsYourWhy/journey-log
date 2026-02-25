@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Journey Log maskable icon">
+  <rect width="512" height="512" fill="#4f3fa0" />
+  <rect x="52" y="52" width="408" height="408" rx="96" fill="#7f6cff" />
+  <path d="M146 174h220v40H146zm0 80h220v40H146zm0 80h146v40H146z" fill="#fff"/>
+  <circle cx="338" cy="354" r="30" fill="#d6f3ff"/>
+</svg>
