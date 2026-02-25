@@ -42,7 +42,10 @@
             <button id="startCueButton" class="start-cue-cta" type="button">Start with one step</button>
         </section>
 
-        <div class="theme-selector">
+        <button id="advancedToolsToggle" class="advanced-tools-toggle" type="button" aria-expanded="false" aria-controls="advancedToolsPanel">Show more tools</button>
+        <section id="advancedToolsPanel" class="advanced-tools-panel" aria-label="Advanced tools" aria-hidden="true" hidden>
+
+        <div class="theme-selector" data-advanced-control="true">
             <label for="theme">Theme</label>
             <select id="theme">
                 <option value="comfort" selected>Comfort</option>
@@ -57,12 +60,12 @@
             </label>
         </div>
 
-        <div class="wisdom-toggle">
+        <div class="wisdom-toggle" data-advanced-control="true">
             <input type="checkbox" id="wisdomToggle" name="wisdomToggle" checked>
             <label for="wisdomToggle">Show wisdom</label>
         </div>
 
-        <section class="insights" aria-label="Journey insights">
+        <section class="insights" aria-label="Journey insights" data-advanced-control="true">
 
             <div class="insight-card">
 
@@ -103,10 +106,10 @@
             </div>
 
         </section>
-        <p class="insights-caption">Totals show how many steps you have, how many are done, and what remains. The progress bar tracks the percentage completed.</p>
+        <p class="insights-caption" data-advanced-control="true">Totals show how many steps you have, how many are done, and what remains. The progress bar tracks the percentage completed.</p>
 
-        <p class="insights-note">These update when you check or add steps.</p>
-        <div class="milestone-wrapper" aria-live="polite">
+        <p class="insights-note" data-advanced-control="true">These update when you check or add steps.</p>
+        <div class="milestone-wrapper" aria-live="polite" data-advanced-control="true">
             <div class="milestone-header">
                 <p class="milestone-title">Milestones</p>
                 <p class="milestone-subtitle">Unlock markers as you complete steps.</p>
@@ -114,11 +117,14 @@
             <div id="milestoneStrip" class="milestone-strip" aria-label="Milestones" role="group"></div>
         </div>
 
+
+        </section>
+
         <div class="input-section">
 
             <div class="input-meta" aria-label="Journey step details">
                 <input type="text" id="taskInput" placeholder="Add a new step in your journey..." aria-label="New journey step description" autocomplete="off">
-                <div class="selectors">
+                <div class="selectors" data-advanced-control="true">
                     <label for="moodSelect">Mood</label>
                     <select id="moodSelect" aria-label="Select a mood for this step" aria-describedby="moodHelper">
                         <option value="">Mood (optional)</option>
@@ -150,18 +156,18 @@
 
             <div class="cta-wrapper">
                 <button id="addTaskButton" aria-label="Add a new journey step">Add Step</button>
-                <button id="addTaskButtonSecondary" type="button" aria-label="Add a journey step near the keyboard">Add</button>
+                <button id="addTaskButtonSecondary" type="button" aria-label="Add a journey step near the keyboard" data-advanced-control="true">Add</button>
                 <div id="addHelperBubble" class="helper-bubble hidden" role="status" aria-live="polite" aria-hidden="true">
                     Tap Add after you type.
                 </div>
                 <div id="inputValidation" data-testid="input-validation" class="input-validation hidden" role="status" aria-live="polite" aria-hidden="true"></div>
                 <div id="saveStatus" class="save-status" role="status" aria-live="polite" aria-hidden="true"></div>
             </div>
-            <button id="secondaryAddButton" class="secondary-add" type="button" aria-label="Add a journey step (mobile-friendly)">Add</button>
+            <button id="secondaryAddButton" class="secondary-add" type="button" aria-label="Add a journey step (mobile-friendly)" data-advanced-control="true">Add</button>
 
         </div>
 
-        <div class="bulk-actions" role="toolbar" aria-label="Task selection controls">
+        <div class="bulk-actions" role="toolbar" aria-label="Task selection controls" data-advanced-control="true">
             <div class="bulk-toggle">
                 <label class="sr-only" for="selectAllCheckbox">Select all tasks</label>
                 <input type="checkbox" id="selectAllCheckbox" aria-label="Select all tasks">
@@ -192,7 +198,7 @@
 
         </ul>
 
-        <div id="wisdomDisplay" class="hidden" role="region" aria-live="polite" aria-expanded="false">
+        <div id="wisdomDisplay" class="hidden" role="region" aria-live="polite" aria-expanded="false" data-advanced-control="true">
 
             <div class="wisdom-header">
                 <p class="wisdom-title"><strong>Wisdom for this step:</strong></p>
