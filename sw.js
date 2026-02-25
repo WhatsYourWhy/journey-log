@@ -1,5 +1,14 @@
-const CACHE_VERSION = 'journey-log-shell-v1';
-const APP_SHELL_FILES = ['index.html', 'style.css', 'script.js'];
+const CACHE_VERSION = 'journey-log-shell-v2';
+const APP_SHELL_FILES = [
+  'index.html',
+  'style.css',
+  'script.js',
+  'src/domain/insights.js',
+  'src/domain/tasks.js',
+  'src/services/storage.js',
+  'src/ui/render.js',
+  'src/app/init.js'
+];
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -27,8 +36,9 @@ self.addEventListener('fetch', event => {
 
   const requestUrl = new URL(event.request.url);
   const isSameOrigin = requestUrl.origin === self.location.origin;
-  const pathname = requestUrl.pathname.split('/').pop();
-  const isAppShellRequest = APP_SHELL_FILES.includes(pathname);
+  const normalizedPath = requestUrl.pathname.replace(/^\//, '');
+  const leafPath = normalizedPath.split('/').pop();
+  const isAppShellRequest = APP_SHELL_FILES.includes(normalizedPath) || APP_SHELL_FILES.includes(leafPath);
 
   if (!isSameOrigin || !isAppShellRequest) {
     return;
