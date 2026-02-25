@@ -21,7 +21,7 @@
         updateTaskNote,
         getNextOpenNoteId
     } = tasksModule;
-    const { createSafeStorage } = storageModule;
+    const { createSafeStorage, normalizeTaskRecord, createJourneyExport, serializeJourneyExport, parseJourneyImport } = storageModule;
     const { updateInsights } = renderModule;
 
     function createSaveFeedbackController(statusElement, options = {}) {
@@ -164,6 +164,9 @@
         const clearCompletedButton = document.getElementById('clearCompletedButton');
         const clearSelectedButton = document.getElementById('clearSelectedButton');
         const undoDeleteButton = document.getElementById('undoDeleteButton');
+        const exportJourneyButton = document.getElementById('exportJourneyButton');
+        const importJourneyButton = document.getElementById('importJourneyButton');
+        const importJourneyInput = document.getElementById('importJourneyInput');
         const taskInput = document.getElementById('taskInput');
         const addTaskButton = document.getElementById('addTaskButton');
         const secondaryAddButton = document.getElementById('secondaryAddButton');
@@ -649,17 +652,7 @@
         }
 
         function normalizeTask(task) {
-            if (!task || typeof task !== 'object') return null;
-            return {
-                id: task.id,
-                description: task.description,
-                completed: !!task.completed,
-                selected: !!task.selected,
-                mood: task.mood || '',
-                category: task.category || '',
-                priority: task.priority || '',
-                note: task.note ?? ''
-            };
+            return normalizeTaskRecord(task, { createTaskId });
         }
 
         function loadTasks() {
@@ -677,6 +670,94 @@
                 console.warn('Failed to parse stored state.tasks, clearing corrupted data.', error);
                 safeStorage.remove('journeyTasks');
                 return [];
+            }
+        }
+
+        function getCurrentSettingsSnapshot() {
+            return {
+                theme: bodyElement?.dataset.theme || defaultTheme,
+                wisdomEnabled: isWisdomEnabled(),
+                artfulMode: artfulModeToggle?.checked ?? false
+            };
+        }
+
+        function exportJourney() {
+            const payload = createJourneyExport(state.tasks, getCurrentSettingsSnapshot());
+            const json = serializeJourneyExport(payload);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = `journey-log-backup-${timestamp}.json`;
+            document.body.appendChild(anchor);
+            anchor.click();
+            document.body.removeChild(anchor);
+            URL.revokeObjectURL(url);
+            saveFeedback.triggerMessage('Journey exported.');
+        }
+
+        function applyImportedSettings(settings) {
+            if (!settings || typeof settings !== 'object') return;
+            applyTheme(settings.theme || defaultTheme);
+            if (wisdomToggle) {
+                wisdomToggle.checked = !!settings.wisdomEnabled;
+            }
+            safeStorage.set(wisdomToggleKey, settings.wisdomEnabled ? 'true' : 'false');
+
+            if (artfulModeToggle) {
+                const isHighContrast = (bodyElement?.dataset.theme || defaultTheme) === 'high-contrast';
+                artfulModeToggle.checked = isHighContrast ? false : !!settings.artfulMode;
+            }
+            safeStorage.set(artfulModeKey, (artfulModeToggle?.checked ?? false) ? 'true' : 'false');
+            updateArtfulState();
+            updateWisdomVisibility(state.tasks, showWisdom, hideWisdom, { wisdomEnabled: !!settings.wisdomEnabled });
+            if (!settings.wisdomEnabled) {
+                hideWisdom();
+            }
+        }
+
+        function importJourneyFromText(jsonText) {
+            const imported = parseJourneyImport(jsonText, { createTaskId });
+            const shouldReplace = state.tasks.length === 0
+                ? true
+                : window.confirm('Replace existing steps? Press Cancel to merge imported steps with your current list.');
+
+            const baseTasks = shouldReplace ? [] : state.tasks.slice();
+            const existingKeys = new Set(baseTasks.map(task => `${task.description.toLowerCase()}::${task.note}`));
+            imported.tasks.forEach((task) => {
+                const normalizedTask = normalizeTask(task);
+                if (!normalizedTask) return;
+                const dedupeKey = `${normalizedTask.description.toLowerCase()}::${normalizedTask.note}`;
+                if (existingKeys.has(dedupeKey)) {
+                    return;
+                }
+                existingKeys.add(dedupeKey);
+                baseTasks.push(normalizedTask);
+            });
+
+            actions.setTasks(baseTasks);
+            saveTasks();
+            applyImportedSettings(imported.settings);
+            renderTasks();
+            updateSelectionActions();
+            syncSelectAllCheckbox();
+            saveFeedback.triggerMessage(shouldReplace ? 'Journey imported (replaced).' : 'Journey imported (merged).');
+        }
+
+        async function handleImportJourneyFile(event) {
+            const file = event?.target?.files?.[0];
+            if (!file) return;
+
+            try {
+                const jsonText = await file.text();
+                importJourneyFromText(jsonText);
+            } catch (error) {
+                showValidationMessage(error.message || 'Import failed. Please choose a valid Journey backup file.');
+            } finally {
+                if (importJourneyInput) {
+                    importJourneyInput.value = '';
+                }
             }
         }
 
@@ -1277,6 +1358,9 @@
         clearCompletedButton?.addEventListener('click', clearCompletedTasks);
         clearSelectedButton?.addEventListener('click', clearSelectedTasks);
         undoDeleteButton?.addEventListener('click', undoLastDelete);
+        exportJourneyButton?.addEventListener('click', exportJourney);
+        importJourneyButton?.addEventListener('click', () => importJourneyInput?.click());
+        importJourneyInput?.addEventListener('change', handleImportJourneyFile);
         selectAllCheckbox?.addEventListener('change', handleSelectAllChange);
         document.addEventListener('keydown', handleKeyboardShortcuts);
         wisdomToggle?.addEventListener('change', () => {
