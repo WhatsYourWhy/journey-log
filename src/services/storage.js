@@ -39,7 +39,8 @@
         return {
             theme: normalizeText(settings.theme) || 'comfort',
             wisdomEnabled: normalizeBoolean(settings.wisdomEnabled, true),
-            artfulMode: normalizeBoolean(settings.artfulMode, false)
+            artfulMode: normalizeBoolean(settings.artfulMode, false),
+            analyticsOptIn: normalizeBoolean(settings.analyticsOptIn, false)
         };
     }
 

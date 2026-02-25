@@ -8,6 +8,9 @@
     const storageModule = typeof module !== 'undefined' && module.exports
         ? require('../services/storage')
         : global.JourneyLogStorage;
+    const analyticsModule = typeof module !== 'undefined' && module.exports
+        ? require('../services/analytics')
+        : global.JourneyLogAnalytics;
     const renderModule = typeof module !== 'undefined' && module.exports
         ? require('../ui/render')
         : global.JourneyLogRender;
@@ -22,6 +25,7 @@
         getNextOpenNoteId
     } = tasksModule;
     const { createSafeStorage, normalizeTaskRecord, createJourneyExport, serializeJourneyExport, parseJourneyImport } = storageModule;
+    const { ANALYTICS_EVENTS, createLocalAggregateStore, createEventDispatcher } = analyticsModule;
     const { updateInsights } = renderModule;
 
     function createSaveFeedbackController(statusElement, options = {}) {
@@ -186,6 +190,10 @@
         const starterHint = document.getElementById('starterHint');
         const themeSelect = document.getElementById('theme');
         const artfulModeToggle = document.getElementById('artfulMode');
+        const analyticsToggle = document.getElementById('analyticsToggle');
+        const usageInsightsPanel = document.getElementById('usageInsightsPanel');
+        const usageInsightsContent = document.getElementById('usageInsightsContent');
+        const clearUsageInsightsButton = document.getElementById('clearUsageInsightsButton');
         const bodyElement = document.body;
         const totalCount = document.getElementById('totalCount');
         const completedCount = document.getElementById('completedCount');
@@ -208,6 +216,8 @@
         const wisdomToggleKey = 'journeyWisdomEnabled';
         const milestoneKey = 'journeyMilestone';
         const artfulModeKey = 'journeyArtfulMode';
+        const analyticsOptInKey = 'journeyAnalyticsOptIn';
+        const analyticsDevModeKey = 'journeyUsageInsightsDevMode';
         const supportedThemes = ['comfort', 'forest', 'ocean', 'dark', 'high-contrast'];
         const themeClasses = supportedThemes.map(theme => `${theme}-theme`);
         const defaultTheme = 'comfort';
@@ -348,13 +358,20 @@
         }
 
         const safeStorage = createSafeStorage(localStorage, { showPersistenceStatus });
+        const analyticsAggregateStore = createLocalAggregateStore(localStorage);
+        const analyticsDispatcher = createEventDispatcher({
+            isEnabled: () => isAnalyticsEnabled(),
+            aggregateStore: analyticsAggregateStore
+        });
 
         let lastEarnedMilestone = Number(safeStorage.get(milestoneKey, '0')) || 0;
         updateUndoButtonState(false);
         updateSelectionActions();
 
         initializeHelperBubble();
+        syncAnalyticsPreference();
         renderTasks();
+        renderUsageInsights();
         updateSelectionActions();
         const wisdomEnabled = syncWisdomPreference();
         updateWisdomVisibility(state.tasks, showWisdom, hideWisdom, { wisdomEnabled });
@@ -446,6 +463,12 @@
             };
             actions.setTasks(tasks => [...tasks, task]);
             saveTasks();
+            analyticsDispatcher.dispatch(ANALYTICS_EVENTS.TASK_ADDED, {
+                hasMood: Boolean(task.mood),
+                hasCategory: Boolean(task.category),
+                hasPriority: Boolean(task.priority)
+            });
+            renderUsageInsights();
             renderTasks();
             dismissHelperBubble();
         }
@@ -611,6 +634,10 @@
                 task.id === taskId ? { ...task, completed: !task.completed } : task
             ));
             saveTasks();
+            analyticsDispatcher.dispatch(ANALYTICS_EVENTS.TASK_COMPLETED, {
+                completed: Boolean(state.tasks.find(task => task.id === taskId)?.completed)
+            });
+            renderUsageInsights();
             renderTasks(focusTarget);
             const target = state.tasks.find(task => task.id === taskId);
             if (target?.completed) {
@@ -677,7 +704,8 @@
             return {
                 theme: bodyElement?.dataset.theme || defaultTheme,
                 wisdomEnabled: isWisdomEnabled(),
-                artfulMode: artfulModeToggle?.checked ?? false
+                artfulMode: artfulModeToggle?.checked ?? false,
+                analyticsOptIn: isAnalyticsEnabled()
             };
         }
 
@@ -710,7 +738,15 @@
                 artfulModeToggle.checked = isHighContrast ? false : !!settings.artfulMode;
             }
             safeStorage.set(artfulModeKey, (artfulModeToggle?.checked ?? false) ? 'true' : 'false');
+
+            const analyticsEnabled = !!settings.analyticsOptIn;
+            safeStorage.set(analyticsOptInKey, analyticsEnabled ? 'true' : 'false');
+            if (analyticsToggle) {
+                analyticsToggle.checked = analyticsEnabled;
+            }
+
             updateArtfulState();
+            renderUsageInsights();
             updateWisdomVisibility(state.tasks, showWisdom, hideWisdom, { wisdomEnabled: !!settings.wisdomEnabled });
             if (!settings.wisdomEnabled) {
                 hideWisdom();
@@ -902,9 +938,12 @@
                 return;
             }
             const focusTarget = captureFocusDetails({ fallback: taskInput });
+            const restoredCount = state.lastDeletedTasks.length;
             actions.setTasks(tasks => restoreDeletedTasks(tasks, state.lastDeletedTasks));
             actions.clearLastDeletedTasks();
             saveTasks();
+            analyticsDispatcher.dispatch(ANALYTICS_EVENTS.UNDO_USED, { restoredCount });
+            renderUsageInsights();
             renderTasks(focusTarget);
             updateWisdomVisibility(state.tasks, showWisdom, hideWisdom, { wisdomEnabled: isWisdomEnabled() });
             updateUndoButtonState(false);
@@ -993,6 +1032,7 @@
 
         function applyTheme(themeValue) {
             const normalizedTheme = normalizeTheme(themeValue);
+            const previousTheme = bodyElement.dataset.theme || defaultTheme;
             document.documentElement.classList.remove(...themeClasses);
             document.documentElement.classList.add(`${normalizedTheme}-theme`);
             bodyElement.classList.remove(...themeClasses);
@@ -1031,6 +1071,48 @@
                 themeSelect.value = normalizedTheme;
             }
             safeStorage.set('journeyTheme', normalizedTheme);
+            if (previousTheme !== normalizedTheme) {
+                analyticsDispatcher.dispatch(ANALYTICS_EVENTS.THEME_CHANGED, {
+                    theme: normalizedTheme
+                });
+                renderUsageInsights();
+            }
+        }
+
+        function isAnalyticsEnabled() {
+            return safeStorage.get(analyticsOptInKey, 'false') === 'true';
+        }
+
+        function syncAnalyticsPreference() {
+            if (!analyticsToggle) return;
+            analyticsToggle.checked = isAnalyticsEnabled();
+        }
+
+        function isUsageInsightsDevModeEnabled() {
+            if (typeof window !== 'undefined') {
+                const search = new URLSearchParams(window.location.search);
+                if (search.get('dev') === '1' || search.get('insights') === '1') {
+                    return true;
+                }
+            }
+            return safeStorage.get(analyticsDevModeKey, 'false') === 'true';
+        }
+
+        function renderUsageInsights() {
+            if (!usageInsightsPanel || !usageInsightsContent) return;
+            const shouldShow = isUsageInsightsDevModeEnabled();
+            usageInsightsPanel.classList.toggle('hidden', !shouldShow);
+            usageInsightsPanel.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+            if (!shouldShow) return;
+
+            const snapshot = analyticsAggregateStore.readSnapshot();
+            const eventNames = Object.values(ANALYTICS_EVENTS);
+            const lines = eventNames.map((eventName) => {
+                const count = snapshot.events[eventName]?.count || 0;
+                return `${eventName}: ${count}`;
+            });
+            lines.unshift(`total_events: ${snapshot.total || 0}`);
+            usageInsightsContent.textContent = lines.join('\n');
         }
 
         function syncArtfulMode() {
@@ -1297,7 +1379,19 @@
         }
 
         function handleNoteInput(taskId, value) {
+            const previousNote = (state.tasks.find(task => task.id === taskId)?.note || '').trim();
             actions.setTasks(tasks => updateTaskNote(tasks, taskId, value));
+            const nextNote = value.trim();
+            if (previousNote !== nextNote) {
+                if (!previousNote && nextNote) {
+                    analyticsDispatcher.dispatch(ANALYTICS_EVENTS.NOTE_USED, { action: 'added' });
+                    renderUsageInsights();
+                }
+                if (previousNote && !nextNote) {
+                    analyticsDispatcher.dispatch(ANALYTICS_EVENTS.NOTE_USED, { action: 'cleared' });
+                    renderUsageInsights();
+                }
+            }
             updateTaskNoteUI(taskId);
             scheduleTaskNoteSave(taskId);
         }
@@ -1370,6 +1464,15 @@
             if (!newValue) {
                 hideWisdom();
             }
+        });
+        analyticsToggle?.addEventListener('change', () => {
+            safeStorage.set(analyticsOptInKey, analyticsToggle.checked ? 'true' : 'false');
+            renderUsageInsights();
+        });
+        clearUsageInsightsButton?.addEventListener('click', () => {
+            analyticsAggregateStore.clear();
+            renderUsageInsights();
+            saveFeedback.triggerMessage('Usage insights cleared.');
         });
 
         setPromptForEmptyState();

@@ -27,7 +27,8 @@ test.describe('storage portability', () => {
             settings: {
                 theme: 'forest',
                 wisdomEnabled: false,
-                artfulMode: true
+                artfulMode: true,
+                analyticsOptIn: true
             }
         });
 
@@ -47,7 +48,8 @@ test.describe('storage portability', () => {
         expect(imported.settings).toEqual({
             theme: 'forest',
             wisdomEnabled: false,
-            artfulMode: true
+            artfulMode: true,
+            analyticsOptIn: true
         });
     });
 
@@ -67,7 +69,8 @@ test.describe('storage portability', () => {
         const settings = {
             theme: 'ocean',
             wisdomEnabled: true,
-            artfulMode: false
+            artfulMode: false,
+            analyticsOptIn: false
         };
 
         const exported = createJourneyExport(tasks, settings);

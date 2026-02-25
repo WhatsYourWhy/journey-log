@@ -13,6 +13,35 @@ A browser-based checklist that stores steps in localStorage, adds optional mood/
 - **Keyboard shortcuts:** Enter adds a step from the input. Ctrl/Cmd + Enter adds a step from elsewhere (except other text inputs). Ctrl/Cmd + Shift + C clears completed steps.
 - **Insights:** Total/active/completed counts and progress bar update from stored steps.
 
+
+## Privacy-first analytics (opt-in)
+
+Journey Log analytics are **disabled by default**. If you opt in via Settings, the app records only a minimal event schema as local aggregate counters in `localStorage`:
+
+- `task_added`
+- `task_completed`
+- `note_used`
+- `theme_changed`
+- `undo_used`
+
+### Data boundaries
+
+- No task description text is collected in analytics.
+- No note body text is collected in analytics.
+- No personally identifying data is added by default.
+- In local-only mode, analytics stay on-device as aggregate counts for self-insight.
+
+### Usage insights panel (dev/optional)
+
+A lightweight **Usage insights (dev)** panel can display local aggregate event counts for feature adoption checks.
+
+- It is intended for local development / inspection.
+- It does not require external analytics services.
+
+### External analytics guardrails (future)
+
+If external analytics is enabled later, only the same sanitized and aggregated metadata should be sent (event type + safe metadata fields). Raw user content (task descriptions, note text) is excluded by design.
+
 ## Technologies
 
 - **HTML** for structure and ARIA-friendly controls.
