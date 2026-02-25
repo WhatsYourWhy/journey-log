@@ -34,6 +34,33 @@ A browser-based checklist that stores steps in localStorage, adds optional mood/
 - **Add a note:** Click **Add note** on a step and type a quick reflection; the note saves immediately.
 - **Keyboard shortcut:** Press Ctrl/Cmd + Enter to add a step when focus isn’t in another text field.
 
+## Backup and restore
+
+Use **Export Journey** and **Import Journey** in the bulk actions row to keep your data portable.
+
+1. Click **Export Journey** to download a `.json` backup file of your steps and settings.
+2. Save the file somewhere safe (cloud drive, external drive, email to yourself, etc.).
+3. On the same or another device, open Journey Log and click **Import Journey**.
+4. Pick your backup file.
+5. If you already have steps, you can choose to **replace** everything with the backup, or **merge** imported steps with current ones.
+
+What gets backed up:
+- Steps (including completion, mood/category/priority, selection state, and notes)
+- Theme selection
+- Wisdom toggle preference
+- Artful mode preference
+
+If the selected file is malformed or not valid Journey Log JSON, the app blocks the import and shows a validation message.
+
+## Optional future sync (integration note)
+
+After local backup/restore is stable, a next step is optional remote sync (for example Supabase or Firebase). A practical phased rollout is:
+
+- Keep local JSON export/import as the source-of-truth fallback.
+- Add authenticated cloud profile storage per user.
+- Sync a normalized task/settings schema identical to local portability format.
+- Resolve conflicts with clear rules (last-write-wins or per-task merge) while preserving manual local import/export.
+
 ## Install on iOS/Android
 
 You can add The Journey Log to your home screen so it opens like an app:
