@@ -428,6 +428,25 @@ button:focus-visible {
     transform: translateY(-1px);
 }
 
+.advanced-tools-toggle {
+    width: 100%;
+    margin: 4px 0 12px;
+    background-color: var(--panel-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.advanced-tools-panel {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 12px;
+    min-width: 0;
+}
+
+.advanced-tools-panel[hidden] {
+    display: none !important;
+}
+
 .theme-selector label {
     font-weight: 600;
 }
@@ -1061,6 +1080,25 @@ button:focus-visible {
         transform: none;
         width: 100%;
         margin-top: 8px;
+    }
+}
+
+@media (max-width: 375px) {
+    .advanced-tools-toggle {
+        position: sticky;
+        top: 8px;
+        z-index: 3;
+    }
+
+    .advanced-tools-panel {
+        overflow-x: clip;
+    }
+
+    .advanced-tools-panel .theme-selector,
+    .advanced-tools-panel .bulk-actions,
+    .advanced-tools-panel .milestone-strip {
+        min-width: 0;
+        width: 100%;
     }
 }
 
