@@ -56,7 +56,7 @@
     ],
     "startHereRitual": {
       "label": "Goblin deal",
-      "slug": "#dopamine-goblin-rituals",
+      "slug": null,
       "description": "Make a short work contract, pre-select the reward, and let the goblin earn its shiny."
     },
     "supportBoundary": "Use these tools to add friction and structure, not to punish yourself for needing novelty. If compulsive use or self-control struggles are severe, bring in additional support.",
@@ -98,7 +98,7 @@
     ],
     "startHereRitual": {
       "label": "Threshold Spell",
-      "slug": "#cave-bear-rituals",
+      "slug": null,
       "description": "Move to the doorway, take one body-first step, and use a social rope if you need outside help getting started."
     },
     "supportBoundary": "This page is for gentle activation and reconnection, not for forcing yourself through burnout, depression, or a real need for rest. If retreat feels dangerous or total, reach for additional support.",

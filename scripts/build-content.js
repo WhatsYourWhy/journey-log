@@ -59,7 +59,11 @@ function buildChooser() {
 
 function deriveSlugFromUrl(url) {
     if (!url) return null;
-    const match = url.match(/\/spellbook\/([^/.]+)/);
+    // Match /spellbook/<slug> while excluding fragments, queries, and file
+    // extensions. URLs that are fragment-only (e.g. "#dopamine-goblin-rituals")
+    // intentionally return null — they point inside another page, not to a
+    // spellbook entry.
+    const match = url.match(/\/spellbook\/([^/.#?]+)/);
     return match ? match[1] : null;
 }
 

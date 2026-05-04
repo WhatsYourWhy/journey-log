@@ -19,16 +19,21 @@ function highlightNav(path) {
 }
 
 export function router(routes) {
+    const handlers = new Map();
+    for (const [key, value] of Object.entries(routes)) {
+        if (key === 'default') continue;
+        if (typeof value === 'function') handlers.set(key, value);
+    }
+    const fallback = routes.default || '#/today';
+
     function dispatch() {
         const { path, params } = parseHash();
-        const handler = Object.prototype.hasOwnProperty.call(routes, path)
-            ? routes[path]
-            : null;
-        if (typeof handler === 'function') {
+        const handler = handlers.get(path);
+        if (handler) {
             highlightNav(path);
             handler(params);
         } else {
-            location.hash = routes.default || '#/today';
+            location.hash = fallback;
         }
     }
 
