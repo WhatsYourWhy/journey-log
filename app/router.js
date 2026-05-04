@@ -21,8 +21,10 @@ function highlightNav(path) {
 export function router(routes) {
     function dispatch() {
         const { path, params } = parseHash();
-        const handler = routes[path];
-        if (handler) {
+        const handler = Object.prototype.hasOwnProperty.call(routes, path)
+            ? routes[path]
+            : null;
+        if (typeof handler === 'function') {
             highlightNav(path);
             handler(params);
         } else {

@@ -132,17 +132,25 @@ function extractCodeBlock(html) {
 }
 
 function stripTags(s) {
-    return decodeEntities(s.replace(/<[^>]+>/g, ''));
+    let prev;
+    let curr = s;
+    do {
+        prev = curr;
+        curr = curr.replace(/<[^>]+>/g, '');
+    } while (curr !== prev);
+    return decodeEntities(curr);
 }
 
 function decodeEntities(s) {
-    return s
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/&nbsp;/g, ' ');
+    const map = {
+        '&lt;': '<',
+        '&gt;': '>',
+        '&quot;': '"',
+        '&#39;': "'",
+        '&nbsp;': ' ',
+        '&amp;': '&'
+    };
+    return s.replace(/&(?:lt|gt|quot|#39|nbsp|amp);/g, m => map[m]);
 }
 
 function buildSpellbook() {
