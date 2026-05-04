@@ -1,0 +1,172 @@
+[
+  {
+    "slug": "goblin-deal",
+    "title": "Goblin Deal",
+    "description": "A negotiation ritual for shiny distractions that lets you bargain with the craving instead of pretending it does not exist.",
+    "heroIntro": "A negotiation ritual for shiny distractions. Use it when the boring task keeps losing the auction to whatever feels more stimulating right now.",
+    "oath": [],
+    "howToUse": [
+      "Name the distraction out loud. Writing it down takes away half its power.",
+      "Pre-choose the reward: a snack, a scroll, a song, a stretch. Decide now, not later.",
+      "Set a short timer (15-25 minutes). Work the boring task until it rings.",
+      "When the timer rings, take the reward. Fully. No guilt. Then decide: another round or done."
+    ],
+    "whyItHelps": [
+      "It stops the craving from being the villain and makes it part of the contract.",
+      "It gives the brain a concrete finish line instead of open-ended suffering.",
+      "It adds friction to the impulse without pretending the impulse is fake."
+    ],
+    "minimalPrompt": "Goblin Deal\nThe shiny thing: ___________________________\nThe boring task: ___________________________\nPre-chosen reward: ___________________________\nTimer: ___ minutes\nDeal struck: yes / no"
+  },
+  {
+    "slug": "minimum-viable-day",
+    "title": "Minimum Viable Day",
+    "description": "A survival ritual for burnout that shrinks the day to its true essentials before you try to plan anything else.",
+    "heroIntro": "A survival ritual for burnout. Use it when everything costs too much and the honest answer is a smaller day, not a better attitude.",
+    "oath": [
+      "I will name what must happen. Everything else is optional until proven otherwise.",
+      "One recovery action goes on the list before a single new task does."
+    ],
+    "howToUse": [
+      "List only what truly must happen today. If it can wait until tomorrow without real consequences, it waits.",
+      "Add one recovery action to the list: a nap, a walk, a meal, silence. It is not optional.",
+      "Cross off anything you added from habit, guilt, or fantasy fuel.",
+      "Do the surviving list in any order. Stop when it is done."
+    ],
+    "whyItHelps": [
+      "It matches the plan to the actual fuel supply instead of yesterday's capacity.",
+      "It protects recovery from being the first thing cut.",
+      "It lets you finish a day instead of failing a bigger one."
+    ],
+    "minimalPrompt": "Minimum Viable Day\nMust happen: [   ] [   ] [   ]\nRecovery action: ___________________________\nCut from habit/guilt: ___________________________\nWhen the list is done, I stop."
+  },
+  {
+    "slug": "reduce-inputs-first",
+    "title": "Reduce Inputs First",
+    "description": "A sensory triage ritual that cuts stimuli before adding tools, because your brain needs less before it needs more.",
+    "heroIntro": "A sensory triage ritual for overload. Use it when sound, light, and texture are piling up and your brain needs less input before it can do anything else.",
+    "oath": [],
+    "howToUse": [
+      "Name the loudest, brightest, scratchiest, or most socially demanding input right now.",
+      "Lower or remove that one thing. Headphones off, lights down, door closed, notification silenced.",
+      "Give your body one steady anchor: cold water, pressure, a single calm sound, or dimmer light.",
+      "Wait two minutes. Then ask what your brain can handle from here."
+    ],
+    "whyItHelps": [
+      "It treats overload as an input problem, not a willpower problem.",
+      "It works faster than any strategy that adds more things to manage.",
+      "It gives the nervous system room to come back online before you ask it to perform."
+    ],
+    "minimalPrompt": "Reduce Inputs First\nLoudest input right now: ___________________________\nAction to lower it: ___________________________\nOne-sense anchor: ___________________________\nAfter 2 min, I can handle: ___________________________"
+  },
+  {
+    "slug": "reply-scaffold",
+    "title": "Reply Scaffold",
+    "description": "A pre-written response ritual for rejection sensitivity that gives you reply shapes before the flood hits.",
+    "heroIntro": "A pre-written response ritual for rejection sensitivity. Use it when one hard message has turned the whole inbox into a minefield.",
+    "oath": [],
+    "howToUse": [
+      "Pick one reply shape: acknowledge, yes, no, or clarify.",
+      "Fill the slots with the minimum honest words. No backstory, no apology tour.",
+      "Read it once for facts. If the facts are right, send it.",
+      "Close the thread. You replied. The rest is not your job right now."
+    ],
+    "whyItHelps": [
+      "It removes the blank-page problem from emotional replies.",
+      "It separates \"what do I say\" from \"what does this mean about me.\"",
+      "It lets you act before the Wisp finishes narrating."
+    ],
+    "minimalPrompt": "Reply Scaffold\nShape: acknowledge / yes / no / clarify\nSlot 1 (the fact): ___________________________\nSlot 2 (the action): ___________________________\nRead once for facts: done / not yet\nSend."
+  },
+  {
+    "slug": "single-task-oath",
+    "title": "Single-Task Oath",
+    "description": "A short ritual for overwhelm spirals that helps you name one task, stay in one lane, and stop the list from multiplying.",
+    "heroIntro": "A short ritual for overwhelm spirals. Use it when the list keeps multiplying and you need one visible task instead of ten competing ones.",
+    "oath": [
+      "I choose one head. I do not grow new ones.",
+      "Today's three quests are visible. The rest can wait."
+    ],
+    "howToUse": [
+      "Name one task, not an entire project category.",
+      "Gather only the tools that belong to that task.",
+      "Put every new idea in a parking lot instead of promoting it into the current battle.",
+      "Finish, stop, and choose again."
+    ],
+    "whyItHelps": [
+      "It reduces switching costs.",
+      "It creates an external rule before overwhelm starts negotiating.",
+      "It keeps new ideas from hijacking the current lane."
+    ],
+    "minimalPrompt": "Single-Task Oath\nI choose one head. I do not grow new ones.\nToday's three quests: [   ] [   ] [   ]\nParking lot: ___________________________"
+  },
+  {
+    "slug": "threshold-spell",
+    "title": "Threshold Spell",
+    "description": "A micro-transition ritual for shutdown and retreat that helps you cross one doorway before your brain asks for the whole plan.",
+    "heroIntro": "A micro-transition ritual for shutdown and retreat. Use it when the cave feels safer than the world and you need one doorway, not an expedition.",
+    "oath": [],
+    "howToUse": [
+      "Stand in a literal or figurative doorway: the bedroom door, the reply button, the first sentence of the email.",
+      "Take three slow breaths in the threshold.",
+      "Make three small moves: sit up, feet on floor, stand. Or: open app, read one line, type one word.",
+      "From the doorway, decide: one more step, or rest here. Either answer is legal."
+    ],
+    "whyItHelps": [
+      "It shrinks the ask from \"rejoin the world\" to \"reach the door.\"",
+      "It uses body movement to interrupt the freeze loop.",
+      "It gives you a decision point after motion, not before it."
+    ],
+    "minimalPrompt": "Threshold Spell\nDoorway I am crossing: ___________________________\nThree breaths: done / not yet\nThree moves: [   ] [   ] [   ]\nFrom the doorway: one more step / rest here"
+  },
+  {
+    "slug": "tide-mark-calendar",
+    "title": "Tide Mark Calendar",
+    "description": "A pre-commitment ritual for time blindness that makes a real start time visible before the deadline panic hits.",
+    "heroIntro": "A pre-commitment ritual for time blindness. Use it when deadlines feel imaginary until they are suddenly on top of you.",
+    "oath": [],
+    "howToUse": [],
+    "whyItHelps": [
+      "It turns intention into a visible commitment.",
+      "It reduces the gap between \"I should\" and \"I am starting now.\"",
+      "It gives the brain something concrete before panic takes over."
+    ],
+    "minimalPrompt": "Tide Marks\nStart time: __________\nT-60 action: __________\nT-15 action: __________\nFirst bite waiting: __________\nBuddy ping time: __________"
+  },
+  {
+    "slug": "ugly-first-pass",
+    "title": "Ugly First Pass",
+    "description": "A counter-spell for perfectionism loops that gives you permission to make the whole shape badly before polishing anything.",
+    "heroIntro": "A counter-spell for perfectionism loops. Use it when the Wyrm whispers that the draft is not ready and you know it never will be.",
+    "oath": [
+      "My first job is existence, not elegance.",
+      "I will make the whole shape before I polish any sentence."
+    ],
+    "howToUse": [
+      "Set a timer for the entire draft, not the first section.",
+      "Write every section as bullet points, placeholders, or garbage prose. All of it counts.",
+      "Mark anything that feels wrong with [FIX LATER] and keep moving.",
+      "When the timer ends, you have a full ugly shape. Now you may polish."
+    ],
+    "whyItHelps": [
+      "It separates creation from editing, which use different brain modes.",
+      "It removes the Wyrm's leverage: you cannot endlessly revise what does not exist yet.",
+      "It makes \"done\" visible before \"perfect\" gets a vote."
+    ],
+    "minimalPrompt": "Ugly First Pass\nMy first job is existence, not elegance.\nSections to rough out: [   ] [   ] [   ] [   ]\n[FIX LATER] count: ___\nShip line: when __________ is done, I send it."
+  },
+  {
+    "slug": "wake-invocation",
+    "title": "Wake Invocation",
+    "description": "A bedside ritual for hard starts that helps you move before the morning negotiation gets louder.",
+    "heroIntro": "A bedside ritual for hard starts. Use it when mornings become negotiations before your feet hit the floor.",
+    "oath": [],
+    "howToUse": [],
+    "whyItHelps": [
+      "It reduces morning decision load.",
+      "It uses body cues instead of waiting for motivation.",
+      "It makes the first movement feel smaller and more scripted."
+    ],
+    "minimalPrompt": "Command phrase: ___________________________\nFeet on floor in three seconds: yes / no\nWater, light, body cue: ___________________________\nI am vertical text sent to: ___________________________\nFirst action: ___________________________"
+  }
+]

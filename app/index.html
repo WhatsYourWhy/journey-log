@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1a1428">
+    <meta name="description" content="A private ADHD companion. Name the monster. Run the ritual. Keep the scroll.">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>The Mage's Rituals</title>
+    <style>
+        :root {
+            --bg: #0f0a1a;
+            --surface: #1a1428;
+            --surface-raised: #251c39;
+            --border: #392c54;
+            --text: #f4ecff;
+            --text-muted: #b6a8d3;
+            --accent: #c9a8ff;
+            --accent-strong: #a47bff;
+            --warm: #ffcd7a;
+            --danger: #ff8a8a;
+            --radius: 14px;
+            --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+            --max-width: 640px;
+            color-scheme: dark;
+            font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+            font-size: 17px;
+            line-height: 1.55;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html, body { background-color: var(--bg); color: var(--text); }
+        html { min-height: 100%; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-image: radial-gradient(ellipse at top, #251c39 0%, var(--bg) 60%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            padding: 20px 20px 0;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .app-title { font-size: 1.4rem; margin: 0; letter-spacing: 0.01em; }
+
+        .app-nav {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .app-nav a {
+            padding: 8px 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+
+        .app-nav a[aria-current="page"] {
+            color: var(--text);
+            border-bottom-color: var(--accent);
+        }
+
+        .view {
+            flex: 1;
+            padding: 24px 20px 80px;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .app-footer {
+            padding: 16px 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        button {
+            font: inherit;
+            color: var(--text);
+            background: var(--surface-raised);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+        button:hover { background: var(--surface); border-color: var(--accent); }
+
+        button.primary {
+            background: var(--accent-strong);
+            border-color: var(--accent-strong);
+            color: #1a1428;
+            font-weight: 600;
+        }
+
+        button.primary:hover { background: var(--accent); border-color: var(--accent); }
+
+        button.danger {
+            color: var(--danger);
+            border-color: rgba(255, 138, 138, 0.4);
+        }
+
+        button.is-default,
+        button[aria-pressed="true"] {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        textarea {
+            width: 100%;
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            font: inherit;
+            resize: vertical;
+        }
+
+        textarea:focus,
+        button:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px; height: 1px;
+            padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0,0,0,0);
+            white-space: nowrap; border: 0;
+        }
+
+        .today__lead {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0 0 16px;
+        }
+
+        .chooser {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chooser__card {
+            display: block;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: inherit;
+            text-align: left;
+            width: 100%;
+            box-shadow: var(--shadow);
+            transition: border-color 0.15s ease;
+            overflow: hidden;
+        }
+
+        .chooser__card[open] { border-color: var(--accent); }
+        .chooser__card:hover { border-color: var(--accent); }
+
+        .chooser__summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 16px 18px;
+            min-height: 56px;
+            position: relative;
+        }
+
+        .chooser__summary::-webkit-details-marker { display: none; }
+
+        .chooser__summary::after {
+            content: "+";
+            position: absolute;
+            top: 50%;
+            right: 18px;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            line-height: 1;
+            transition: transform 0.2s ease;
+        }
+
+        .chooser__card[open] .chooser__summary::after {
+            content: "−";
+            color: var(--accent);
+        }
+
+        .chooser__struggle { font-size: 1rem; margin: 0; padding-right: 28px; }
+        .chooser__hint {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+        .chooser__card[open] .chooser__hint { display: none; }
+
+        .ritual-content {
+            padding: 0 18px 18px;
+            border-top: 1px solid var(--border);
+            margin-top: 4px;
+            padding-top: 14px;
+        }
+
+        .ritual-content h3 {
+            margin: 16px 0 8px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+        }
+        .ritual-content h3:first-child { margin-top: 0; }
+
+        .ritual-content__intro {
+            color: var(--text-muted);
+            margin: 0 0 14px;
+        }
+
+        .ritual-content__oath p {
+            font-style: italic;
+            border-left: 2px solid var(--accent);
+            padding-left: 14px;
+            margin: 8px 0;
+        }
+
+        .ritual-content ol,
+        .ritual-content__why {
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .ritual-content ol li { margin: 6px 0; }
+        .ritual-content__why li { margin: 6px 0; color: var(--text-muted); }
+
+        .ritual-content__prompt {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-family: ui-monospace, "SF Mono", Menlo, monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            color: var(--text-muted);
+            overflow-x: auto;
+        }
+
+        .chooser__monster {
+            font-size: 0.85rem;
+            color: var(--accent);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .today__footnote {
+            margin-top: 28px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .ritual__back {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+        .ritual__back:hover { color: var(--accent); }
+
+        .ritual__monster {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.8rem;
+            margin: 0 0 4px;
+        }
+
+        .ritual__title { margin: 0 0 8px; font-size: 1.6rem; }
+        .ritual__intro { color: var(--text-muted); margin: 0; }
+
+        .ritual section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            margin-top: 16px;
+        }
+
+        .ritual section h3 {
+            margin: 0 0 10px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+        }
+
+        .ritual__oath p {
+            font-style: italic;
+            border-left: 2px solid var(--accent);
+            padding-left: 14px;
+            margin: 8px 0;
+        }
+
+        .ritual__steps ol { padding-left: 20px; margin: 0; }
+        .ritual__steps li { margin: 6px 0; }
+        .ritual__why ul { padding-left: 20px; margin: 0; }
+        .ritual__why li { margin: 6px 0; color: var(--text-muted); }
+
+        .timer__display {
+            font-variant-numeric: tabular-nums;
+            font-size: 2.6rem;
+            margin: 0 0 12px;
+            text-align: center;
+            color: var(--warm);
+        }
+
+        .timer__controls,
+        .timer__actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .timer__note {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+            margin: 8px 0 0;
+        }
+
+        .ritual__journal textarea { margin-bottom: 10px; }
+        .ritual__journal button { width: 100%; }
+
+        .ritual__saved {
+            color: var(--accent);
+            margin: 8px 0 0;
+            text-align: center;
+        }
+
+        .scroll__lead { color: var(--text-muted); margin: 0 0 16px; }
+
+        .scroll__list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .scroll__entry {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+        }
+
+        .scroll__when { font-size: 0.8rem; color: var(--text-muted); margin: 0 0 4px; }
+        .scroll__what { margin: 0 0 6px; font-weight: 600; }
+        .scroll__note { margin: 0; color: var(--text-muted); white-space: pre-wrap; }
+
+        .scroll__empty {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 32px 0;
+        }
+
+        .scroll__actions { display: flex; gap: 8px; }
+        .scroll__actions button { flex: 1; }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <h1 class="app-title">The Mage's Rituals <span style="font-size:0.55em;color:var(--text-muted);font-weight:normal;">v3 — tap to expand</span></h1>
+        <nav class="app-nav" aria-label="Primary">
+            <a href="#/today" data-route="today">Today</a>
+            <a href="#/scroll" data-route="scroll">Scroll</a>
+        </nav>
+    </header>
+
+    <main id="view" class="view" aria-live="polite">
+        <section class="today">
+            <p class="today__lead">Which feeling matches right now?</p>
+            <ul class="chooser">
+            <li>
+                <details class="chooser__card">
+                    <summary class="chooser__summary">
+                        <p class="chooser__monster">Task Hydra</p>
+                        <p class="chooser__struggle">I have too many tasks and I cannot tell where to start.</p>
+                        <span class="chooser__hint" aria-hidden="true">Tap to open the ritual</span>
+                    </summary>
+                    <div class="ritual-content">
+<p class="ritual-content__intro">A short ritual for overwhelm spirals. Use it when the list keeps multiplying and you need one visible task instead of ten competing ones.</p>
+<h3>The oath</h3>
+<div class="ritual-content__oath">
+<p>I choose one head. I do not grow new ones.</p>
+<p>Today's three quests are visible. The rest can wait.</p>
+</div>
+<h3>How to use it</h3>
+<ol>
+<li>Name one task, not an entire project category.</li>
+<li>Gather only the tools that belong to that task.</li>
+<li>Put every new idea in a parking lot instead of promoting it into the current battle.</li>
+<li>Finish, stop, and choose again.</li>
+</ol>
+<h3>Minimal prompt</h3>
+<pre class="ritual-content__prompt">Single-Task Oath
+I choose one head. I do not grow new ones.
+Today's three quests: [   ] [   ] [   ]
+Parking lot: ___________________________</pre>
+<h3>Why it helps</h3>
+<ul class="ritual-content__why">
+<li>It reduces switching costs.</li>
+<li>It creates an external rule before overwhelm starts negotiating.</li>
+<li>It keeps new ideas from hijacking the current lane.</li>
+</ul>
+                    </div>
+                </details>
+            </li>
+            <li>
+                <details class="chooser__card">
+                    <summary class="chooser__summary">
+                        <p class="chooser__monster">Temporal Shark</p>
+                        <p class="chooser__struggle">Deadlines do not feel real until they are already biting me.</p>
+                        <span class="chooser__hint" aria-hidden="true">Tap to open the ritual</span>
+                    </summary>
+                    <div class="ritual-content">
+<p class="ritual-content__intro">A pre-commitment ritual for time blindness. Use it when deadlines feel imaginary until they are suddenly on top of you.</p>
+<h3>Minimal prompt</h3>
+<pre class="ritual-content__prompt">Tide Marks
+Start time: __________
+T-60 action: __________
+T-15 action: __________
+First bite waiting: __________
+Buddy ping time: __________</pre>
+<h3>Why it helps</h3>
+<ul class="ritual-content__why">
+<li>It turns intention into a visible commitment.</li>
+<li>It reduces the gap between &quot;I should&quot; and &quot;I am starting now.&quot;</li>
+<li>It gives the brain something concrete before panic takes over.</li>
+</ul>
+                    </div>
+                </details>
+            </li>
+            <li>
+                <details class="chooser__card">
+                    <summary class="chooser__summary">
+                        <p class="chooser__monster">Slumber Troll</p>
+                        <p class="chooser__struggle">Crossing from rest to motion feels absurdly hard.</p>
+                        <span class="chooser__hint" aria-hidden="true">Tap to open the ritual</span>
+                    </summary>
+                    <div class="ritual-content">
+<p class="ritual-content__intro">A bedside ritual for hard starts. Use it when mornings become negotiations before your feet hit the floor.</p>
+<h3>Minimal prompt</h3>
+<pre class="ritual-content__prompt">Command phrase: ___________________________
+Feet on floor in three seconds: yes / no
+Water, light, body cue: ___________________________
+I am vertical text sent to: ___________________________
+First action: ___________________________</pre>
+<h3>Why it helps</h3>
+<ul class="ritual-content__why">
+<li>It reduces morning decision load.</li>
+<li>It uses body cues instead of waiting for motivation.</li>
+<li>It makes the first movement feel smaller and more scripted.</li>
+</ul>
+                    </div>
+                </details>
+            </li>
+            <li>
+                <details class="chooser__card">
+                    <summary class="chooser__summary">
+                        <p class="chooser__monster">Dopamine Goblin</p>
+                        <p class="chooser__struggle">Shiny distractions keep outbidding the work I chose.</p>
+                        <span class="chooser__hint" aria-hidden="true">Tap to open the ritual</span>
+                    </summary>
+                    <div class="ritual-content">
+<p class="ritual-content__intro">A negotiation ritual for shiny distractions. Use it when the boring task keeps losing the auction to whatever feels more stimulating right now.</p>
+<h3>How to use it</h3>
+<ol>
+<li>Name the distraction out loud. Writing it down takes away half its power.</li>
+<li>Pre-choose the reward: a snack, a scroll, a song, a stretch. Decide now, not later.</li>
+<li>Set a short timer (15-25 minutes). Work the boring task until it rings.</li>
+<li>When the timer rings, take the reward. Fully. No guilt. Then decide: another round or done.</li>
+</ol>
+<h3>Minimal prompt</h3>
+<pre class="ritual-content__prompt">Goblin Deal
+The shiny thing: ___________________________
+The boring task: ___________________________
+Pre-chosen reward: ___________________________
+Timer: ___ minutes
+Deal struck: yes / no</pre>
+<h3>Why it helps</h3>
+<ul class="ritual-content__why">
+<li>It stops the craving from being the villain and makes it part of the contract.</li>
+<li>It gives the brain a concrete finish line instead of open-ended suffering.</li>
+<li>It adds friction to the impulse without pretending the impulse is fake.</li>
+</ul>
+                    </div>
+                </details>
+            </li>
+            <li>
+                <details class="chooser__card">
+                    <summary class="chooser__summary">
+                        <p class="chooser__monster">Cave Bear</p>
+                        <p class="chooser__struggle">I keep retreating, hiding, or staying in the cave even when I want out.</p>
+                        <span class="chooser__hint" aria-hidden="true">Tap to open the ritual</span>
+                    </summary>
+                    <div class="ritual-content">
+<p class="ritual-content__intro">A micro-transition ritual for shutdown and retreat. Use it when the cave feels safer than the world and you need one doorway, not an expedition.</p>
+<h3>How to use it</h3>
+<ol>
+<li>Stand in a literal or figurative doorway: the bedroom door, the reply button, the first sentence of the email.</li>
+<li>Take three slow breaths in the threshold.</li>
+<li>Make three small moves: sit up, feet on floor, stand. Or: open app, read one line, type one word.</li>
+<li>From the doorway, decide: one more step, or rest here. Either answer is legal.</li>
+</ol>
+<h3>Minimal prompt</h3>
+<pre class="ritual-content__prompt">Threshold Spell
+Doorway I am crossing: ___________________________
+Three breaths: done / not yet
+Three moves: [   ] [   ] [   ]
+From the doorway: one more step / rest here</pre>
+<h3>Why it helps</h3>
+<ul class="ritual-content__why">
+<li>It shrinks the ask from &quot;rejoin the world&quot; to &quot;reach the door.&quot;</li>
+<li>It uses body movement to interrupt the freeze loop.</li>
+<li>It gives you a decision point after motion, not before it.</li>
+</ul>
+                    </div>
+                </details>
+            </li>
+            <li>
+                <details class="chooser__card">
+                    <summary class="chooser__summary">
+                        <p class="chooser__monster">Perfection Wyrm</p>
+                        <p class="chooser__struggle">I keep polishing the work instead of finishing or sending it.</p>
+                        <span class="chooser__hint" aria-hidden="true">Tap to open the ritual</span>
+                    </summary>
+                    <div class="ritual-content">
+<p class="ritual-content__intro">A counter-spell for perfectionism loops. Use it when the Wyrm whispers that the draft is not ready and you know it never will be.</p>
+<h3>The oath</h3>
+<div class="ritual-content__oath">
+<p>My first job is existence, not elegance.</p>
+<p>I will make the whole shape before I polish any sentence.</p>
+</div>
+<h3>How to use it</h3>
+<ol>
+<li>Set a timer for the entire draft, not the first section.</li>
+<li>Write every section as bullet points, placeholders, or garbage prose. All of it counts.</li>
+<li>Mark anything that feels wrong with [FIX LATER] and keep moving.</li>
+<li>When the timer ends, you have a full ugly shape. Now you may polish.</li>
+</ol>
+<h3>Minimal prompt</h3>
+<pre class="ritual-content__prompt">Ugly First Pass
+My first job is existence, not elegance.
+Sections to rough out: [   ] [   ] [   ] [   ]
+[FIX LATER] count: ___
+Ship line: when __________ is done, I send it.</pre>
+<h3>Why it helps</h3>
+<ul class="ritual-content__why">
+<li>It separates creation from editing, which use different brain modes.</li>
+<li>It removes the Wyrm's leverage: you cannot endlessly revise what does not exist yet.</li>
+<li>It makes &quot;done&quot; visible before &quot;perfect&quot; gets a vote.</li>
+</ul>
+                    </div>
+                </details>
+            </li>
+            <li>
+                <details class="chooser__card">
+                    <summary class="chooser__summary">
+                        <p class="chooser__monster">Rejection Wisp</p>
+                        <p class="chooser__struggle">One hard message makes the whole inbox feel dangerous.</p>
+                        <span class="chooser__hint" aria-hidden="true">Tap to open the ritual</span>
+                    </summary>
+                    <div class="ritual-content">
+<p class="ritual-content__intro">A pre-written response ritual for rejection sensitivity. Use it when one hard message has turned the whole inbox into a minefield.</p>
+<h3>How to use it</h3>
+<ol>
+<li>Pick one reply shape: acknowledge, yes, no, or clarify.</li>
+<li>Fill the slots with the minimum honest words. No backstory, no apology tour.</li>
+<li>Read it once for facts. If the facts are right, send it.</li>
+<li>Close the thread. You replied. The rest is not your job right now.</li>
+</ol>
+<h3>Minimal prompt</h3>
+<pre class="ritual-content__prompt">Reply Scaffold
+Shape: acknowledge / yes / no / clarify
+Slot 1 (the fact): ___________________________
+Slot 2 (the action): ___________________________
+Read once for facts: done / not yet
+Send.</pre>
+<h3>Why it helps</h3>
+<ul class="ritual-content__why">
+<li>It removes the blank-page problem from emotional replies.</li>
+<li>It separates &quot;what do I say&quot; from &quot;what does this mean about me.&quot;</li>
+<li>It lets you act before the Wisp finishes narrating.</li>
+</ul>
+                    </div>
+                </details>
+            </li>
+            <li>
+                <details class="chooser__card">
+                    <summary class="chooser__summary">
+                        <p class="chooser__monster">Sensory Storm</p>
+                        <p class="chooser__struggle">Everything around me feels too loud, bright, sharp, or intense.</p>
+                        <span class="chooser__hint" aria-hidden="true">Tap to open the ritual</span>
+                    </summary>
+                    <div class="ritual-content">
+<p class="ritual-content__intro">A sensory triage ritual for overload. Use it when sound, light, and texture are piling up and your brain needs less input before it can do anything else.</p>
+<h3>How to use it</h3>
+<ol>
+<li>Name the loudest, brightest, scratchiest, or most socially demanding input right now.</li>
+<li>Lower or remove that one thing. Headphones off, lights down, door closed, notification silenced.</li>
+<li>Give your body one steady anchor: cold water, pressure, a single calm sound, or dimmer light.</li>
+<li>Wait two minutes. Then ask what your brain can handle from here.</li>
+</ol>
+<h3>Minimal prompt</h3>
+<pre class="ritual-content__prompt">Reduce Inputs First
+Loudest input right now: ___________________________
+Action to lower it: ___________________________
+One-sense anchor: ___________________________
+After 2 min, I can handle: ___________________________</pre>
+<h3>Why it helps</h3>
+<ul class="ritual-content__why">
+<li>It treats overload as an input problem, not a willpower problem.</li>
+<li>It works faster than any strategy that adds more things to manage.</li>
+<li>It gives the nervous system room to come back online before you ask it to perform.</li>
+</ul>
+                    </div>
+                </details>
+            </li>
+            <li>
+                <details class="chooser__card">
+                    <summary class="chooser__summary">
+                        <p class="chooser__monster">Burnout Dragon</p>
+                        <p class="chooser__struggle">Everything costs too much and I do not have the fuel I used to.</p>
+                        <span class="chooser__hint" aria-hidden="true">Tap to open the ritual</span>
+                    </summary>
+                    <div class="ritual-content">
+<p class="ritual-content__intro">A survival ritual for burnout. Use it when everything costs too much and the honest answer is a smaller day, not a better attitude.</p>
+<h3>The oath</h3>
+<div class="ritual-content__oath">
+<p>I will name what must happen. Everything else is optional until proven otherwise.</p>
+<p>One recovery action goes on the list before a single new task does.</p>
+</div>
+<h3>How to use it</h3>
+<ol>
+<li>List only what truly must happen today. If it can wait until tomorrow without real consequences, it waits.</li>
+<li>Add one recovery action to the list: a nap, a walk, a meal, silence. It is not optional.</li>
+<li>Cross off anything you added from habit, guilt, or fantasy fuel.</li>
+<li>Do the surviving list in any order. Stop when it is done.</li>
+</ol>
+<h3>Minimal prompt</h3>
+<pre class="ritual-content__prompt">Minimum Viable Day
+Must happen: [   ] [   ] [   ]
+Recovery action: ___________________________
+Cut from habit/guilt: ___________________________
+When the list is done, I stop.</pre>
+<h3>Why it helps</h3>
+<ul class="ritual-content__why">
+<li>It matches the plan to the actual fuel supply instead of yesterday's capacity.</li>
+<li>It protects recovery from being the first thing cut.</li>
+<li>It lets you finish a day instead of failing a bigger one.</li>
+</ul>
+                    </div>
+                </details>
+            </li>
+            </ul>
+            <p class="today__footnote">One match is enough. You can come back when the next beast shows up.</p>
+        </section></main>
+
+    <footer class="app-footer">
+        <p>Private. Offline. Yours.</p>
+    </footer>
+
+    <script id="data-chooser" type="application/json">[{"slug":"task-hydra","struggle":"I have too many tasks and I cannot tell where to start.","summary":"Start here when your list keeps multiplying, your tabs are breeding, or choosing the first step feels impossible.","monster":{"name":"Task Hydra","slug":"task-hydra"},"signs":["You keep rewriting the list instead of doing the work.","Every task feels equally urgent, so none of them move.","New tasks appear mid-stream and pull you away from the first one."],"ritual":{"label":"Use the Single-Task Oath","slug":"single-task-oath","summary":"Choose one head, hide the rest, and work the first cut before switching."}},{"slug":"temporal-shark","struggle":"Deadlines do not feel real until they are already biting me.","summary":"Start here when time keeps disappearing, prep steps stay invisible, or panic becomes the only thing that gets you moving.","monster":{"name":"Temporal Shark","slug":"temporal-shark"},"signs":["You feel calm right up until something is suddenly due.","A task looks small until you count the setup and recovery time.","You need alarms, pings, or another human to make time feel solid."],"ritual":{"label":"Set a Tide Mark","slug":"tide-mark-calendar","summary":"Put the real start time on your calendar and add T-60 and T-15 alarms with action verbs."}},{"slug":"slumber-troll","struggle":"Crossing from rest to motion feels absurdly hard.","summary":"Start here when mornings, wake-ups, or other body-state transitions feel heavier than the task itself.","monster":{"name":"Slumber Troll","slug":"slumber-troll"},"signs":["You bargain for five more minutes until the morning is gone.","You know what to do next, but getting vertical feels impossible.","Light, music, or accountability help more than logic does."],"ritual":{"label":"Use the Wake Invocation","slug":"wake-invocation","summary":"Count down, move before negotiating, and stack light plus a simple accountability cue."}},{"slug":"dopamine-goblin","struggle":"Shiny distractions keep outbidding the work I chose.","summary":"Start here when boredom, scrolling, novelty, or impulse trades keep stealing the session you meant to protect.","monster":{"name":"Dopamine Goblin","slug":"dopamine-goblin"},"signs":["You open one tab or app and lose the whole block.","A boring task feels physically harder than a distracting one.","Rewards help, but only if you decide them before you wander."],"ritual":{"label":"Make a Goblin deal","slug":"goblin-deal","summary":"Pick a short work block, pre-choose the reward, and make the distraction wait its turn."}},{"slug":"cave-bear","struggle":"I keep retreating, hiding, or staying in the cave even when I want out.","summary":"Start here when isolation, shutdown, scrolling in bed, or gentle avoidance are shrinking your world.","monster":{"name":"Cave Bear","slug":"cave-bear"},"signs":["Rest keeps turning into retreat.","Replying, leaving the room, or starting the errand feels too big.","A text, doorway step, or tiny body cue helps more than making a bigger plan."],"ritual":{"label":"Cast the Threshold Spell","slug":"threshold-spell","summary":"Step to a doorway, take the first body movement, and use a social rope if you need help leaving the cave."}},{"slug":"perfection-wyrm","struggle":"I keep polishing the work instead of finishing or sending it.","summary":"Start here when the draft is already useful but another round of edits feels safer than letting anyone see it.","monster":{"name":"Perfection Wyrm","slug":"perfection-wyrm"},"signs":["You tell yourself the next pass is about quality, but it is really about fear.","Finishing feels riskier than revising.","A visible stop rule helps more than vague permission to relax."],"ritual":{"label":"Cast Ugly First Pass","slug":"ugly-first-pass","summary":"Define useful enough, make one imperfect pass, and stop when the work crosses the ship line."}},{"slug":"rejection-wisp","struggle":"One hard message makes the whole inbox feel dangerous.","summary":"Start here when unread replies, criticism, or vague silence have turned communication into a body-level threat.","monster":{"name":"Rejection Wisp","slug":"rejection-wisp"},"signs":["You can name the reply, but sending it still feels unsafe.","One awkward thread poisons every other unopened message.","A short script works better than trying to improvise while flooded."],"ritual":{"label":"Use the Reply Scaffold","slug":"reply-scaffold","summary":"Choose the smallest reply shape that moves the thread forward and send that version first."}},{"slug":"sensory-storm","struggle":"Everything around me feels too loud, bright, sharp, or intense.","summary":"Start here when overload is making it hard to think, speak, or stay present and you need to lower input before doing anything else.","monster":{"name":"Sensory Storm","slug":"sensory-storm"},"signs":["You are getting fragile, foggy, or snappy faster than the situation seems to justify.","Changing the environment helps more than another productivity trick.","You need shelter before you need a plan."],"ritual":{"label":"Reduce Inputs First","slug":"reduce-inputs-first","summary":"Lower one major input, add one anchor, and shrink the environment before you ask your brain for more."}},{"slug":"burnout-dragon","struggle":"Everything costs too much and I do not have the fuel I used to.","summary":"Start here when exhaustion has become the climate, ordinary tasks feel expensive, and the honest answer is fewer demands.","monster":{"name":"Burnout Dragon","slug":"burnout-dragon"},"signs":["Simple things now feel steep.","Rest keeps getting postponed because there is always more to carry.","You need a smaller day, not a more inspiring plan."],"ritual":{"label":"Build a Minimum Viable Day","slug":"minimum-viable-day","summary":"Cut the day to essentials, protect one recovery action, and stop budgeting energy you do not have."}}]</script>
+    <script id="data-monsters" type="application/json">[{"slug":"slumber-troll","name":"The Slumber Troll","emoji":"🌙","tagline":"Sleep inertia & morning bridges","plainName":"morning inertia and transition friction","challenge":"Slumber Troll blocks the bridge between rest and motion, especially when your body has not caught up with your intentions yet.","accentColor":"#2d6b3a","youMightBeHereIf":["You keep bargaining for a few more minutes until the morning disappears.","Standing up feels harder than the task waiting for you.","Light, sound, or a text message helps more than trying to argue with yourself."],"startHereRitual":{"label":"Wake Invocation","slug":"wake-invocation","description":"Count down, move before negotiating, and stack a simple light cue with accountability."},"supportBoundary":"If sleep, exhaustion, depression, or medication changes are driving the problem, treat this page as a companion tool rather than the whole answer.","order":1},{"slug":"task-hydra","name":"The Task Hydra","emoji":"🐲","tagline":"Too many heads, not enough focus","plainName":"overwhelm from too many tasks","challenge":"Task Hydra shows up when too many open loops are screaming at once and choosing the first task feels harder than doing it.","accentColor":"#6b5ae0","youMightBeHereIf":["You keep reorganizing the list instead of starting.","Every task feels urgent, so your brain treats them all like a threat cloud.","You switch to new tasks before the first one has a chance to shrink."],"startHereRitual":{"label":"Single-Task Oath","slug":"single-task-oath","description":"Pick one task, hide the rest, and say no to new heads until you finish the first cut."},"supportBoundary":"Use this page as a practical naming tool, not as proof that you should power through exhaustion without support. If the overwhelm is tied to burnout, panic, or unsafe pressure, scale down and seek real-world help.","order":2},{"slug":"dopamine-goblin","name":"The Dopamine Goblin","emoji":"🧝‍♂️","tagline":"Shiny distractions & impulse trades","plainName":"shiny distractions and impulse trades","challenge":"Dopamine Goblin shows up when the stimulating thing keeps winning even though you still care about the boring thing.","accentColor":"#d4721a","youMightBeHereIf":["You start the task and drift to tabs, pings, or side quests within minutes.","A reward helps, but only if you decide it before the distraction hits.","The problem is not knowing what matters; it is keeping the shiny thing from hijacking the session."],"startHereRitual":{"label":"Goblin deal","slug":"#dopamine-goblin-rituals","description":"Make a short work contract, pre-select the reward, and let the goblin earn its shiny."},"supportBoundary":"Use these tools to add friction and structure, not to punish yourself for needing novelty. If compulsive use or self-control struggles are severe, bring in additional support.","order":3},{"slug":"temporal-shark","name":"The Temporal Shark","emoji":"🦈","tagline":"Deadlines you can feel","plainName":"time blindness and deadline panic","challenge":"Temporal Shark appears when time stays abstract until panic finally makes it feel real.","accentColor":"#1a7a7a","youMightBeHereIf":["You only feel the deadline once it is already urgent.","Prep steps vanish until the last possible moment.","Alarms, pings, or body doubling help more than good intentions do."],"startHereRitual":{"label":"Tide Mark Ritual","slug":"tide-mark-calendar","description":"Put the true start time on your calendar and add action-labeled alarms before the fin shows up."},"supportBoundary":"This page can help with time awareness and task setup, but it is not a substitute for accommodations, calendar support, or clinical care if deadlines are harming your health or livelihood.","order":4},{"slug":"cave-bear","name":"The Cave Bear","emoji":"🐻","tagline":"Avoidance & hibernation holes","plainName":"shutdown, retreat, and hiding in the cave","challenge":"Cave Bear takes over when retreat starts to feel safer than re-entering the world, even when you do not want to stay hidden.","accentColor":"#8b2a2a","youMightBeHereIf":["Rest keeps turning into retreat or isolation.","Replying, leaving the room, or starting the errand feels too big to touch.","A doorway step or a text to another person helps more than building a bigger plan."],"startHereRitual":{"label":"Threshold Spell","slug":"#cave-bear-rituals","description":"Move to the doorway, take one body-first step, and use a social rope if you need outside help getting started."},"supportBoundary":"This page is for gentle activation and reconnection, not for forcing yourself through burnout, depression, or a real need for rest. If retreat feels dangerous or total, reach for additional support.","order":5},{"slug":"perfection-wyrm","name":"The Perfection Wyrm","emoji":"🐉","tagline":"Polish loops that keep the work from ever leaving the cave","plainName":"perfectionism, over-editing, and fear of shipping","challenge":"Perfection Wyrm appears when finishing starts to feel riskier than endless improving, so the draft stays safe but never gets used.","accentColor":"#a08020","youMightBeHereIf":["You keep editing after the useful changes are already done.","Starting feels okay, but finishing and sending feel strangely dangerous.","You call it 'making it better' even when the real problem is fear."],"startHereRitual":{"label":"Ugly First Pass","slug":"ugly-first-pass","description":"Make one deliberately imperfect pass, define what 'useful enough' means, and stop when the draft crosses that line."},"supportBoundary":"This page is for untangling revision fear and all-or-nothing thinking, not for excusing unsafe work or impossible expectations. If perfection pressure is tied to trauma, punishment, or severe anxiety, use gentler pacing and outside support.","order":6},{"slug":"rejection-wisp","name":"The Rejection Wisp","emoji":"👻","tagline":"One hard interaction that fogs the whole inbox","plainName":"rejection sensitivity, unread messages, and social avoidance","challenge":"Rejection Wisp appears when one ambiguous message, criticism, or silence expands into a whole-body warning signal and replying starts to feel unsafe.","accentColor":"#4cc8c8","youMightBeHereIf":["You can handle the task itself, but not the feeling around the reply.","One awkward thread makes every unopened message feel charged.","A tiny script helps more than trying to improvise while flooded."],"startHereRitual":{"label":"Reply Scaffold","slug":"reply-scaffold","description":"Choose the smallest reply shape that moves the thread forward instead of waiting for the perfect emotional state."},"supportBoundary":"This page is for reducing social dread and reply paralysis, not for pushing yourself through abusive dynamics or unsafe contact. If a conversation feels harmful, prioritize boundaries and support over responsiveness.","order":7},{"slug":"sensory-storm","name":"The Sensory Storm","emoji":"⛈️","tagline":"Too much input, not enough shelter","plainName":"sensory overload, saturation, and shutdown risk","challenge":"Sensory Storm appears when sound, light, texture, motion, or social input pile up until your body starts protecting itself by scattering, freezing, or shutting down.","accentColor":"#7a5aa0","youMightBeHereIf":["Noise, brightness, touch, or too many people are making it hard to think.","You are getting snappier, foggier, or more fragile by the minute.","Relief comes faster from reducing input than from trying harder."],"startHereRitual":{"label":"Reduce Inputs First","slug":"reduce-inputs-first","description":"Lower one major input, add one sensory anchor, and give your body a smaller environment before asking it to function."},"supportBoundary":"This page is for sensory regulation and load reduction, not for forcing yourself through environments that are actively harming you. If you need to leave, cancel, or use accommodations, that is real support, not failure.","order":8},{"slug":"burnout-dragon","name":"The Burnout Dragon","emoji":"🔥","tagline":"When everything costs too much","plainName":"burnout, deep depletion, and task collapse","challenge":"Burnout Dragon appears when your reserves are so low that ordinary tasks feel expensive, recovery keeps getting deferred, and even useful plans start to feel like demands.","accentColor":"#8b3a1a","youMightBeHereIf":["Everything feels heavier than it used to, even simple things.","Rest does not seem to refill you because the pressure never really stops.","You need fewer expectations, not better productivity hacks."],"startHereRitual":{"label":"Minimum Viable Day","slug":"minimum-viable-day","description":"Cut the day down to essentials, protect one recovery action, and stop pretending you have capacity you do not have."},"supportBoundary":"This page is for naming depletion and reducing demands, not for pushing through dangerous exhaustion. If burnout is affecting your safety, health, or ability to function, seek medical, workplace, or community support alongside rest.","order":9}]</script>
+    <script id="data-spellbook" type="application/json">[{"slug":"goblin-deal","title":"Goblin Deal","description":"A negotiation ritual for shiny distractions that lets you bargain with the craving instead of pretending it does not exist.","heroIntro":"A negotiation ritual for shiny distractions. Use it when the boring task keeps losing the auction to whatever feels more stimulating right now.","oath":[],"howToUse":["Name the distraction out loud. Writing it down takes away half its power.","Pre-choose the reward: a snack, a scroll, a song, a stretch. Decide now, not later.","Set a short timer (15-25 minutes). Work the boring task until it rings.","When the timer rings, take the reward. Fully. No guilt. Then decide: another round or done."],"whyItHelps":["It stops the craving from being the villain and makes it part of the contract.","It gives the brain a concrete finish line instead of open-ended suffering.","It adds friction to the impulse without pretending the impulse is fake."],"minimalPrompt":"Goblin Deal\nThe shiny thing: ___________________________\nThe boring task: ___________________________\nPre-chosen reward: ___________________________\nTimer: ___ minutes\nDeal struck: yes / no"},{"slug":"minimum-viable-day","title":"Minimum Viable Day","description":"A survival ritual for burnout that shrinks the day to its true essentials before you try to plan anything else.","heroIntro":"A survival ritual for burnout. Use it when everything costs too much and the honest answer is a smaller day, not a better attitude.","oath":["I will name what must happen. Everything else is optional until proven otherwise.","One recovery action goes on the list before a single new task does."],"howToUse":["List only what truly must happen today. If it can wait until tomorrow without real consequences, it waits.","Add one recovery action to the list: a nap, a walk, a meal, silence. It is not optional.","Cross off anything you added from habit, guilt, or fantasy fuel.","Do the surviving list in any order. Stop when it is done."],"whyItHelps":["It matches the plan to the actual fuel supply instead of yesterday's capacity.","It protects recovery from being the first thing cut.","It lets you finish a day instead of failing a bigger one."],"minimalPrompt":"Minimum Viable Day\nMust happen: [   ] [   ] [   ]\nRecovery action: ___________________________\nCut from habit/guilt: ___________________________\nWhen the list is done, I stop."},{"slug":"reduce-inputs-first","title":"Reduce Inputs First","description":"A sensory triage ritual that cuts stimuli before adding tools, because your brain needs less before it needs more.","heroIntro":"A sensory triage ritual for overload. Use it when sound, light, and texture are piling up and your brain needs less input before it can do anything else.","oath":[],"howToUse":["Name the loudest, brightest, scratchiest, or most socially demanding input right now.","Lower or remove that one thing. Headphones off, lights down, door closed, notification silenced.","Give your body one steady anchor: cold water, pressure, a single calm sound, or dimmer light.","Wait two minutes. Then ask what your brain can handle from here."],"whyItHelps":["It treats overload as an input problem, not a willpower problem.","It works faster than any strategy that adds more things to manage.","It gives the nervous system room to come back online before you ask it to perform."],"minimalPrompt":"Reduce Inputs First\nLoudest input right now: ___________________________\nAction to lower it: ___________________________\nOne-sense anchor: ___________________________\nAfter 2 min, I can handle: ___________________________"},{"slug":"reply-scaffold","title":"Reply Scaffold","description":"A pre-written response ritual for rejection sensitivity that gives you reply shapes before the flood hits.","heroIntro":"A pre-written response ritual for rejection sensitivity. Use it when one hard message has turned the whole inbox into a minefield.","oath":[],"howToUse":["Pick one reply shape: acknowledge, yes, no, or clarify.","Fill the slots with the minimum honest words. No backstory, no apology tour.","Read it once for facts. If the facts are right, send it.","Close the thread. You replied. The rest is not your job right now."],"whyItHelps":["It removes the blank-page problem from emotional replies.","It separates \"what do I say\" from \"what does this mean about me.\"","It lets you act before the Wisp finishes narrating."],"minimalPrompt":"Reply Scaffold\nShape: acknowledge / yes / no / clarify\nSlot 1 (the fact): ___________________________\nSlot 2 (the action): ___________________________\nRead once for facts: done / not yet\nSend."},{"slug":"single-task-oath","title":"Single-Task Oath","description":"A short ritual for overwhelm spirals that helps you name one task, stay in one lane, and stop the list from multiplying.","heroIntro":"A short ritual for overwhelm spirals. Use it when the list keeps multiplying and you need one visible task instead of ten competing ones.","oath":["I choose one head. I do not grow new ones.","Today's three quests are visible. The rest can wait."],"howToUse":["Name one task, not an entire project category.","Gather only the tools that belong to that task.","Put every new idea in a parking lot instead of promoting it into the current battle.","Finish, stop, and choose again."],"whyItHelps":["It reduces switching costs.","It creates an external rule before overwhelm starts negotiating.","It keeps new ideas from hijacking the current lane."],"minimalPrompt":"Single-Task Oath\nI choose one head. I do not grow new ones.\nToday's three quests: [   ] [   ] [   ]\nParking lot: ___________________________"},{"slug":"threshold-spell","title":"Threshold Spell","description":"A micro-transition ritual for shutdown and retreat that helps you cross one doorway before your brain asks for the whole plan.","heroIntro":"A micro-transition ritual for shutdown and retreat. Use it when the cave feels safer than the world and you need one doorway, not an expedition.","oath":[],"howToUse":["Stand in a literal or figurative doorway: the bedroom door, the reply button, the first sentence of the email.","Take three slow breaths in the threshold.","Make three small moves: sit up, feet on floor, stand. Or: open app, read one line, type one word.","From the doorway, decide: one more step, or rest here. Either answer is legal."],"whyItHelps":["It shrinks the ask from \"rejoin the world\" to \"reach the door.\"","It uses body movement to interrupt the freeze loop.","It gives you a decision point after motion, not before it."],"minimalPrompt":"Threshold Spell\nDoorway I am crossing: ___________________________\nThree breaths: done / not yet\nThree moves: [   ] [   ] [   ]\nFrom the doorway: one more step / rest here"},{"slug":"tide-mark-calendar","title":"Tide Mark Calendar","description":"A pre-commitment ritual for time blindness that makes a real start time visible before the deadline panic hits.","heroIntro":"A pre-commitment ritual for time blindness. Use it when deadlines feel imaginary until they are suddenly on top of you.","oath":[],"howToUse":[],"whyItHelps":["It turns intention into a visible commitment.","It reduces the gap between \"I should\" and \"I am starting now.\"","It gives the brain something concrete before panic takes over."],"minimalPrompt":"Tide Marks\nStart time: __________\nT-60 action: __________\nT-15 action: __________\nFirst bite waiting: __________\nBuddy ping time: __________"},{"slug":"ugly-first-pass","title":"Ugly First Pass","description":"A counter-spell for perfectionism loops that gives you permission to make the whole shape badly before polishing anything.","heroIntro":"A counter-spell for perfectionism loops. Use it when the Wyrm whispers that the draft is not ready and you know it never will be.","oath":["My first job is existence, not elegance.","I will make the whole shape before I polish any sentence."],"howToUse":["Set a timer for the entire draft, not the first section.","Write every section as bullet points, placeholders, or garbage prose. All of it counts.","Mark anything that feels wrong with [FIX LATER] and keep moving.","When the timer ends, you have a full ugly shape. Now you may polish."],"whyItHelps":["It separates creation from editing, which use different brain modes.","It removes the Wyrm's leverage: you cannot endlessly revise what does not exist yet.","It makes \"done\" visible before \"perfect\" gets a vote."],"minimalPrompt":"Ugly First Pass\nMy first job is existence, not elegance.\nSections to rough out: [   ] [   ] [   ] [   ]\n[FIX LATER] count: ___\nShip line: when __________ is done, I send it."},{"slug":"wake-invocation","title":"Wake Invocation","description":"A bedside ritual for hard starts that helps you move before the morning negotiation gets louder.","heroIntro":"A bedside ritual for hard starts. Use it when mornings become negotiations before your feet hit the floor.","oath":[],"howToUse":[],"whyItHelps":["It reduces morning decision load.","It uses body cues instead of waiting for motivation.","It makes the first movement feel smaller and more scripted."],"minimalPrompt":"Command phrase: ___________________________\nFeet on floor in three seconds: yes / no\nWater, light, body cue: ___________________________\nI am vertical text sent to: ___________________________\nFirst action: ___________________________"}]</script>
+
+    <script>
+    (function () {
+        const view = document.getElementById('view');
+        const chooser = JSON.parse(document.getElementById('data-chooser').textContent);
+        const monsters = JSON.parse(document.getElementById('data-monsters').textContent);
+        const spellbook = JSON.parse(document.getElementById('data-spellbook').textContent);
+        const monstersBySlug = new Map(monsters.map(m => [m.slug, m]));
+        const ritualsBySlug = new Map(spellbook.map(r => [r.slug, r]));
+        const STORE_KEY = 'mages-rituals.scroll.v1';
+
+        function escapeHtml(s) {
+            return String(s ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function readEntries() {
+            try {
+                const raw = localStorage.getItem(STORE_KEY);
+                if (!raw) return [];
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch { return []; }
+        }
+
+        function writeEntries(entries) {
+            try { localStorage.setItem(STORE_KEY, JSON.stringify(entries)); } catch {}
+        }
+
+        function addEntry(entry) {
+            const entries = readEntries();
+            entries.push({
+                id: Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+                timestamp: Date.now(),
+                ...entry
+            });
+            writeEntries(entries);
+        }
+
+        function clearEntries() { writeEntries([]); }
+
+        function exportMarkdown() {
+            const entries = readEntries().sort((a, b) => b.timestamp - a.timestamp);
+            if (!entries.length) return '# Your scroll\n\n_Empty._\n';
+            const lines = ['# Your scroll', ''];
+            for (const e of entries) {
+                lines.push('## ' + (e.monsterName || 'Unknown') + ' — ' + (e.ritualTitle || ''));
+                lines.push('*' + new Date(e.timestamp).toISOString() + '*');
+                lines.push('');
+                if (e.note) { lines.push(e.note); lines.push(''); }
+                lines.push('---');
+                lines.push('');
+            }
+            return lines.join('\n');
+        }
+
+        function highlightNav(path) {
+            document.querySelectorAll('.app-nav a').forEach(link => {
+                if (path.startsWith(link.getAttribute('href'))) {
+                    link.setAttribute('aria-current', 'page');
+                } else {
+                    link.removeAttribute('aria-current');
+                }
+            });
+        }
+
+        function parseHash() {
+            const raw = location.hash || '';
+            const [path, query = ''] = raw.split('?');
+            const params = Object.fromEntries(new URLSearchParams(query));
+            return { path, params };
+        }
+
+        function renderToday() {
+            view.innerHTML = '';
+            view.style.removeProperty('--accent');
+            const lead = document.createElement('p');
+            lead.className = 'today__lead';
+            lead.textContent = 'Which feeling matches right now?';
+            view.appendChild(lead);
+
+            const list = document.createElement('ul');
+            list.className = 'chooser';
+            for (const path of chooser) {
+                const li = document.createElement('li');
+                const button = document.createElement('button');
+                button.className = 'chooser__card';
+                button.type = 'button';
+                button.innerHTML =
+                    '<p class="chooser__monster">' + escapeHtml(path.monster.name) + '</p>' +
+                    '<p class="chooser__struggle">' + escapeHtml(path.struggle) + '</p>';
+                button.addEventListener('click', function () {
+                    location.hash = '#/ritual?monster=' + encodeURIComponent(path.monster.slug) +
+                        '&ritual=' + encodeURIComponent(path.ritual.slug);
+                });
+                li.appendChild(button);
+                list.appendChild(li);
+            }
+            view.appendChild(list);
+
+            const footnote = document.createElement('p');
+            footnote.className = 'today__footnote';
+            footnote.textContent = 'One match is enough. You can come back when the next beast shows up.';
+            view.appendChild(footnote);
+        }
+
+        function renderRitual(params) {
+            const monster = monstersBySlug.get(params.monster);
+            const ritual = ritualsBySlug.get(params.ritual);
+
+            if (!ritual) {
+                view.innerHTML = '<p>Ritual not found. <a href="#/today">Back to Today</a>.</p>';
+                return;
+            }
+
+            view.innerHTML = '';
+            if (monster && monster.accentColor) {
+                view.style.setProperty('--accent', monster.accentColor);
+            }
+
+            const wrap = document.createElement('section');
+            wrap.className = 'ritual';
+
+            const back = document.createElement('a');
+            back.className = 'ritual__back';
+            back.href = '#/today';
+            back.textContent = '← Back to Today';
+            wrap.appendChild(back);
+
+            const header = document.createElement('header');
+            header.className = 'ritual__header';
+            header.innerHTML =
+                '<p class="ritual__monster">' + escapeHtml(monster ? monster.name : '') + '</p>' +
+                '<h2 class="ritual__title">' + escapeHtml(ritual.title) + '</h2>' +
+                '<p class="ritual__intro">' + escapeHtml(ritual.heroIntro || ritual.description || '') + '</p>';
+            wrap.appendChild(header);
+
+            if (ritual.oath && ritual.oath.length) {
+                const oath = document.createElement('section');
+                oath.className = 'ritual__oath';
+                let html = '<h3>The oath</h3>';
+                for (const line of ritual.oath) html += '<p>' + escapeHtml(line) + '</p>';
+                oath.innerHTML = html;
+                wrap.appendChild(oath);
+            }
+
+            if (ritual.howToUse && ritual.howToUse.length) {
+                const steps = document.createElement('section');
+                steps.className = 'ritual__steps';
+                let html = '<h3>How to use it</h3><ol>';
+                for (const step of ritual.howToUse) html += '<li>' + escapeHtml(step) + '</li>';
+                html += '</ol>';
+                steps.innerHTML = html;
+                wrap.appendChild(steps);
+            }
+
+            // Timer
+            const timerSection = document.createElement('section');
+            timerSection.className = 'ritual__timer';
+            timerSection.innerHTML =
+                '<h3>Timer</h3>' +
+                '<div class="timer">' +
+                '<p class="timer__display" id="timerDisplay">15:00</p>' +
+                '<div class="timer__controls">' +
+                '<button type="button" data-minutes="5">5m</button>' +
+                '<button type="button" data-minutes="15" class="is-default">15m</button>' +
+                '<button type="button" data-minutes="25">25m</button>' +
+                '</div>' +
+                '<div class="timer__actions">' +
+                '<button type="button" id="timerStart">Start</button>' +
+                '<button type="button" id="timerStop" hidden>Stop</button>' +
+                '</div>' +
+                '<p class="timer__note">Missed it? Start again. No streaks here.</p>' +
+                '</div>';
+            wrap.appendChild(timerSection);
+
+            // Journal
+            const journal = document.createElement('section');
+            journal.className = 'ritual__journal';
+            journal.innerHTML =
+                '<h3>Note for the scroll</h3>' +
+                '<label class="sr-only" for="ritualNote">Write a brief note about this ritual</label>' +
+                '<textarea id="ritualNote" rows="4" placeholder="What showed up? What helped? Optional."></textarea>' +
+                '<button type="button" id="ritualSave" class="primary">Save to scroll</button>' +
+                '<p class="ritual__saved" id="ritualSaved" hidden>Saved.</p>';
+            wrap.appendChild(journal);
+
+            if (ritual.whyItHelps && ritual.whyItHelps.length) {
+                const why = document.createElement('section');
+                why.className = 'ritual__why';
+                let html = '<h3>Why it helps</h3><ul>';
+                for (const reason of ritual.whyItHelps) html += '<li>' + escapeHtml(reason) + '</li>';
+                html += '</ul>';
+                why.innerHTML = html;
+                wrap.appendChild(why);
+            }
+
+            view.appendChild(wrap);
+            wireTimer();
+            wireJournal(monster, ritual);
+        }
+
+        function wireTimer() {
+            const display = document.getElementById('timerDisplay');
+            const startBtn = document.getElementById('timerStart');
+            const stopBtn = document.getElementById('timerStop');
+            const presetBtns = document.querySelectorAll('.timer__controls button');
+            let minutes = 15;
+            let endAt = null;
+            let interval = null;
+
+            function paint(remainingMs) {
+                const total = Math.max(0, Math.ceil(remainingMs / 1000));
+                const m = String(Math.floor(total / 60)).padStart(2, '0');
+                const s = String(total % 60).padStart(2, '0');
+                display.textContent = m + ':' + s;
+            }
+
+            function tick() {
+                const remaining = endAt - Date.now();
+                if (remaining <= 0) {
+                    paint(0);
+                    display.textContent = 'Done.';
+                    stop();
+                    return;
+                }
+                paint(remaining);
+            }
+
+            function stop() {
+                if (interval) clearInterval(interval);
+                interval = null;
+                endAt = null;
+                startBtn.hidden = false;
+                stopBtn.hidden = true;
+            }
+
+            function setPreset(m) {
+                minutes = m;
+                paint(m * 60 * 1000);
+                presetBtns.forEach(b => {
+                    const active = Number(b.dataset.minutes) === m;
+                    b.setAttribute('aria-pressed', String(active));
+                    b.classList.toggle('is-default', active);
+                });
+            }
+
+            presetBtns.forEach(b => {
+                b.addEventListener('click', () => setPreset(Number(b.dataset.minutes)));
+            });
+
+            startBtn.addEventListener('click', () => {
+                endAt = Date.now() + minutes * 60 * 1000;
+                paint(minutes * 60 * 1000);
+                interval = setInterval(tick, 250);
+                startBtn.hidden = true;
+                stopBtn.hidden = false;
+            });
+
+            stopBtn.addEventListener('click', stop);
+            setPreset(minutes);
+        }
+
+        function wireJournal(monster, ritual) {
+            const note = document.getElementById('ritualNote');
+            const save = document.getElementById('ritualSave');
+            const saved = document.getElementById('ritualSaved');
+            save.addEventListener('click', () => {
+                addEntry({
+                    monsterSlug: monster ? monster.slug : null,
+                    monsterName: monster ? monster.name : null,
+                    ritualSlug: ritual.slug,
+                    ritualTitle: ritual.title,
+                    note: note.value.trim()
+                });
+                saved.hidden = false;
+                save.disabled = true;
+                setTimeout(() => {
+                    saved.hidden = true;
+                    save.disabled = false;
+                    note.value = '';
+                }, 1500);
+            });
+        }
+
+        function renderScroll() {
+            view.innerHTML = '';
+            view.style.removeProperty('--accent');
+            const wrap = document.createElement('section');
+            wrap.className = 'scroll';
+            wrap.innerHTML =
+                '<h2>Your scroll</h2>' +
+                '<p class="scroll__lead">A private record of monsters named and rituals run.</p>' +
+                '<ul class="scroll__list" id="scrollList"></ul>' +
+                '<p class="scroll__empty" id="scrollEmpty" hidden>Nothing here yet. Start with Today.</p>' +
+                '<div class="scroll__actions">' +
+                '<button type="button" id="scrollExport">Export as Markdown</button>' +
+                '<button type="button" id="scrollClear" class="danger">Clear scroll</button>' +
+                '</div>';
+            view.appendChild(wrap);
+
+            function paint() {
+                const list = document.getElementById('scrollList');
+                const empty = document.getElementById('scrollEmpty');
+                const entries = readEntries().sort((a, b) => b.timestamp - a.timestamp);
+                list.innerHTML = '';
+                if (!entries.length) { empty.hidden = false; return; }
+                empty.hidden = true;
+                for (const e of entries) {
+                    const li = document.createElement('li');
+                    li.className = 'scroll__entry';
+                    li.innerHTML =
+                        '<p class="scroll__when">' + escapeHtml(new Date(e.timestamp).toLocaleString()) + '</p>' +
+                        '<p class="scroll__what">' + escapeHtml(e.monsterName || '') + ' — ' + escapeHtml(e.ritualTitle || '') + '</p>' +
+                        (e.note ? '<p class="scroll__note">' + escapeHtml(e.note) + '</p>' : '');
+                    list.appendChild(li);
+                }
+            }
+
+            document.getElementById('scrollExport').addEventListener('click', () => {
+                const blob = new Blob([exportMarkdown()], { type: 'text/markdown' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'mages-rituals-scroll-' + new Date().toISOString().slice(0, 10) + '.md';
+                document.body.appendChild(a); a.click(); a.remove();
+                URL.revokeObjectURL(url);
+            });
+
+            document.getElementById('scrollClear').addEventListener('click', () => {
+                if (confirm('Clear your entire scroll? This cannot be undone.')) {
+                    clearEntries();
+                    paint();
+                }
+            });
+
+            paint();
+        }
+
+        function dispatch() {
+            const { path, params } = parseHash();
+            highlightNav(path);
+            if (path === '#/today' || path === '') {
+                if (path === '') { location.hash = '#/today'; return; }
+                renderToday();
+            } else if (path === '#/ritual') {
+                renderRitual(params);
+            } else if (path === '#/scroll') {
+                renderScroll();
+            } else {
+                location.hash = '#/today';
+            }
+        }
+
+        window.addEventListener('hashchange', dispatch);
+        dispatch();
+    })();
+    </script>
+</body>
+</html>

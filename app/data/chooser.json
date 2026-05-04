@@ -1,0 +1,173 @@
+[
+  {
+    "slug": "task-hydra",
+    "struggle": "I have too many tasks and I cannot tell where to start.",
+    "summary": "Start here when your list keeps multiplying, your tabs are breeding, or choosing the first step feels impossible.",
+    "monster": {
+      "name": "Task Hydra",
+      "slug": "task-hydra"
+    },
+    "signs": [
+      "You keep rewriting the list instead of doing the work.",
+      "Every task feels equally urgent, so none of them move.",
+      "New tasks appear mid-stream and pull you away from the first one."
+    ],
+    "ritual": {
+      "label": "Use the Single-Task Oath",
+      "slug": "single-task-oath",
+      "summary": "Choose one head, hide the rest, and work the first cut before switching."
+    }
+  },
+  {
+    "slug": "temporal-shark",
+    "struggle": "Deadlines do not feel real until they are already biting me.",
+    "summary": "Start here when time keeps disappearing, prep steps stay invisible, or panic becomes the only thing that gets you moving.",
+    "monster": {
+      "name": "Temporal Shark",
+      "slug": "temporal-shark"
+    },
+    "signs": [
+      "You feel calm right up until something is suddenly due.",
+      "A task looks small until you count the setup and recovery time.",
+      "You need alarms, pings, or another human to make time feel solid."
+    ],
+    "ritual": {
+      "label": "Set a Tide Mark",
+      "slug": "tide-mark-calendar",
+      "summary": "Put the real start time on your calendar and add T-60 and T-15 alarms with action verbs."
+    }
+  },
+  {
+    "slug": "slumber-troll",
+    "struggle": "Crossing from rest to motion feels absurdly hard.",
+    "summary": "Start here when mornings, wake-ups, or other body-state transitions feel heavier than the task itself.",
+    "monster": {
+      "name": "Slumber Troll",
+      "slug": "slumber-troll"
+    },
+    "signs": [
+      "You bargain for five more minutes until the morning is gone.",
+      "You know what to do next, but getting vertical feels impossible.",
+      "Light, music, or accountability help more than logic does."
+    ],
+    "ritual": {
+      "label": "Use the Wake Invocation",
+      "slug": "wake-invocation",
+      "summary": "Count down, move before negotiating, and stack light plus a simple accountability cue."
+    }
+  },
+  {
+    "slug": "dopamine-goblin",
+    "struggle": "Shiny distractions keep outbidding the work I chose.",
+    "summary": "Start here when boredom, scrolling, novelty, or impulse trades keep stealing the session you meant to protect.",
+    "monster": {
+      "name": "Dopamine Goblin",
+      "slug": "dopamine-goblin"
+    },
+    "signs": [
+      "You open one tab or app and lose the whole block.",
+      "A boring task feels physically harder than a distracting one.",
+      "Rewards help, but only if you decide them before you wander."
+    ],
+    "ritual": {
+      "label": "Make a Goblin deal",
+      "slug": "goblin-deal",
+      "summary": "Pick a short work block, pre-choose the reward, and make the distraction wait its turn."
+    }
+  },
+  {
+    "slug": "cave-bear",
+    "struggle": "I keep retreating, hiding, or staying in the cave even when I want out.",
+    "summary": "Start here when isolation, shutdown, scrolling in bed, or gentle avoidance are shrinking your world.",
+    "monster": {
+      "name": "Cave Bear",
+      "slug": "cave-bear"
+    },
+    "signs": [
+      "Rest keeps turning into retreat.",
+      "Replying, leaving the room, or starting the errand feels too big.",
+      "A text, doorway step, or tiny body cue helps more than making a bigger plan."
+    ],
+    "ritual": {
+      "label": "Cast the Threshold Spell",
+      "slug": "threshold-spell",
+      "summary": "Step to a doorway, take the first body movement, and use a social rope if you need help leaving the cave."
+    }
+  },
+  {
+    "slug": "perfection-wyrm",
+    "struggle": "I keep polishing the work instead of finishing or sending it.",
+    "summary": "Start here when the draft is already useful but another round of edits feels safer than letting anyone see it.",
+    "monster": {
+      "name": "Perfection Wyrm",
+      "slug": "perfection-wyrm"
+    },
+    "signs": [
+      "You tell yourself the next pass is about quality, but it is really about fear.",
+      "Finishing feels riskier than revising.",
+      "A visible stop rule helps more than vague permission to relax."
+    ],
+    "ritual": {
+      "label": "Cast Ugly First Pass",
+      "slug": "ugly-first-pass",
+      "summary": "Define useful enough, make one imperfect pass, and stop when the work crosses the ship line."
+    }
+  },
+  {
+    "slug": "rejection-wisp",
+    "struggle": "One hard message makes the whole inbox feel dangerous.",
+    "summary": "Start here when unread replies, criticism, or vague silence have turned communication into a body-level threat.",
+    "monster": {
+      "name": "Rejection Wisp",
+      "slug": "rejection-wisp"
+    },
+    "signs": [
+      "You can name the reply, but sending it still feels unsafe.",
+      "One awkward thread poisons every other unopened message.",
+      "A short script works better than trying to improvise while flooded."
+    ],
+    "ritual": {
+      "label": "Use the Reply Scaffold",
+      "slug": "reply-scaffold",
+      "summary": "Choose the smallest reply shape that moves the thread forward and send that version first."
+    }
+  },
+  {
+    "slug": "sensory-storm",
+    "struggle": "Everything around me feels too loud, bright, sharp, or intense.",
+    "summary": "Start here when overload is making it hard to think, speak, or stay present and you need to lower input before doing anything else.",
+    "monster": {
+      "name": "Sensory Storm",
+      "slug": "sensory-storm"
+    },
+    "signs": [
+      "You are getting fragile, foggy, or snappy faster than the situation seems to justify.",
+      "Changing the environment helps more than another productivity trick.",
+      "You need shelter before you need a plan."
+    ],
+    "ritual": {
+      "label": "Reduce Inputs First",
+      "slug": "reduce-inputs-first",
+      "summary": "Lower one major input, add one anchor, and shrink the environment before you ask your brain for more."
+    }
+  },
+  {
+    "slug": "burnout-dragon",
+    "struggle": "Everything costs too much and I do not have the fuel I used to.",
+    "summary": "Start here when exhaustion has become the climate, ordinary tasks feel expensive, and the honest answer is fewer demands.",
+    "monster": {
+      "name": "Burnout Dragon",
+      "slug": "burnout-dragon"
+    },
+    "signs": [
+      "Simple things now feel steep.",
+      "Rest keeps getting postponed because there is always more to carry.",
+      "You need a smaller day, not a more inspiring plan."
+    ],
+    "ritual": {
+      "label": "Build a Minimum Viable Day",
+      "slug": "minimum-viable-day",
+      "summary": "Cut the day to essentials, protect one recovery action, and stop budgeting energy you do not have."
+    }
+  }
+]

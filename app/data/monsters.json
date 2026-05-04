@@ -1,0 +1,191 @@
+[
+  {
+    "slug": "slumber-troll",
+    "name": "The Slumber Troll",
+    "emoji": "🌙",
+    "tagline": "Sleep inertia & morning bridges",
+    "plainName": "morning inertia and transition friction",
+    "challenge": "Slumber Troll blocks the bridge between rest and motion, especially when your body has not caught up with your intentions yet.",
+    "accentColor": "#2d6b3a",
+    "youMightBeHereIf": [
+      "You keep bargaining for a few more minutes until the morning disappears.",
+      "Standing up feels harder than the task waiting for you.",
+      "Light, sound, or a text message helps more than trying to argue with yourself."
+    ],
+    "startHereRitual": {
+      "label": "Wake Invocation",
+      "slug": "wake-invocation",
+      "description": "Count down, move before negotiating, and stack a simple light cue with accountability."
+    },
+    "supportBoundary": "If sleep, exhaustion, depression, or medication changes are driving the problem, treat this page as a companion tool rather than the whole answer.",
+    "order": 1
+  },
+  {
+    "slug": "task-hydra",
+    "name": "The Task Hydra",
+    "emoji": "🐲",
+    "tagline": "Too many heads, not enough focus",
+    "plainName": "overwhelm from too many tasks",
+    "challenge": "Task Hydra shows up when too many open loops are screaming at once and choosing the first task feels harder than doing it.",
+    "accentColor": "#6b5ae0",
+    "youMightBeHereIf": [
+      "You keep reorganizing the list instead of starting.",
+      "Every task feels urgent, so your brain treats them all like a threat cloud.",
+      "You switch to new tasks before the first one has a chance to shrink."
+    ],
+    "startHereRitual": {
+      "label": "Single-Task Oath",
+      "slug": "single-task-oath",
+      "description": "Pick one task, hide the rest, and say no to new heads until you finish the first cut."
+    },
+    "supportBoundary": "Use this page as a practical naming tool, not as proof that you should power through exhaustion without support. If the overwhelm is tied to burnout, panic, or unsafe pressure, scale down and seek real-world help.",
+    "order": 2
+  },
+  {
+    "slug": "dopamine-goblin",
+    "name": "The Dopamine Goblin",
+    "emoji": "🧝‍♂️",
+    "tagline": "Shiny distractions & impulse trades",
+    "plainName": "shiny distractions and impulse trades",
+    "challenge": "Dopamine Goblin shows up when the stimulating thing keeps winning even though you still care about the boring thing.",
+    "accentColor": "#d4721a",
+    "youMightBeHereIf": [
+      "You start the task and drift to tabs, pings, or side quests within minutes.",
+      "A reward helps, but only if you decide it before the distraction hits.",
+      "The problem is not knowing what matters; it is keeping the shiny thing from hijacking the session."
+    ],
+    "startHereRitual": {
+      "label": "Goblin deal",
+      "slug": "#dopamine-goblin-rituals",
+      "description": "Make a short work contract, pre-select the reward, and let the goblin earn its shiny."
+    },
+    "supportBoundary": "Use these tools to add friction and structure, not to punish yourself for needing novelty. If compulsive use or self-control struggles are severe, bring in additional support.",
+    "order": 3
+  },
+  {
+    "slug": "temporal-shark",
+    "name": "The Temporal Shark",
+    "emoji": "🦈",
+    "tagline": "Deadlines you can feel",
+    "plainName": "time blindness and deadline panic",
+    "challenge": "Temporal Shark appears when time stays abstract until panic finally makes it feel real.",
+    "accentColor": "#1a7a7a",
+    "youMightBeHereIf": [
+      "You only feel the deadline once it is already urgent.",
+      "Prep steps vanish until the last possible moment.",
+      "Alarms, pings, or body doubling help more than good intentions do."
+    ],
+    "startHereRitual": {
+      "label": "Tide Mark Ritual",
+      "slug": "tide-mark-calendar",
+      "description": "Put the true start time on your calendar and add action-labeled alarms before the fin shows up."
+    },
+    "supportBoundary": "This page can help with time awareness and task setup, but it is not a substitute for accommodations, calendar support, or clinical care if deadlines are harming your health or livelihood.",
+    "order": 4
+  },
+  {
+    "slug": "cave-bear",
+    "name": "The Cave Bear",
+    "emoji": "🐻",
+    "tagline": "Avoidance & hibernation holes",
+    "plainName": "shutdown, retreat, and hiding in the cave",
+    "challenge": "Cave Bear takes over when retreat starts to feel safer than re-entering the world, even when you do not want to stay hidden.",
+    "accentColor": "#8b2a2a",
+    "youMightBeHereIf": [
+      "Rest keeps turning into retreat or isolation.",
+      "Replying, leaving the room, or starting the errand feels too big to touch.",
+      "A doorway step or a text to another person helps more than building a bigger plan."
+    ],
+    "startHereRitual": {
+      "label": "Threshold Spell",
+      "slug": "#cave-bear-rituals",
+      "description": "Move to the doorway, take one body-first step, and use a social rope if you need outside help getting started."
+    },
+    "supportBoundary": "This page is for gentle activation and reconnection, not for forcing yourself through burnout, depression, or a real need for rest. If retreat feels dangerous or total, reach for additional support.",
+    "order": 5
+  },
+  {
+    "slug": "perfection-wyrm",
+    "name": "The Perfection Wyrm",
+    "emoji": "🐉",
+    "tagline": "Polish loops that keep the work from ever leaving the cave",
+    "plainName": "perfectionism, over-editing, and fear of shipping",
+    "challenge": "Perfection Wyrm appears when finishing starts to feel riskier than endless improving, so the draft stays safe but never gets used.",
+    "accentColor": "#a08020",
+    "youMightBeHereIf": [
+      "You keep editing after the useful changes are already done.",
+      "Starting feels okay, but finishing and sending feel strangely dangerous.",
+      "You call it 'making it better' even when the real problem is fear."
+    ],
+    "startHereRitual": {
+      "label": "Ugly First Pass",
+      "slug": "ugly-first-pass",
+      "description": "Make one deliberately imperfect pass, define what 'useful enough' means, and stop when the draft crosses that line."
+    },
+    "supportBoundary": "This page is for untangling revision fear and all-or-nothing thinking, not for excusing unsafe work or impossible expectations. If perfection pressure is tied to trauma, punishment, or severe anxiety, use gentler pacing and outside support.",
+    "order": 6
+  },
+  {
+    "slug": "rejection-wisp",
+    "name": "The Rejection Wisp",
+    "emoji": "👻",
+    "tagline": "One hard interaction that fogs the whole inbox",
+    "plainName": "rejection sensitivity, unread messages, and social avoidance",
+    "challenge": "Rejection Wisp appears when one ambiguous message, criticism, or silence expands into a whole-body warning signal and replying starts to feel unsafe.",
+    "accentColor": "#4cc8c8",
+    "youMightBeHereIf": [
+      "You can handle the task itself, but not the feeling around the reply.",
+      "One awkward thread makes every unopened message feel charged.",
+      "A tiny script helps more than trying to improvise while flooded."
+    ],
+    "startHereRitual": {
+      "label": "Reply Scaffold",
+      "slug": "reply-scaffold",
+      "description": "Choose the smallest reply shape that moves the thread forward instead of waiting for the perfect emotional state."
+    },
+    "supportBoundary": "This page is for reducing social dread and reply paralysis, not for pushing yourself through abusive dynamics or unsafe contact. If a conversation feels harmful, prioritize boundaries and support over responsiveness.",
+    "order": 7
+  },
+  {
+    "slug": "sensory-storm",
+    "name": "The Sensory Storm",
+    "emoji": "⛈️",
+    "tagline": "Too much input, not enough shelter",
+    "plainName": "sensory overload, saturation, and shutdown risk",
+    "challenge": "Sensory Storm appears when sound, light, texture, motion, or social input pile up until your body starts protecting itself by scattering, freezing, or shutting down.",
+    "accentColor": "#7a5aa0",
+    "youMightBeHereIf": [
+      "Noise, brightness, touch, or too many people are making it hard to think.",
+      "You are getting snappier, foggier, or more fragile by the minute.",
+      "Relief comes faster from reducing input than from trying harder."
+    ],
+    "startHereRitual": {
+      "label": "Reduce Inputs First",
+      "slug": "reduce-inputs-first",
+      "description": "Lower one major input, add one sensory anchor, and give your body a smaller environment before asking it to function."
+    },
+    "supportBoundary": "This page is for sensory regulation and load reduction, not for forcing yourself through environments that are actively harming you. If you need to leave, cancel, or use accommodations, that is real support, not failure.",
+    "order": 8
+  },
+  {
+    "slug": "burnout-dragon",
+    "name": "The Burnout Dragon",
+    "emoji": "🔥",
+    "tagline": "When everything costs too much",
+    "plainName": "burnout, deep depletion, and task collapse",
+    "challenge": "Burnout Dragon appears when your reserves are so low that ordinary tasks feel expensive, recovery keeps getting deferred, and even useful plans start to feel like demands.",
+    "accentColor": "#8b3a1a",
+    "youMightBeHereIf": [
+      "Everything feels heavier than it used to, even simple things.",
+      "Rest does not seem to refill you because the pressure never really stops.",
+      "You need fewer expectations, not better productivity hacks."
+    ],
+    "startHereRitual": {
+      "label": "Minimum Viable Day",
+      "slug": "minimum-viable-day",
+      "description": "Cut the day down to essentials, protect one recovery action, and stop pretending you have capacity you do not have."
+    },
+    "supportBoundary": "This page is for naming depletion and reducing demands, not for pushing through dangerous exhaustion. If burnout is affecting your safety, health, or ability to function, seek medical, workplace, or community support alongside rest.",
+    "order": 9
+  }
+]
