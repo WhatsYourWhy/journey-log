@@ -14,7 +14,7 @@
   "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.57.0",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^4.2.0",
     "prettier": "^3.3.3"
   }
 }
